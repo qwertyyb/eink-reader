@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vconsole@3.14.6/dist/vconsole.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    html, body, .page-container {
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+    }
+    .page-container {
+      position: relative;
+    }
+    .catalog {
+      display: none;
+    }
+    .catalog-content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-right: 1px solid #000;
+      width: 70vw;
+      max-width: 300px;
+      background-color: #fff;
+      z-index: 10;
+      max-height: 100vh;
+      overflow: auto;
+    }
+    .catalog-item {
+      padding: 10px;
+      border-bottom: 1px solid #000;
+      cursor: pointer;
+    }
+    .control {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 6;
+      height: 60px;
+      background-color: #fff;
+      border-top: 1px solid #000;
+      text-align: center;
+    }
+    .mask {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9;
+    }
+    .content {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      padding: 20px;
+      overflow: auto;
+    }
+    .content .placeholder {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+  <style id="theme">
+    .content {
+      line-height: 2.5;
+      font-size: 24px;
+      font-weight: bold;
+      color: black;
+      font-family: SimSun, STSong
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="catalog">
+      <div class="mask"></div>
+      <div class="catalog-content">
+        <div class="catalog-item">
+          <div class="catalog-label">第一章 xxx</div>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-label">第一章 xxx</div>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-label">第一章 xxx</div>
+        </div>
+        <div class="catalog-item">
+          <div class="catalog-label">第一章 xxx</div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="placeholder">
+        正在加载
+      </div>
+    </div>
+    <div class="control">
+      <div class="control-item" data-control="catalog">
+        <div class="control-icon material-icons">menu</div>
+        <div class="control-label">目录</div>
+      </div>
+      <div class="control-item" data-control="autoPlay">
+        <div class="control-icon material-icons">play_arrow</div>
+        <div class="control-label">自动翻页</div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+  <script>
+    // const vConsole = new VConsole()
+    // console.log('hello')
+
+    const jsonp = (data) => {
+      return new Promise((resolve, reject) => {
+        $.ajax({
+          url: localStorage.getItem('proxyUrl'),
+          dataType: 'jsonp',
+          data: {
+            format: 'string',
+            charset: 'gbk',
+            ...data
+          },
+          success: resolve,
+          error: (xhr, textStatus, errMessage) => {
+            alert('获取数据失败')
+            localStorage.removeItem('proxyUrl')
+            reject(new Error('失败'))
+          }
+        })
+      })
+    }
+
+    const getCatalog = async () => {
+      const res = await jsonp({
+        url: 'http://www.b5200.net/77_77704/',
+        format: 'string',
+        charset: 'gbk'
+      })
+      const html = document.createElement('html')
+      html.innerHTML = res
+      const catalog = html.querySelector('#list dl')
+      const withUpdateList = Array.from(catalog.children)
+      const index = withUpdateList.slice(1).findIndex(item => item.localName === 'dt')
+      const list = withUpdateList.slice(index + 2)
+        .map(item => {
+          return {
+            label: item.innerText,
+            href: item.querySelector('a').href
+          }
+        })
+        .reverse()
+      return { list }
+    }
+
+    const renderCatalog = (catalog) => {
+      const doc = document.createDocumentFragment()
+      // @todo 先只渲染最新的100章
+      catalog.list.slice(0, 100).forEach(({ label, href }) => {
+        const item = document.createElement('div')
+        item.classList.add('catalog-item')
+        item.dataset.href = href
+        const labelDom = document.createElement('div')
+        labelDom.classList.add('catalog-label')
+        labelDom.textContent = label
+        item.appendChild(labelDom)
+        doc.appendChild(item)
+      })
+      document.querySelector('.catalog-content').innerHTML = ''
+      document.querySelector('.catalog-content').append(...doc.childNodes)
+    }
+
+    const getContent = async (catalogItem) => {
+      const res = await jsonp({
+        url: catalogItem.href,
+        format: 'string',
+        charset: 'gbk'
+      })
+      const html = document.createElement('html')
+      html.innerHTML = res
+      const content = html.querySelector('#content')
+      return {
+        content: content.innerHTML
+      }
+    }
+    const renderContent = async ({ content }) => {
+      document.querySelector('.content').innerHTML = content
+    }
+    $('.control').on('click', '.control-item', event => {
+      const control = $(event.currentTarget).data('control')
+      console.log(control)
+      if (control === 'catalog') {
+        $('.catalog').toggle()
+      }
+    })
+    $('.catalog .mask').on('click', (event) => {
+      $('.catalog').hide()
+    })
+    $('.catalog').on('click', '.catalog-item', event => {
+      const href = $(event.currentTarget).data('href')
+      if (!href) return;
+      getContent({ href }).then(content => renderContent(content))
+      $('.catalog').hide()
+    })
+    $('.content').on('click', (event) => {
+      const { clientX, clientY } = event
+      const { height, width } = document.documentElement.getBoundingClientRect()
+      if (clientY < height / 3) {
+        return $('.control').toggle()
+      }
+      if (clientX < width / 2) {
+        $('.content').scrollTop($('.content').scrollTop() - height)
+        return console.log('prev page')
+      }
+      if (clientX > width / 2) {
+        $('.content').scrollTop($('.content').scrollTop() + height)
+        return console.log('next page')
+      }
+    })
+    window.onload = () => {
+      if (!localStorage.getItem('proxyUrl')) {
+        const input = window.prompt('请输入proxyUrl')
+        localStorage.setItem('proxyUrl', input)
+      }
+
+      getCatalog().then(catalog => {
+        renderCatalog(catalog)
+        return getContent(catalog.list[0]).then(content => renderContent(content))
+      })
+    }
+  </script>
+</body>
+</html>
