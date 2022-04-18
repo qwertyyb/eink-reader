@@ -70,8 +70,10 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      padding: 20px;
+      padding: 20px 0;
       overflow: auto;
+      column-count: 1;
+      column-gap: 0;
     }
     .content .placeholder {
       position: absolute;
@@ -96,6 +98,9 @@
       font-weight: bold;
       color: black;
       font-family: "SourceHansSerifCN-VF";
+    }
+    .content p {
+      padding: 0 20px;
     }
   </style>
 </head>
@@ -152,7 +157,9 @@
           success: resolve,
           error: (xhr, textStatus, errMessage) => {
             alert('获取数据失败')
-            localStorage.removeItem('proxyUrl')
+            if (window.confirm('清除代理URL?')) {
+              localStorage.removeItem('proxyUrl')
+            }
             reject(new Error('失败'))
           }
         })
@@ -214,6 +221,15 @@
     const renderContent = async ({ content }) => {
       document.querySelector('.content').innerHTML = content
     }
+
+    const getVisibleEls = () => {
+      const content = document.querySelector('.content').getBoundingClientRect()
+
+      Array.from(content.children).filter(el => {
+        const rect = el.getBoundingClientRect
+      })
+    }
+
     $('.control').on('click', '.control-item', event => {
       const control = $(event.currentTarget).data('control')
       console.log(control)
@@ -236,12 +252,14 @@
       if (clientY < height / 3) {
         return $('.control').toggle()
       }
+      const content = document.querySelector('.content')
+      const curPage = Math.round(content.scrollLeft / width)
       if (clientX < width / 2) {
-        $('.content').scrollTop($('.content').scrollTop() - height)
+        document.querySelector('.content').scrollLeft = (curPage - 1) * width;
         return console.log('prev page')
       }
       if (clientX > width / 2) {
-        $('.content').scrollTop($('.content').scrollTop() + height)
+        document.querySelector('.content').scrollLeft = (curPage + 1) * width;
         return console.log('next page')
       }
     })
