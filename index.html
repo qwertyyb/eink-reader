@@ -12,6 +12,7 @@
     * {
       padding: 0;
       margin: 0;
+      color: #000;
     }
     html, body, .page-container {
       width: 100%;
@@ -86,11 +87,61 @@
       align-items: center;
       justify-content: center;
     }
+    .control .control-panel {
+      position: absolute;
+      left: 0;
+      bottom: 100%;
+      right: 0;
+      background: #fff;
+      padding: 30px 0;
+      border-top: 1px solid #000;
+    }
+    .control .control-panel.font-panel {
+      /* display: flex; */
+      display: none;
+      font-size: 20px;
+      justify-content: space-around;
+    }
+    .control-panel.font-panel .font-family select {
+      border: 1px solid #000;
+      border-radius: 5px;
+      padding: 4px 8px;
+      font-size: 22px;
+    }
+    .control-panel.font-panel .font-size {
+      display: flex;
+      align-items: center;
+    }
+    .control-panel.font-panel .font-size .text-size {
+      padding: 0 20px;
+    }
+    .control-panel.font-panel .font-size button {
+      border: 1px solid #000;
+      border-radius: 999px;
+      font-size: 22px;
+      padding: 6px;
+    }
   </style>
   <style id="theme">
     @font-face {
       font-family: "SourceHansSerifCN-VF";
       src: url("./css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("./css/fonts/SourceHanSerifCN-VF.otf") format("otf");
+    }
+    @font-face {
+      font-family: "FZKTSC";
+      src: url("./css/fonts/FZKTSC.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "FZFSSC";
+      src: url("./css/fonts/FZFSSC.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "FZSSSC";
+      src: url("./css/fonts/FZSSSC.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "FZHTSC";
+      src: url("./css/fonts/FZHTSC.ttf") format("truetype");
     }
     .content {
       line-height: 2.5;
@@ -98,6 +149,18 @@
       font-weight: bold;
       color: black;
       font-family: "SourceHansSerifCN-VF";
+    }
+    .content.FZKT {
+      font-family: "FZKTSC";
+    }
+    .content.FZFS {
+      font-family: "FZFSSC";
+    }
+    .content.FZSS {
+      font-family: "FZSSSC";
+    }
+    .content.FZHT {
+      font-family: "FZHTSC";
     }
     .content p {
       padding: 0 20px;
@@ -123,7 +186,7 @@
         </div>
       </div>
     </div>
-    <div class="content">
+    <div class="content fangsong">
       <div class="placeholder">
         正在加载
       </div>
@@ -136,6 +199,31 @@
       <div class="control-item" data-control="autoPlay">
         <div class="control-icon material-icons">play_arrow</div>
         <div class="control-label">自动翻页</div>
+      </div>
+      <div class="control-item" data-control="font">
+        <span class="material-icons">text_format</span>
+        <div class="control-label">字体</div>
+      </div>
+
+      <div class="control-panel font-panel" data-target-control="font">
+        <div class="font-family">
+          <select name="font">
+            <option value="SYST">思源宋体</option>
+            <option value="FZSS" selected>方正书宋</option>
+            <option value="FZFS">方正仿宋</option>
+            <option value="FZHT">方正黑体</option>
+            <option value="FZKT">方正楷体</option>
+          </select>
+        </div>
+        <div class="font-size">
+          <button class="material-icons text-dec">
+              text_decrease
+          </button>
+          <span class="text-size">24</span>
+          <button class="material-icons text-inc">
+              text_increase
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -164,6 +252,26 @@
           }
         })
       })
+    }
+
+    const getSettings = () => {
+      const defaultSettings = {
+        fontFamily: 'SYST',
+        fontSize: 24,
+      }
+      const settings = JSON.parse(localStorage.getItem('settings') || '{}')
+
+      return {
+        ...defaultSettings,
+        ...settings,
+      }
+    }
+
+    const saveSettings = (name, value) => {
+      localStorage.setItem('settings', JSON.stringify({
+        ...getSettings(),
+        [name]: value,
+      }))
     }
 
     const getCatalog = async () => {
@@ -234,7 +342,13 @@
       const control = $(event.currentTarget).data('control')
       console.log(control)
       if (control === 'catalog') {
-        $('.catalog').toggle()
+        return $('.catalog').toggle()
+      }
+      if (control === 'font') {
+        if ($('.font-panel').css('display') === 'none') {
+          return $('.font-panel').css({ display: 'flex' })
+        }
+        return $('.font-panel').hide()
       }
     })
     $('.catalog .mask').on('click', (event) => {
@@ -245,6 +359,23 @@
       if (!href) return;
       getContent({ href }).then(content => renderContent(content))
       $('.catalog').hide()
+    })
+    $('.control-panel.font-panel .font-family select').on('change', event => {
+      const font = $(event.currentTarget).val()
+      document.querySelector('.content').setAttribute('class', 'content ' + font)
+      saveSettings('fontFamily', font)
+    })
+    $('.control-panel.font-panel .font-size button').on('click', event => {
+      const target = $(event.currentTarget)
+      let textSize = parseInt(target.siblings('.text-size').text())
+      if (target.hasClass('text-dec')) {
+        textSize -= 1
+      } else {
+        textSize += 1
+      }
+      target.siblings('.text-size').text(textSize)
+      document.querySelector('.content').style.fontSize = textSize + 'px'
+      saveSettings('fontSize', textSize)
     })
     $('.content').on('click', (event) => {
       const { clientX, clientY } = event
@@ -263,10 +394,24 @@
         return console.log('next page')
       }
     })
+
+    const applySettings = () => {
+      const settings = getSettings()
+      $('.content').attr('class', 'content ' + settings.fontFamily)
+      $('.content').css({ fontSize: settings.fontSize + 'px' })
+      $('.control-panel.font-panel .font-family select').val(settings.fontFamily)
+      $('.control-panel.font-panel .font-size .text-size').text(settings.fontSize)
+    }
+
     window.onload = () => {
+      applySettings()
       if (!localStorage.getItem('proxyUrl')) {
         const input = window.prompt('请输入proxyUrl')
+        if (!input) return;
         localStorage.setItem('proxyUrl', input)
+      }
+      if (!localStorage.getItem('proxyUrl')) {
+        return
       }
 
       getCatalog().then(catalog => {
