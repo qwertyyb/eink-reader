@@ -57,6 +57,9 @@
       border-top: 1px solid #000;
       text-align: center;
     }
+    .control .material-icons {
+      font-size: 32px;
+    }
     .mask {
       position: fixed;
       top: 0;
@@ -118,8 +121,25 @@
     .control-panel.font-panel .font-size button {
       border: 1px solid #000;
       border-radius: 999px;
-      font-size: 22px;
+      font-size: 24px;
       padding: 6px;
+    }
+
+    .control-panel.play-panel {
+      display: flex;
+      justify-content: space-around;
+    }
+    .control-panel.play-panel button {
+      border: 1px solid #000;
+      border-radius: 999px;
+      font-size: 24px;
+      padding: 6px;
+    }
+    .control-panel.play-panel .speed {
+      width: 90%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
     }
   </style>
   <style id="theme">
@@ -205,6 +225,18 @@
         <div class="control-label">字体</div>
       </div>
 
+      <div class="control-panel play-panel" data-target-control="autoPlay">
+        <div class="speed">
+          <button class="material-icons speed-dec" data-action="dec">
+            remove
+          </button>
+          <span class="speed-value">24</span>
+          <button class="material-icons speed-inc" data-action="inc">
+            add
+          </button>
+        </div>
+      </div>
+
       <div class="control-panel font-panel" data-target-control="font">
         <div class="font-family">
           <select name="font">
@@ -258,6 +290,8 @@
       const defaultSettings = {
         fontFamily: 'SYST',
         fontSize: 24,
+
+        autoPlayDuration: 24, // 24s
       }
       const settings = JSON.parse(localStorage.getItem('settings') || '{}')
 
@@ -338,19 +372,70 @@
       })
     }
 
-    $('.control').on('click', '.control-item', event => {
-      const control = $(event.currentTarget).data('control')
-      console.log(control)
-      if (control === 'catalog') {
-        return $('.catalog').toggle()
+    const pageNav = (direction) => {
+      const content = document.querySelector('.content')
+      const curPage = Math.round(content.scrollLeft / window.innerWidth)
+      if (direction === 'prev') {
+        return document.querySelector('.content').scrollLeft = (curPage - 1) * window.innerWidth;
+      } else if (direction === 'next') {
+        document.querySelector('.content').scrollLeft = (curPage + 1) * window.innerWidth;
       }
-      if (control === 'font') {
-        if ($('.font-panel').css('display') === 'none') {
-          return $('.font-panel').css({ display: 'flex' })
+    }
+    const prevPage = () => pageNav('prev')
+    const nextPage = () => pageNav('next')
+
+    const player = (() => {
+      let interval = null;
+      const isPlaying = () => !!interval;
+      const stop = () => {
+        interval && clearInterval(interval)
+        interval = null
+      }
+      const start = () => {
+        stop()
+        interval = setInterval(() => {
+          nextPage()
+        }, getSettings().autoPlayDuration * 1000)
+      }
+      const updateInterval = s => {
+        saveSettings('autoPlayDuration', s)
+        if (isPlaying()) {
+          start()
         }
-        return $('.font-panel').hide()
       }
-    })
+      return {
+        interval: () => getSettings().autoPlayDuration,
+        isPlaying,
+        start,
+        stop,
+        updateInterval,
+      }
+    })()
+
+    $('.control').on('click', '.control-item', (() => {
+      return event => {
+        const control = $(event.currentTarget).data('control')
+        console.log(control)
+        if (control === 'catalog') {
+          return $('.catalog').toggle()
+        }
+
+        if (control === 'font') {
+          if ($('.font-panel').css('display') === 'none') {
+            $('.control-panel').hide()
+            return $('.font-panel').css({ display: 'flex' })
+          }
+          return $('.font-panel').hide()
+        }
+        if (control === 'autoPlay') {
+          player.isPlaying() ? player.stop() : player.start()
+          $(event.currentTarget)
+            .find('.material-icons')
+            .text(
+            player.isPlaying() ? 'pause' : 'play_arrow')
+        }
+      }
+    })())
     $('.catalog .mask').on('click', (event) => {
       $('.catalog').hide()
     })
@@ -377,21 +462,33 @@
       document.querySelector('.content').style.fontSize = textSize + 'px'
       saveSettings('fontSize', textSize)
     })
+    $('.control-panel.play-panel button').on('click', event => {
+      const action = $(event.currentTarget).data('action')
+      const settings = getSettings()
+      const newDuration = action === 'dec'
+        ? settings.autoPlayDuration - 1
+        : action === 'inc'
+          ? settings.autoPlayDuration + 1
+          : settings.autoPlayDuration
+      player.updateInterval(newDuration);
+      $('.control-panel.play-panel .speed-value').text(newDuration + 's')
+    })
     $('.content').on('click', (event) => {
       const { clientX, clientY } = event
       const { height, width } = document.documentElement.getBoundingClientRect()
       if (clientY < height / 3) {
+        if (player.isPlaying()) {
+          $('.control-panel').hide()
+          $('.control-panel.play-panel').show()
+        }
         return $('.control').toggle()
       }
-      const content = document.querySelector('.content')
-      const curPage = Math.round(content.scrollLeft / width)
       if (clientX < width / 2) {
-        document.querySelector('.content').scrollLeft = (curPage - 1) * width;
+        return prevPage()
         return console.log('prev page')
       }
       if (clientX > width / 2) {
-        document.querySelector('.content').scrollLeft = (curPage + 1) * width;
-        return console.log('next page')
+        return nextPage()
       }
     })
 
@@ -401,6 +498,7 @@
       $('.content').css({ fontSize: settings.fontSize + 'px' })
       $('.control-panel.font-panel .font-family select').val(settings.fontFamily)
       $('.control-panel.font-panel .font-size .text-size').text(settings.fontSize)
+      $('.control-panel.play-panel .speed-value').text(settings.autoPlayDuration + 's')
     }
 
     window.onload = () => {
