@@ -22,6 +22,21 @@
     .page-container {
       position: relative;
     }
+    .page-container.shelf-page .book-list {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 140px);
+      column-gap: 20px;
+      row-gap: 20px;
+    }
+    .book-item .book-cover {
+      width: 100%;
+      height: auto;
+    }
+
+    .page-container.detail-page {
+      display: none;
+    }
     .catalog {
       display: none;
     }
@@ -37,11 +52,16 @@
       z-index: 10;
       max-height: 100vh;
       overflow: auto;
+      content-visibility: auto;
     }
     .catalog-item {
       padding: 10px;
       border-bottom: 1px solid #000;
       cursor: pointer;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
     }
     .control {
       position: fixed;
@@ -78,6 +98,7 @@
       overflow: auto;
       column-count: 1;
       column-gap: 0;
+      overflow: hidden;
     }
     .content .placeholder {
       position: absolute;
@@ -188,7 +209,16 @@
   </style>
 </head>
 <body>
-  <div class="page-container">
+  <div class="page-container shelf-page">
+    <div class="shelf-wrapper">
+      <div class="self">
+        <div class="book-list">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-container detail-page">
     <div class="catalog">
       <div class="mask"></div>
       <div class="catalog-content">
@@ -260,9 +290,131 @@
     </div>
   </div>
   <script src="https://cdn.bootcdn.net/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+  <script src="./js/vlist.js"></script>
   <script>
     // const vConsole = new VConsole()
     // console.log('hello')
+
+    const dataService = (() => {
+      return {
+        getBookList: () => {
+          return [
+            {
+              id: '轮回乐园',
+              title: '轮回乐园',
+              cover: 'https://bookcover.yuewen.com/qdbimg/349573/1009817672/300',
+              extraInfo: {
+                url: 'http://www.b5200.net/77_77704/',
+                format: 'string',
+                charset: 'gbk'
+              }
+            }
+          ]
+        },
+        getCatalog: async (book) => {
+          const { extraInfo } = book;
+          const res = await jsonp({
+            url: 'http://www.b5200.net/77_77704/',
+            format: 'string',
+            charset: 'gbk'
+          })
+          const html = document.createElement('html')
+          html.innerHTML = res
+          const catalog = html.querySelector('#list dl')
+          const withUpdateList = Array.from(catalog.children)
+          const index = withUpdateList.slice(1).findIndex(item => item.localName === 'dt')
+          const list = withUpdateList.slice(index + 2)
+            .map(item => {
+              return {
+                id: item.querySelector('a').href,
+                title: item.innerText,
+                extraInfo: {
+                  href: item.querySelector('a').href
+                }
+              }
+            })
+            .reverse()
+          return { catalog: list }
+        },
+        getContent: async (catalog) => {
+          const res = await jsonp({
+            url: catalog.id,
+            format: 'string',
+            charset: 'gbk'
+          })
+          const html = document.createElement('html')
+          html.innerHTML = res
+          const content = html.querySelector('#content')
+          return { content: content.innerHTML }
+        }
+      }
+    })()
+
+    const data = {
+      bookList: [],
+      curBook: null,
+    }
+    let dataReady = new Promise(async (resolve) => {
+      if (data.bookList.length) return;
+      const bookList = await dataService.getBookList()
+      renderer.bookList({ bookList })
+      data.bookList = bookList
+      resolve()
+    })
+
+    const router = {
+      '/': {
+        el: '.page-container.shelf-page',
+        async created() {
+          
+        }
+      },
+      '/detail': {
+        el: '.page-container.detail-page',
+        async created(query) {
+          const bookId = query.bookId
+          if (!bookId) {
+            return alert('错误的链接')
+          }
+          await dataReady;
+          if (!data.curBook || data.curBook.id !== bookId) {
+            data.curBook = data.bookList.find(item => item.id === bookId)
+          }
+          if (!data.curBook) {
+            return alert('错误的book id')
+          }
+          if (!data.curBook.catalog) {
+            const { catalog } = await dataService.getCatalog(data.curBook)
+            data.curBook.catalog = catalog
+            renderer.catalog({ catalog })
+          }
+          // @todo 获取最近读取的章节
+          const [first] = data.curBook.catalog
+          if (!first.content) {
+            const { content } = await dataService.getContent(first)
+            first.content = content
+          }
+          renderer.content({ content: first.content })
+        }
+      }
+    }
+
+    const pushPage = (path, query = {}) => {
+      location.hash = `#${path}?query=${JSON.stringify(query)}`
+    }
+
+    const activeRoutePage = () => {
+      const hash = location.hash || '#/'
+      const [path, search = ''] = hash.substring(1).split('?');
+      $(Object.values(router).map(item => item.el).join(',')).hide();
+      const route = router[path]
+      $(route.el).show();
+      const params = new URLSearchParams(search)
+      route.created(JSON.parse(params.get('query') || '{}'))
+    }
+    window.addEventListener('hashchange', (event) => {
+      activeRoutePage()
+    })
 
     const jsonp = (data) => {
       return new Promise((resolve, reject) => {
@@ -308,69 +460,42 @@
       }))
     }
 
-    const getCatalog = async () => {
-      const res = await jsonp({
-        url: 'http://www.b5200.net/77_77704/',
-        format: 'string',
-        charset: 'gbk'
-      })
-      const html = document.createElement('html')
-      html.innerHTML = res
-      const catalog = html.querySelector('#list dl')
-      const withUpdateList = Array.from(catalog.children)
-      const index = withUpdateList.slice(1).findIndex(item => item.localName === 'dt')
-      const list = withUpdateList.slice(index + 2)
-        .map(item => {
-          return {
-            label: item.innerText,
-            href: item.querySelector('a').href
-          }
-        })
-        .reverse()
-      return { list }
-    }
-
-    const renderCatalog = (catalog) => {
-      const doc = document.createDocumentFragment()
-      // @todo 先只渲染最新的100章
-      catalog.list.slice(0, 100).forEach(({ label, href }) => {
-        const item = document.createElement('div')
-        item.classList.add('catalog-item')
-        item.dataset.href = href
-        const labelDom = document.createElement('div')
-        labelDom.classList.add('catalog-label')
-        labelDom.textContent = label
-        item.appendChild(labelDom)
-        doc.appendChild(item)
-      })
-      document.querySelector('.catalog-content').innerHTML = ''
-      document.querySelector('.catalog-content').append(...doc.childNodes)
-    }
-
-    const getContent = async (catalogItem) => {
-      const res = await jsonp({
-        url: catalogItem.href,
-        format: 'string',
-        charset: 'gbk'
-      })
-      const html = document.createElement('html')
-      html.innerHTML = res
-      const content = html.querySelector('#content')
+    const renderer = (() => {
       return {
-        content: content.innerHTML
+        bookList: ({ bookList }) => {
+          $('.book-list').empty()
+            .append(bookList.map(book => $(`
+              <div class="book-item" data-book-id=${JSON.stringify(book.id)}>
+                <img src="${book.cover}" class="book-cover"/>
+                <div class="book-title">${book.title}</div>
+              </div>
+          `)))
+        },
+        catalog: ({ catalog }) => {
+          var list = new VirtualList({
+            h: window.innerHeight,
+            itemHeight: 46,
+            totalRows: catalog.length,
+            generatorFn: function(row) {
+              const { title, id } = catalog[row];
+              const item = document.createElement('div')
+              item.classList.add('catalog-item')
+              item.dataset.catalogId = id
+              const labelDom = document.createElement('div')
+              labelDom.classList.add('catalog-label')
+              labelDom.textContent = title
+              item.appendChild(labelDom)
+              return item
+            }
+          });
+          $('.catalog-content').empty()
+            .append(list.container)
+        },
+        content: ({ content }) => {
+          $('.content').empty().html(content)
+        }
       }
-    }
-    const renderContent = async ({ content }) => {
-      document.querySelector('.content').innerHTML = content
-    }
-
-    const getVisibleEls = () => {
-      const content = document.querySelector('.content').getBoundingClientRect()
-
-      Array.from(content.children).filter(el => {
-        const rect = el.getBoundingClientRect
-      })
-    }
+    })()
 
     const pageNav = (direction) => {
       const content = document.querySelector('.content')
@@ -412,6 +537,11 @@
       }
     })()
 
+    $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
+      const bookId = $(event.currentTarget).data('bookId')
+      pushPage('/detail', { bookId })
+    })
+
     $('.control').on('click', '.control-item', (() => {
       return event => {
         const control = $(event.currentTarget).data('control')
@@ -433,16 +563,23 @@
             .find('.material-icons')
             .text(
             player.isPlaying() ? 'pause' : 'play_arrow')
+          $('.control-panel').hide();
+          $('.control-panel.play-panel').show()
         }
       }
     })())
     $('.catalog .mask').on('click', (event) => {
       $('.catalog').hide()
     })
-    $('.catalog').on('click', '.catalog-item', event => {
-      const href = $(event.currentTarget).data('href')
-      if (!href) return;
-      getContent({ href }).then(content => renderContent(content))
+    $('.catalog').on('click', '.catalog-item', async event => {
+      const catalogId = $(event.currentTarget).data('catalogId')
+      if (!catalogId) return;
+      const catalogItem = (data.curBook.catalog || []).find(catalog => catalog.id === catalogId);
+      if (!catalogItem.content) {
+        const { content } = await dataService.getContent(catalogItem)
+        catalogItem.content = content;
+      }
+      renderer.content(catalogItem)
       $('.catalog').hide()
     })
     $('.control-panel.font-panel .font-family select').on('change', event => {
@@ -502,6 +639,7 @@
     }
 
     window.onload = () => {
+      activeRoutePage();
       applySettings()
       if (!localStorage.getItem('proxyUrl')) {
         const input = window.prompt('请输入proxyUrl')
@@ -511,11 +649,6 @@
       if (!localStorage.getItem('proxyUrl')) {
         return
       }
-
-      getCatalog().then(catalog => {
-        renderCatalog(catalog)
-        return getContent(catalog.list[0]).then(content => renderContent(content))
-      })
     }
   </script>
 </body>
