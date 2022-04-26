@@ -95,9 +95,11 @@
       height: 100%;
       overflow: auto;
       padding: 20px 0;
-      overflow: auto;
+    }
+    .content.column {
       column-count: 1;
       column-gap: 0;
+      column-width: 200px;
       overflow: hidden;
     }
     .content .placeholder {
@@ -189,18 +191,20 @@
       font-size: 24px;
       font-weight: bold;
       color: black;
+    }
+    [data-font="SYST"] {
       font-family: "SourceHansSerifCN-VF";
     }
-    .content.FZKT {
+    [data-font="FZKT"] {
       font-family: "FZKTSC";
     }
-    .content.FZFS {
+    [data-font="FZFS"] {
       font-family: "FZFSSC";
     }
-    .content.FZSS {
+    [data-font="FZSS"] {
       font-family: "FZSSSC";
     }
-    .content.FZHT {
+    [data-font="FZHT"] {
       font-family: "FZHTSC";
     }
     .content p {
@@ -236,7 +240,7 @@
         </div>
       </div>
     </div>
-    <div class="content fangsong">
+    <div class="content column" data-font="fangsong">
       <div class="placeholder">
         正在加载
       </div>
@@ -631,7 +635,7 @@
 
     const applySettings = () => {
       const settings = getSettings()
-      $('.content').attr('class', 'content ' + settings.fontFamily)
+      $('.content').data('font', settings.fontFamily)
       $('.content').css({ fontSize: settings.fontSize + 'px' })
       $('.control-panel.font-panel .font-family select').val(settings.fontFamily)
       $('.control-panel.font-panel .font-size .text-size').text(settings.fontSize)
