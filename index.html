@@ -29,6 +29,9 @@
       column-gap: 20px;
       row-gap: 20px;
     }
+    .page-container.shelf-page .book-item .book-cover {
+      box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+    }
     .book-item .book-cover {
       width: 100%;
       height: auto;
@@ -62,6 +65,9 @@
       box-sizing: border-box;
       display: flex;
       align-items: center;
+    }
+    .control-wrapper {
+      display: none;
     }
     .control {
       position: fixed;
@@ -245,50 +251,52 @@
         正在加载
       </div>
     </div>
-    <div class="control">
-      <div class="control-item" data-control="catalog">
-        <div class="control-icon material-icons">menu</div>
-        <div class="control-label">目录</div>
-      </div>
-      <div class="control-item" data-control="autoPlay">
-        <div class="control-icon material-icons">play_arrow</div>
-        <div class="control-label">自动翻页</div>
-      </div>
-      <div class="control-item" data-control="font">
-        <span class="material-icons">text_format</span>
-        <div class="control-label">字体</div>
-      </div>
-
-      <div class="control-panel play-panel" data-target-control="autoPlay">
-        <div class="speed">
-          <button class="material-icons speed-dec" data-action="dec">
-            remove
-          </button>
-          <span class="speed-value">24</span>
-          <button class="material-icons speed-inc" data-action="inc">
-            add
-          </button>
+    <div class="control-wrapper">
+      <div class="control">
+        <div class="control-item" data-control="catalog">
+          <div class="control-icon material-icons">menu</div>
+          <div class="control-label">目录</div>
         </div>
-      </div>
-
-      <div class="control-panel font-panel" data-target-control="font">
-        <div class="font-family">
-          <select name="font">
-            <option value="SYST">思源宋体</option>
-            <option value="FZSS" selected>方正书宋</option>
-            <option value="FZFS">方正仿宋</option>
-            <option value="FZHT">方正黑体</option>
-            <option value="FZKT">方正楷体</option>
-          </select>
+        <div class="control-item" data-control="autoPlay">
+          <div class="control-icon material-icons">play_arrow</div>
+          <div class="control-label">自动翻页</div>
         </div>
-        <div class="font-size">
-          <button class="material-icons text-dec">
-              text_decrease
-          </button>
-          <span class="text-size">24</span>
-          <button class="material-icons text-inc">
-              text_increase
-          </button>
+        <div class="control-item" data-control="font">
+          <span class="material-icons">text_format</span>
+          <div class="control-label">字体</div>
+        </div>
+
+        <div class="control-panel play-panel" data-target-control="autoPlay">
+          <div class="speed">
+            <button class="material-icons speed-dec" data-action="dec">
+              remove
+            </button>
+            <span class="speed-value">24</span>
+            <button class="material-icons speed-inc" data-action="inc">
+              add
+            </button>
+          </div>
+        </div>
+
+        <div class="control-panel font-panel" data-target-control="font">
+          <div class="font-family">
+            <select name="font">
+              <option value="SYST">思源宋体</option>
+              <option value="FZSS" selected>方正书宋</option>
+              <option value="FZFS">方正仿宋</option>
+              <option value="FZHT">方正黑体</option>
+              <option value="FZKT">方正楷体</option>
+            </select>
+          </div>
+          <div class="font-size">
+            <button class="material-icons text-dec">
+                text_decrease
+            </button>
+            <span class="text-size">24</span>
+            <button class="material-icons text-inc">
+                text_increase
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -399,6 +407,9 @@
             first.content = content
           }
           renderer.content({ content: first.content })
+        },
+        deactivate() {
+          player.stop()
         }
       }
     }
@@ -407,9 +418,14 @@
       location.hash = `#${path}?query=${JSON.stringify(query)}`
     }
 
-    const activeRoutePage = () => {
+    const activeRoutePage = (event) => {
+      console.log(event)
       const hash = location.hash || '#/'
       const [path, search = ''] = hash.substring(1).split('?');
+      if (event) {
+        const [,oldPath,] = event.oldURL.split(/[#?]/)
+        router[oldPath] && router[oldPath].deactivate && router[oldPath].deactivate()
+      }
       $(Object.values(router).map(item => item.el).join(',')).hide();
       const route = router[path]
       $(route.el).show();
@@ -417,7 +433,7 @@
       route.created(JSON.parse(params.get('query') || '{}'))
     }
     window.addEventListener('hashchange', (event) => {
-      activeRoutePage()
+      activeRoutePage(event)
     })
 
     const jsonp = (data) => {
@@ -512,6 +528,10 @@
     }
     const prevPage = () => pageNav('prev')
     const nextPage = () => pageNav('next')
+    const scrollV = () => {
+      $('.content').scrollTop($('.content').scrollTop() + 1)
+    }
+    const isHorizontial = () => $('.content').hasClass('column')
 
     const player = (() => {
       let interval = null;
@@ -522,9 +542,15 @@
       }
       const start = () => {
         stop()
-        interval = setInterval(() => {
-          nextPage()
-        }, getSettings().autoPlayDuration * 1000)
+        if (isHorizontial()) {
+          interval = setInterval(() => {
+            nextPage()
+          }, getSettings().autoPlayDuration * 1000)
+        } else {
+          interval = setInterval(() => {
+            scrollV()
+          }, getSettings().autoPlayDuration)
+        }
       }
       const updateInterval = s => {
         saveSettings('autoPlayDuration', s)
@@ -622,7 +648,7 @@
           $('.control-panel').hide()
           $('.control-panel.play-panel').show()
         }
-        return $('.control').toggle()
+        return $('.control-wrapper').toggle()
       }
       if (clientX < width / 2) {
         return prevPage()
@@ -642,8 +668,18 @@
       $('.control-panel.play-panel .speed-value').text(settings.autoPlayDuration + 's')
     }
 
+    const env = {
+      isBooxLeaf: navigator.userAgent.includes('Leaf')
+    }
+    const envHandler = () => {
+      if (!env.isBooxLeaf) {
+        return $('.content').removeClass('column')
+      }
+    }
+    envHandler()
+
+    activeRoutePage();
     window.onload = () => {
-      activeRoutePage();
       applySettings()
       if (!localStorage.getItem('proxyUrl')) {
         const input = window.prompt('请输入proxyUrl')
