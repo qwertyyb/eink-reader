@@ -40,6 +40,24 @@
     .page-container.detail-page {
       display: none;
     }
+    .navigator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      width: 100%;
+      display: flex;
+      box-sizing: border-box;
+      align-items: center;
+      padding: 0 20px;
+      background: #fff;
+      border-bottom: 1px solid #000;
+      z-index: 10;
+    }
+    .navigator #back-to-index {
+      font-size: 32px;
+    }
     .catalog {
       display: none;
     }
@@ -58,13 +76,14 @@
       content-visibility: auto;
     }
     .catalog-item {
-      padding: 10px;
+      padding: 0 10px;
       border-bottom: 1px solid #000;
       cursor: pointer;
       width: 100%;
       box-sizing: border-box;
       display: flex;
       align-items: center;
+      height: 48px;
     }
     .control-wrapper {
       display: none;
@@ -95,18 +114,25 @@
       background: rgba(0, 0, 0, 0.5);
       z-index: 9;
     }
-    .content {
-      box-sizing: border-box;
+    .content-wrapper {
       width: 100%;
       height: 100%;
       overflow: auto;
-      padding: 20px 0;
+    }
+    .content {
+      box-sizing: border-box;
+      height: 100%;
+      margin-left: 20px;
+      margin-right: 20px;
+      width: calc(100vw - 40px);
     }
     .content.column {
-      column-count: 1;
+      margin-top: 20px;
+      margin-bottom: 20px;
       column-gap: 0;
-      column-width: 200px;
+      column-width: calc(100vw - 40px);
       overflow: hidden;
+      height: calc(100vh - 40px);
     }
     .content .placeholder {
       position: absolute;
@@ -127,6 +153,7 @@
       background: #fff;
       padding: 30px 0;
       border-top: 1px solid #000;
+      display: none;
     }
     .control .control-panel.font-panel {
       /* display: flex; */
@@ -213,9 +240,6 @@
     [data-font="FZHT"] {
       font-family: "FZHTSC";
     }
-    .content p {
-      padding: 0 20px;
-    }
   </style>
 </head>
 <body>
@@ -229,6 +253,11 @@
   </div>
 
   <div class="page-container detail-page">
+    <div class="navigator-wrapper" style="display:none">
+      <div class="navigator">
+        <div id="back-to-index" class="material-icons">arrow_back</div>
+      </div>
+    </div>
     <div class="catalog">
       <div class="mask"></div>
       <div class="catalog-content">
@@ -246,9 +275,11 @@
         </div>
       </div>
     </div>
-    <div class="content column" data-font="fangsong">
-      <div class="placeholder">
-        正在加载
+    <div class="content-wrapper">
+      <div class="content column" data-font="fangsong">
+        <div class="placeholder">
+          正在加载
+        </div>
       </div>
     </div>
     <div class="control-wrapper">
@@ -264,6 +295,10 @@
         <div class="control-item" data-control="font">
           <span class="material-icons">text_format</span>
           <div class="control-label">字体</div>
+        </div>
+        <div class="control-item" data-control="darkMode">
+          <span class="material-icons">dark_mode</span>
+          <div class="control-label">夜间</div>
         </div>
         <div class="control-item" data-control="fullscreen">
           <span class="material-icons">fullscreen</span>
@@ -311,18 +346,6 @@
     // const vConsole = new VConsole()
     // console.log('hello')
 
-
-    (vm) => {
-      if (vm.inMagic) return;
-      const origin = vm.app.openUrl 
-      vm.app.openUrl = (url, ...args) => {
-        if (isDetailPage(url)) {
-          startListener()
-        }
-        origin(url, ...args)
-      }
-    } 
-
     const dataService = (() => {
       return {
         getBookList: () => {
@@ -332,9 +355,9 @@
               title: '轮回乐园',
               cover: 'https://bookcover.yuewen.com/qdbimg/349573/1009817672/300',
               extraInfo: {
-                url: 'http://www.b5200.net/77_77704/',
+                url: 'https://www.sobiquge.com/book/29250/',
                 format: 'string',
-                charset: 'gbk'
+                charset: 'utf8'
               }
             }
           ]
@@ -342,33 +365,29 @@
         getCatalog: async (book) => {
           const { extraInfo } = book;
           const res = await jsonp({
-            url: 'http://www.b5200.net/77_77704/',
+            url: book.extraInfo.url,
             format: 'string',
-            charset: 'gbk'
+            charset: 'utf8'
           })
           const html = document.createElement('html')
           html.innerHTML = res
-          const catalog = html.querySelector('#list dl')
-          const withUpdateList = Array.from(catalog.children)
-          const index = withUpdateList.slice(1).findIndex(item => item.localName === 'dt')
-          const list = withUpdateList.slice(index + 2)
+          const els = Array.from(html.querySelectorAll('#list dl dd'))
+          const list = els
             .map(item => {
               return {
-                id: item.querySelector('a').href,
+                id: 'https://www.sobiquge.com' + item.querySelector('a').getAttribute('href'),
                 title: item.innerText,
-                extraInfo: {
-                  href: item.querySelector('a').href
-                }
               }
             })
             .reverse()
+          console.log(list)
           return { catalog: list }
         },
         getContent: async (catalog) => {
           const res = await jsonp({
             url: catalog.id,
             format: 'string',
-            charset: 'gbk'
+            charset: 'utf8'
           })
           const html = document.createElement('html')
           html.innerHTML = res
@@ -426,6 +445,8 @@
         },
         deactivate() {
           player.stop()
+          fullscreen.exit()
+          darkMode.exit()
         }
       }
     }
@@ -510,7 +531,7 @@
         catalog: ({ catalog }) => {
           var list = new VirtualList({
             h: window.innerHeight,
-            itemHeight: 46,
+            itemHeight: 48,
             totalRows: catalog.length,
             generatorFn: function(row) {
               const { title, id } = catalog[row];
@@ -537,17 +558,18 @@
 
     const pageNav = (direction) => {
       const content = document.querySelector('.content')
-      const curPage = Math.round(content.scrollLeft / window.innerWidth)
+      const pageWidth = content.offsetWidth
+      const curPage = Math.round(content.scrollLeft / pageWidth)
       if (direction === 'prev') {
-        return document.querySelector('.content').scrollLeft = (curPage - 1) * window.innerWidth;
+        return content.scrollLeft = (curPage - 1) * pageWidth;
       } else if (direction === 'next') {
-        document.querySelector('.content').scrollLeft = (curPage + 1) * window.innerWidth;
+        content.scrollLeft = (curPage + 1) * pageWidth;
       }
     }
     const prevPage = () => pageNav('prev')
     const nextPage = () => pageNav('next')
     const scrollV = () => {
-      $('.content').scrollTop($('.content').scrollTop() + 1)
+      $('.content-wrapper').scrollTop($('.content-wrapper').scrollTop() + 1)
     }
     const isHorizontial = () => $('.content').hasClass('column')
 
@@ -604,11 +626,33 @@
       }
     }
 
+    const darkMode = {
+      enter() {
+        $('html').css({
+          filter: 'invert(1) hue-rotate(180deg)'
+        })
+      },
+      exit() {
+        $('html').css({
+          filter: 'initial'
+        })
+      },
+      isActivated() {
+        return $('html').css('filter') === 'invert(1) hue-rotate(180deg)'
+      },
+      toggle() {
+        return this.isActivated() ? this.exit() : this.enter()
+      }
+    }
+
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
       const bookId = $(event.currentTarget).data('bookId')
       pushPage('/detail', { bookId })
     })
 
+    $('#back-to-index').on('click', () => {
+      pushPage('/')
+    })
     $('.control').on('click', '.control-item', (() => {
       return async event => {
         const control = $(event.currentTarget).data('control')
@@ -636,6 +680,11 @@
         if (control === 'fullscreen') {
           await fullscreen.toggle()
           const icon = fullscreen.isActivated() ? 'close_fullscreen' : 'fullscreen'
+          $(event.currentTarget).find('.material-icons').text(icon)
+        }
+        if (control === 'darkMode') {
+          darkMode.toggle()
+          const icon = darkMode.isActivated() ? 'light_mode' : 'dark_mode'
           $(event.currentTarget).find('.material-icons').text(icon)
         }
       }
@@ -682,23 +731,21 @@
       player.updateInterval(newDuration);
       $('.control-panel.play-panel .speed-value').text(newDuration + 's')
     })
-    $('.content').on('click', (event) => {
-      const { clientX, clientY } = event
-      const { height, width } = document.documentElement.getBoundingClientRect()
-      if (clientY < height / 3) {
-        if (player.isPlaying()) {
-          $('.control-panel').hide()
-          $('.control-panel.play-panel').show()
-        }
-        return $('.control-wrapper').toggle()
+    $('.content-wrapper').on('click', (event) => {
+      // 左、中、右
+      const { clientX } = event
+      const centerLeft = window.innerWidth / 3
+      const centerRight = 2 * centerLeft
+      const isLeft = clientX < centerLeft
+      const isRight = clientX > centerRight
+      if (isLeft) return prevPage()
+      if (isRight) return nextPage()
+      if (player.isPlaying()) {
+        $('.control-panel').hide()
+        $('.control-panel.play-panel').show()
       }
-      if (clientX < width / 2) {
-        return prevPage()
-        return console.log('prev page')
-      }
-      if (clientX > width / 2) {
-        return nextPage()
-      }
+      $('.navigator-wrapper').toggle()
+      $('.control-wrapper').toggle()
     })
 
     const applySettings = () => {
@@ -718,7 +765,7 @@
         return $('.content').removeClass('column')
       }
     }
-    envHandler()
+    // envHandler()
 
     activeRoutePage();
     window.onload = () => {
