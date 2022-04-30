@@ -265,6 +265,10 @@
           <span class="material-icons">text_format</span>
           <div class="control-label">字体</div>
         </div>
+        <div class="control-item" data-control="fullscreen">
+          <span class="material-icons">fullscreen</span>
+          <div class="control-label">全屏</div>
+        </div>
 
         <div class="control-panel play-panel" data-target-control="autoPlay">
           <div class="speed">
@@ -306,6 +310,18 @@
   <script>
     // const vConsole = new VConsole()
     // console.log('hello')
+
+
+    (vm) => {
+      if (vm.inMagic) return;
+      const origin = vm.app.openUrl 
+      vm.app.openUrl = (url, ...args) => {
+        if (isDetailPage(url)) {
+          startListener()
+        }
+        origin(url, ...args)
+      }
+    } 
 
     const dataService = (() => {
       return {
@@ -513,6 +529,8 @@
         },
         content: ({ content }) => {
           $('.content').empty().html(content)
+          $('.content').scrollLeft(0)
+          $('.content').scrollTop(0)
         }
       }
     })()
@@ -567,13 +585,32 @@
       }
     })()
 
+    const fullscreen = {
+      enter() {
+        if (!document.fullscreenElement) {
+          return document.documentElement.requestFullscreen();
+        }
+      },
+      exit() {
+        if (document.exitFullscreen) {
+          return document.exitFullscreen();
+        }
+      },
+      isActivated() {
+        return !!document.fullscreenElement
+      },
+      toggle() {
+        return this.isActivated() ? this.exit() : this.enter()
+      }
+    }
+
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
       const bookId = $(event.currentTarget).data('bookId')
       pushPage('/detail', { bookId })
     })
 
     $('.control').on('click', '.control-item', (() => {
-      return event => {
+      return async event => {
         const control = $(event.currentTarget).data('control')
         console.log(control)
         if (control === 'catalog') {
@@ -596,6 +633,11 @@
           $('.control-panel').hide();
           $('.control-panel.play-panel').show()
         }
+        if (control === 'fullscreen') {
+          await fullscreen.toggle()
+          const icon = fullscreen.isActivated() ? 'close_fullscreen' : 'fullscreen'
+          $(event.currentTarget).find('.material-icons').text(icon)
+        }
       }
     })())
     $('.catalog .mask').on('click', (event) => {
@@ -614,7 +656,7 @@
     })
     $('.control-panel.font-panel .font-family select').on('change', event => {
       const font = $(event.currentTarget).val()
-      document.querySelector('.content').setAttribute('class', 'content ' + font)
+      $('.content').data('font', font)
       saveSettings('fontFamily', font)
     })
     $('.control-panel.font-panel .font-size button').on('click', event => {
