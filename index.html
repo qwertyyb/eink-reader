@@ -132,7 +132,7 @@
       column-gap: 0;
       column-width: calc(100vw - 40px);
       overflow: hidden;
-      height: calc(100vh - 40px);
+      height: calc(100% - 40px);
     }
     .content .placeholder {
       position: absolute;
@@ -342,6 +342,7 @@
   </div>
   <script src="https://cdn.bootcdn.net/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
   <script src="./js/vlist.js"></script>
+  <script src="https://cdn.staticfile.org/hammer.js/2.0.8/hammer.min.js"></script>
   <script>
     // const vConsole = new VConsole()
     // console.log('hello')
@@ -614,7 +615,7 @@
         }
       },
       exit() {
-        if (document.exitFullscreen) {
+        if (document.exitFullscreen && this.isActivated()) {
           return document.exitFullscreen();
         }
       },
@@ -747,6 +748,9 @@
       $('.navigator-wrapper').toggle()
       $('.control-wrapper').toggle()
     })
+    const hammer = new Hammer(document.querySelector('.content-wrapper'))
+    hammer.on('swipeleft', () => nextPage())
+    hammer.on('swiperight', () => prevPage())
 
     const applySettings = () => {
       const settings = getSettings()
@@ -765,7 +769,7 @@
         return $('.content').removeClass('column')
       }
     }
-    // envHandler()
+    envHandler()
 
     activeRoutePage();
     window.onload = () => {
