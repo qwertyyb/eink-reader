@@ -75,6 +75,9 @@
       overflow: auto;
       content-visibility: auto;
     }
+    .catalog-content > div {
+      box-sizing: border-box;
+    }
     .catalog-item {
       padding: 0 10px;
       border-bottom: 1px solid #000;
@@ -84,6 +87,13 @@
       display: flex;
       align-items: center;
       height: 48px;
+    }
+    .catalog-item.active {
+      color: #fff;
+      background: #000;
+    }
+    .catalog-item.active .catalog-label {
+      color: #fff;
     }
     .control-wrapper {
       display: none;
@@ -393,6 +403,16 @@
           const html = document.createElement('html')
           html.innerHTML = res
           const content = html.querySelector('#content')
+
+          const removeEl = content.querySelector('.bottem2')
+          if (removeEl) {
+            const prevRemoveEl = removeEl.previousElementSibling
+            const nextRemoveEl = removeEl.nextElementSibling;
+            [prevRemoveEl, removeEl, nextRemoveEl].forEach(el => {
+              content.removeChild(el)
+            })
+          }
+
           return { content: content.innerHTML }
         }
       }
@@ -401,7 +421,9 @@
     const data = {
       bookList: [],
       curBook: null,
+      curCatalogItem: null,
     }
+
     let dataReady = new Promise(async (resolve) => {
       if (data.bookList.length) return;
       const bookList = await dataService.getBookList()
@@ -436,13 +458,13 @@
             data.curBook.catalog = catalog
             renderer.catalog({ catalog })
           }
-          // @todo 获取最近读取的章节
+          const lastReadInfo = lastRead.getLastRead(bookId)
           const [first] = data.curBook.catalog
-          if (!first.content) {
-            const { content } = await dataService.getContent(first)
-            first.content = content
+          let lastReadCatalogItem = first;
+          if (lastReadInfo) {
+            lastReadCatalogItem = data.curBook.catalog.find(item => item.id === lastReadInfo.chapter) || first
           }
-          renderer.content({ content: first.content })
+          readCatalogItem(lastReadCatalogItem)
         },
         deactivate() {
           player.stop()
@@ -450,6 +472,16 @@
           darkMode.exit()
         }
       }
+    }
+
+    const readCatalogItem = async (catalogItem, bookId = data.curBook.id) => {
+      if (!catalogItem.content) {
+        const { content } = await dataService.getContent(catalogItem)
+        catalogItem.content = content
+      }
+      renderer.content(catalogItem)
+      data.curCatalogItem = catalogItem
+      lastRead.saveRead(bookId, { chapter: catalogItem.id })
     }
 
     const pushPage = (path, query = {}) => {
@@ -552,7 +584,7 @@
         content: ({ content }) => {
           $('.content').empty().html(content)
           $('.content').scrollLeft(0)
-          $('.content').scrollTop(0)
+          $('.content-wrapper').scrollTop(0)
         }
       }
     })()
@@ -561,10 +593,17 @@
       const content = document.querySelector('.content')
       const pageWidth = content.offsetWidth
       const curPage = Math.round(content.scrollLeft / pageWidth)
+      const originScroll = content.scrollLeft;
       if (direction === 'prev') {
-        return content.scrollLeft = (curPage - 1) * pageWidth;
+        content.scrollLeft = (curPage - 1) * pageWidth;
+        if (content.scrollLeft === originScroll) {
+          toast.show('已是第一页')
+        }
       } else if (direction === 'next') {
         content.scrollLeft = (curPage + 1) * pageWidth;
+        if (content.scrollLeft === originScroll) {
+          toast.show('已是最后一页')
+        }
       }
     }
     const prevPage = () => pageNav('prev')
@@ -646,6 +685,28 @@
       }
     }
 
+    const toast = {
+      show(msg, duration = 1500) {
+        const toastEl = $(`<div style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100;border:1px solid #000;border-radius:4px;padding:4px 10px;background:#000;color:#fff;">${msg}</div>`)
+        const body = $('body').append(toastEl)
+        setTimeout(() => {
+          toastEl.remove()
+        }, duration)
+      }
+    }
+
+    const lastRead = {
+      getLastRead(bookId) {
+        const lastReadInfo = JSON.parse(localStorage.getItem('lastRead') || '{}')
+        return lastReadInfo[bookId]
+      },
+      saveRead(bookId, { chapter }) {
+        const lastReadInfo = JSON.parse(localStorage.getItem('lastRead') || '{}')
+        lastReadInfo[bookId] = { chapter }
+        localStorage.setItem('lastRead', JSON.stringify(lastReadInfo))
+      }
+    }
+
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
       const bookId = $(event.currentTarget).data('bookId')
       pushPage('/detail', { bookId })
@@ -659,7 +720,19 @@
         const control = $(event.currentTarget).data('control')
         console.log(control)
         if (control === 'catalog') {
-          return $('.catalog').toggle()
+          $('.catalog').toggle()
+          const vscroll = document.querySelector('.catalog-content > div').vscroll
+          const index = data.curBook.catalog.indexOf(data.curCatalogItem)
+          console.log(index)
+          vscroll.scrollToIndex(index)
+          setTimeout(() => {
+            const selected = document.querySelector('.catalog-item.active')
+            selected && selected.classList.remove('active')
+            
+            const willBeSelected = document.querySelector(`.catalog-content .catalog-item[data-catalog-id=${JSON.stringify(data.curCatalogItem.id)}]`)
+            willBeSelected && willBeSelected.classList.add('active')
+          }, 100)
+          return;
         }
 
         if (control === 'font') {
@@ -697,11 +770,7 @@
       const catalogId = $(event.currentTarget).data('catalogId')
       if (!catalogId) return;
       const catalogItem = (data.curBook.catalog || []).find(catalog => catalog.id === catalogId);
-      if (!catalogItem.content) {
-        const { content } = await dataService.getContent(catalogItem)
-        catalogItem.content = content;
-      }
-      renderer.content(catalogItem)
+      readCatalogItem(catalogItem)
       $('.catalog').hide()
     })
     $('.control-panel.font-panel .font-family select').on('change', event => {

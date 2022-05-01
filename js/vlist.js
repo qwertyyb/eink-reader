@@ -40,6 +40,7 @@
  
    var scroller = VirtualList.createScroller(itemHeight * this.totalRows);
    this.container = VirtualList.createContainer(width, height);
+   this.container.vscroll = this;
    this.container.appendChild(scroller);
  
    var screenItemsLen = Math.ceil(config.h / itemHeight);
@@ -128,6 +129,11 @@
    }
    node.appendChild(fragment);
  };
+
+ VirtualList.prototype.scrollToIndex = function(index) {
+   console.log(index * this.itemHeight)
+    this.container.scrollTop = index * this.itemHeight;
+ }
  
  VirtualList.createContainer = function(w, h) {
    var c = document.createElement('div');
