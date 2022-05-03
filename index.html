@@ -5,9 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="https://cdn.jsdelivr.net/npm/vconsole@3.14.6/dist/vconsole.min.js"></script>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+  <link rel="manifest" href="./manifest.json">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     * {
       padding: 0;
@@ -350,9 +349,10 @@
       </div>
     </div>
   </div>
-  <script src="https://cdn.bootcdn.net/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+  <script src="./js/lib/vconsole.min.js"></script>
+  <script src="./js/lib/zepto.min.js"></script>
+  <script src="./js/lib/hammer.min.js"></script>
   <script src="./js/vlist.js"></script>
-  <script src="https://cdn.staticfile.org/hammer.js/2.0.8/hammer.min.js"></script>
   <script>
     // const vConsole = new VConsole()
     // console.log('hello')
@@ -431,6 +431,16 @@
       data.bookList = bookList
       resolve()
     })
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => {
+          console.log('service worker register successfully: ', reg)
+        })
+        .catch(err => {
+          console.error('service worker register failed: ', err)
+        })
+    }
 
     const router = {
       '/': {
@@ -705,6 +715,10 @@
         lastReadInfo[bookId] = { chapter }
         localStorage.setItem('lastRead', JSON.stringify(lastReadInfo))
       }
+    }
+
+    const pwa = {
+      isPwa: () => window.matchMedia('(display-mode: standalone)').matches
     }
 
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {

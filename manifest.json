@@ -1,0 +1,19 @@
+{
+  "short_name": "Eink Reader",
+  "name": "Eink Reader: Ink screen friendly reader",
+  "start_url": "./index.html?source=pwa",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./assets/icons/192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    },
+    {
+      "src": "./assets/icons/512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ]
+}
