@@ -735,6 +735,23 @@
       isPwa: () => window.matchMedia('(display-mode: standalone)').matches
     }
 
+    const readSpeak = (() => {
+      const getFirst = () => {
+        return Array.from(document.querySelectorAll('.content > p'))
+          .find(item => item.getBoundingClientRect().x > 0)
+      }
+      return {
+        start() {
+          const first = getFirst()
+          const voices = window.speechSynthesis.getVoices()
+            .filter(voice => voice.lang === 'zh-CN')
+          const utterThis = new SpeechSynthesisUtterance(first.innerText);
+          utterThis.voice = voices[0]
+          window.speechSynthesis.speak(utterThis)
+        }
+      }
+    })()
+
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
       const bookId = $(event.currentTarget).data('bookId')
       pushPage('/detail', { bookId })
@@ -866,7 +883,7 @@
         return $('.content').removeClass('column')
       }
     }
-    envHandler()
+    // envHandler()
 
     activeRoutePage();
     window.onload = () => {
