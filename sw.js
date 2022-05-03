@@ -1,4 +1,3 @@
-// test
 const CACHE_NAME = 'v2';
 
 const resources = [
@@ -14,6 +13,8 @@ const resources = [
   '/eink-reader/js/lib/zepto.min.js',
   '/eink-reader/js/lib/vconsole.min.js',
   '/eink-reader/js/lib/hammer.min.js',
+  '/eink-reader/assets/icons/192.svg',
+  '/eink-reader/assets/icons/512.svg',
 ]
 
 const bridge = {
@@ -34,36 +35,57 @@ const bridge = {
       return new Promise(resolve => {
         const callback = `callback_${Math.random()}`;
         callbacks.set(callback, resolve);
-        self.postMessage({
-          type: 'invoke',
-          method,
-          callback,
-          payload: args,
-        });
+        clients.matchAll()
+          .then(clients => clients
+            .forEach(client => client
+              .postMessage({
+                type: 'invoke',
+                method,
+                callback,
+                payload: args,
+              })
+            )
+          );
       })
     }
   })()
 }
 
+const logger = {
+  info: (...args) => console.info('[sw]', ...args),
+  warn: (...args) => console.warn('[sw]', ...args),
+  error: (...args) => console.error('[sw]', ...args),
+}
+
 self.addEventListener('install', function(event) {
-  console.log('install')
+  logger.info('service worker installing...')
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(resources);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(resources);
+      })
+      .then(() => {
+        logger.info('service worker installed')
+      })
   )
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
+  logger.info('active')
   caches.keys().then(function(keyList) {
     return Promise.all(keyList.map(function(key) {
       if (key !== CACHE_NAME) {
+        logger.info('delete cache', key)
         return caches.delete(key);
       }
     }));
   })
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    clients.claim().then(() => {
+      bridge.invoke('toast', '已更新，刷新页面即可使用新版本')
+    })
+  );
 })
 
 const resourceNeedCache = (request, response) => {
@@ -80,8 +102,8 @@ const notUseCache = (request) => {
 
 self.addEventListener('fetch', function(event) {
   if (notUseCache(event.request)) return;
-  console.log('fetch', event.request)
   if (!resourceNeedCache(event.request)) return;
+  logger.info('fetch', event.request.url)
   event.respondWith(
     caches.match(event.request).then(function(cachedResp) {
       return cachedResp || fetch(event.request).then(function(response) {
@@ -96,5 +118,3 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
-
-

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Eink Reader</title>
   <link rel="manifest" href="./manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -34,6 +34,9 @@
     .book-item .book-cover {
       width: 100%;
       height: auto;
+    }
+    .book-item .book-title {
+      text-align: center;
     }
 
     .page-container.detail-page {
@@ -233,6 +236,7 @@
       font-size: 24px;
       font-weight: bold;
       color: black;
+      user-select: text;
     }
     .content > p {
       text-indent: 2em;
@@ -406,8 +410,8 @@
           })
           const html = document.createElement('html')
           html.innerHTML = res
-          const origin = html.querySelector('#content > #content').innerHTML
-          const content = origin.split('<br><br>').filter(item => item.trim()).map(item => `<p>${item.trim()}</p>`).join('\n')
+          const origin = (html.querySelector('#content > #content') || html.querySelector('#content')).innerHTML
+          const content = origin.split('<br><br>').map(item => item.replace(/(&nbsp;)*/g, '')).filter(item => item.trim()).map(item => `<p>${item.trim()}</p>`).join('\n')
 
           return { content: content }
         }
@@ -439,6 +443,7 @@
 
       const controller = {
         prompt: window.prompt,
+        toast: (...args) => toast.show(...args)
       }
       navigator.serviceWorker.addEventListener('message', async event => {
         const { type, method, payload, callback } = event
@@ -452,7 +457,7 @@
         }
       })
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        toast.show('页面已更新')
+        toast.show('已更新, 刷新页面后可应用')
       })
     }
 
@@ -752,6 +757,10 @@
       }
     })()
 
+    const env = {
+      isBooxLeaf: navigator.userAgent.includes('Leaf')
+    }
+
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
       const bookId = $(event.currentTarget).data('bookId')
       pushPage('/detail', { bookId })
@@ -846,25 +855,30 @@
       player.updateInterval(newDuration);
       $('.control-panel.play-panel .speed-value').text(newDuration + 's')
     })
-    $('.content-wrapper').on('click', (event) => {
-      // 左、中、右
-      const { clientX } = event
-      const centerLeft = window.innerWidth / 3
-      const centerRight = 2 * centerLeft
-      const isLeft = clientX < centerLeft
-      const isRight = clientX > centerRight
-      if (isLeft) return prevPage()
-      if (isRight) return nextPage()
+    const contentTapHandler = (event) => {
+      if (env.isBooxLeaf) {
+        // 左、中、右
+        const { x } = event.center
+        const centerLeft = window.innerWidth / 3
+        const centerRight = 2 * centerLeft
+        const isLeft = x < centerLeft
+        const isRight = x > centerRight
+        if (isLeft) return prevPage()
+        if (isRight) return nextPage()
+      }
       if (player.isPlaying()) {
         $('.control-panel').hide()
         $('.control-panel.play-panel').show()
       }
       $('.navigator-wrapper').toggle()
       $('.control-wrapper').toggle()
-    })
+    }
     const hammer = new Hammer(document.querySelector('.content-wrapper'))
-    hammer.on('swipeleft', () => nextPage())
-    hammer.on('swiperight', () => prevPage())
+    if (env.isBooxLeaf) {
+      hammer.on('swipeleft', () => nextPage())
+      hammer.on('swiperight', () => prevPage())
+    }
+    hammer.on('tap', contentTapHandler)
 
     const applySettings = () => {
       const settings = getSettings()
@@ -875,15 +889,12 @@
       $('.control-panel.play-panel .speed-value').text(settings.autoPlayDuration + 's')
     }
 
-    const env = {
-      isBooxLeaf: navigator.userAgent.includes('Leaf')
-    }
     const envHandler = () => {
       if (!env.isBooxLeaf) {
         return $('.content').removeClass('column')
       }
     }
-    // envHandler()
+    envHandler()
 
     activeRoutePage();
     window.onload = () => {
