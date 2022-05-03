@@ -229,10 +229,14 @@
       src: url("./css/fonts/FZHTSC.ttf") format("truetype");
     }
     .content {
-      line-height: 2.5;
+      line-height: 2;
       font-size: 24px;
       font-weight: bold;
       color: black;
+    }
+    .content > p {
+      text-indent: 2em;
+      letter-spacing: 1px;
     }
     [data-font="SYST"] {
       font-family: "SourceHansSerifCN-VF";
@@ -402,18 +406,10 @@
           })
           const html = document.createElement('html')
           html.innerHTML = res
-          const content = html.querySelector('#content')
+          const origin = html.querySelector('#content > #content').innerHTML
+          const content = origin.split('<br><br>').filter(item => item.trim()).map(item => `<p>${item.trim()}</p>`).join('\n')
 
-          const removeEl = content.querySelector('.bottem2')
-          if (removeEl) {
-            const prevRemoveEl = removeEl.previousElementSibling
-            const nextRemoveEl = removeEl.nextElementSibling;
-            [prevRemoveEl, removeEl, nextRemoveEl].forEach(el => {
-              content.removeChild(el)
-            })
-          }
-
-          return { content: content.innerHTML }
+          return { content: content }
         }
       }
     })()
@@ -440,6 +436,24 @@
         .catch(err => {
           console.error('service worker register failed: ', err)
         })
+
+      const controller = {
+        prompt: window.prompt,
+      }
+      navigator.serviceWorker.addEventListener('message', async event => {
+        const { type, method, payload, callback } = event
+        if (type === 'invoke') {
+          let result = await controller[method](...payload)
+          return navigator.serviceWorker.postMessage({
+            type: 'callback',
+            callback: callback,
+            result: result
+          })
+        }
+      })
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        toast.show('页面已更新')
+      })
     }
 
     const router = {

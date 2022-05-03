@@ -1,4 +1,5 @@
-const CACHE_NAME = 'v1';
+// test
+const CACHE_NAME = 'v2';
 
 const resources = [
   '/eink-reader/',
@@ -15,13 +16,42 @@ const resources = [
   '/eink-reader/js/lib/hammer.min.js',
 ]
 
+const bridge = {
+  invoke: (() => {
+    const callbacks = new Map();
+
+    self.addEventListener('message', event => {
+      const { type, callback, result } = event.data;
+      if (type === 'callback') {
+        const cb = callbacks.get(callback);
+        if (cb) {
+          cb(result);
+          callbacks.delete(callback);
+        }
+      }
+    })
+    return (method, ...args) => {
+      return new Promise(resolve => {
+        const callback = `callback_${Math.random()}`;
+        callbacks.set(callback, resolve);
+        self.postMessage({
+          type: 'invoke',
+          method,
+          callback,
+          payload: args,
+        });
+      })
+    }
+  })()
+}
+
 self.addEventListener('install', function(event) {
   console.log('install')
   event.waitUntil(
-    caches.open('v1').then(function(cache) {
+    caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(resources);
     })
-  );
+  )
   self.skipWaiting();
 });
 
@@ -33,9 +63,7 @@ self.addEventListener('activate', event => {
       }
     }));
   })
-  event.waitUntil(
-    clients.claim()
-  );
+  event.waitUntil(clients.claim());
 })
 
 const resourceNeedCache = (request, response) => {
@@ -45,8 +73,14 @@ const resourceNeedCache = (request, response) => {
   return true;
 }
 
+const notUseCache = (request) => {
+  const isNoCache = request.url.includes('no-cache=1') || request.referrer.includes('no-cache=1')
+  return isNoCache
+}
+
 self.addEventListener('fetch', function(event) {
-  console.log('fetch', event.request.url)
+  if (notUseCache(event.request)) return;
+  console.log('fetch', event.request)
   if (!resourceNeedCache(event.request)) return;
   event.respondWith(
     caches.match(event.request).then(function(cachedResp) {
@@ -62,3 +96,5 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
+
