@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -242,6 +242,9 @@
       text-indent: 2em;
       letter-spacing: 1px;
     }
+    .content > p.reading span {
+      background: yellow;
+    }
     [data-font="SYST"] {
       font-family: "SourceHansSerifCN-VF";
     }
@@ -308,6 +311,10 @@
         <div class="control-item" data-control="autoPlay">
           <div class="control-icon material-icons">play_arrow</div>
           <div class="control-label">自动翻页</div>
+        </div>
+        <div class="control-item" data-control="readSpeak">
+          <div class="control-icon material-icons">play_circle</div>
+          <div class="control-label">朗读</div>
         </div>
         <div class="control-item" data-control="font">
           <span class="material-icons">text_format</span>
@@ -411,7 +418,7 @@
           const html = document.createElement('html')
           html.innerHTML = res
           const origin = (html.querySelector('#content > #content') || html.querySelector('#content')).innerHTML
-          const content = origin.split('<br><br>').map(item => item.replace(/(&nbsp;)*/g, '')).filter(item => item.trim()).map(item => `<p>${item.trim()}</p>`).join('\n')
+          const content = origin.split('<br><br>').map(item => item.replace(/(&nbsp;)*/g, '')).filter(item => item.trim()).map(item => `<p><span>${item.trim()}</span></p>`).join('\n')
 
           return { content: content }
         }
@@ -745,20 +752,63 @@
         return Array.from(document.querySelectorAll('.content > p'))
           .find(item => item.getBoundingClientRect().x > 0)
       }
+
+      const createUtterance = (p, readyNext) => {
+        const utterThis = new SpeechSynthesisUtterance(p.textContent);
+        let nextTriggered = false
+        utterThis.addEventListener('boundary', event => {
+          if (event.charIndex > event.utterance.text.length - 10 && !nextTriggered) {
+            nextTriggered = true
+            readyNext(p)
+          }
+        })
+        utterThis.addEventListener('start', event => {
+          Array.from(document.querySelectorAll('.content p.reading'))
+            .forEach(el => el.classList.remove('reading'))
+          p.classList.add('reading')
+          console.log('scrollIntoView')
+          p.scrollIntoView({ block: 'center' })
+        })
+        utterThis.addEventListener('end', event => {
+          p.classList.remove('reading')
+        })
+        return utterThis
+      }
+      const isEnd = p => p.parentNode.lastElementChild === p
+      const readyNext = (prevP) => {
+        if (isEnd(prevP)) return;
+        // @todo 是否需要翻页
+        const nextP = prevP.nextElementSibling
+        console.log('next', nextP)
+        const utterance = createUtterance(nextP, readyNext)
+        window.speechSynthesis.speak(utterance)
+      }
+      const speak = (first) => {
+        const utterance = createUtterance(first, readyNext)
+        window.speechSynthesis.speak(utterance)
+      }
       return {
         start() {
           const first = getFirst()
-          const voices = window.speechSynthesis.getVoices()
-            .filter(voice => voice.lang === 'zh-CN')
-          const utterThis = new SpeechSynthesisUtterance(first.innerText);
-          utterThis.voice = voices[0]
-          window.speechSynthesis.speak(utterThis)
+          speak(first)
+        },
+        stop() {
+          window.speechSynthesis.cancel()
+        },
+        toggle() {
+          if (window.speechSynthesis.speaking) {
+            return this.stop()
+          }
+          this.start()
+        },
+        isSpeaking() {
+          return window.speechSynthesis.speaking
         }
       }
     })()
 
     const env = {
-      isBooxLeaf: navigator.userAgent.includes('Leaf')
+      isBooxLeaf: navigator.userAgent.includes('Leaf') || true
     }
 
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
@@ -813,6 +863,11 @@
         if (control === 'darkMode') {
           darkMode.toggle()
           const icon = darkMode.isActivated() ? 'light_mode' : 'dark_mode'
+          $(event.currentTarget).find('.material-icons').text(icon)
+        }
+        if (control === 'readSpeak') {
+          readSpeak.toggle()
+          const icon = readSpeak.isSpeaking() ? 'pause_circle' : 'play_circle'
           $(event.currentTarget).find('.material-icons').text(icon)
         }
       }
