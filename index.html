@@ -777,9 +777,7 @@
       const isEnd = p => p.parentNode.lastElementChild === p
       const readyNext = (prevP) => {
         if (isEnd(prevP)) return;
-        // @todo 是否需要翻页
         const nextP = prevP.nextElementSibling
-        console.log('next', nextP)
         const utterance = createUtterance(nextP, readyNext)
         window.speechSynthesis.speak(utterance)
       }
@@ -808,7 +806,7 @@
     })()
 
     const env = {
-      isBooxLeaf: navigator.userAgent.includes('Leaf') || true
+      isBooxLeaf: navigator.userAgent.includes('Leaf')
     }
 
     $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
