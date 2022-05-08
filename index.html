@@ -381,7 +381,7 @@
               title: '轮回乐园',
               cover: 'https://bookcover.yuewen.com/qdbimg/349573/1009817672/300',
               extraInfo: {
-                url: 'https://www.sobiquge.com/book/29250/',
+                url: 'https://m.01xs.com/xiaoshuo/106301/all.html',
                 format: 'string',
                 charset: 'utf8'
               }
@@ -397,11 +397,11 @@
           })
           const html = document.createElement('html')
           html.innerHTML = res
-          const els = Array.from(html.querySelectorAll('#list dl dd'))
+          const els = Array.from(html.querySelectorAll('#chapterlist li'))
           const list = els
             .map(item => {
               return {
-                id: 'https://www.sobiquge.com' + item.querySelector('a').getAttribute('href'),
+                id: 'https://m.01xs.com' + item.querySelector('a').getAttribute('href'),
                 title: item.innerText,
               }
             })
@@ -417,8 +417,13 @@
           })
           const html = document.createElement('html')
           html.innerHTML = res
-          const origin = (html.querySelector('#content > #content') || html.querySelector('#content')).innerHTML
-          const content = origin.split('<br><br>').map(item => item.replace(/(&nbsp;)*/g, '')).filter(item => item.trim()).map(item => `<p><span>${item.trim()}</span></p>`).join('\n')
+          const origin = html.querySelector('article#nr')
+          Array.from(origin.children).forEach(item => {
+            if (item.nodeName === 'SCRIPT') {
+              item.parentNode.removeChild(item)
+            }
+          })
+          const content = origin.innerHTML
 
           return { content: content }
         }
@@ -825,7 +830,6 @@
           $('.catalog').toggle()
           const vscroll = document.querySelector('.catalog-content > div').vscroll
           const index = data.curBook.catalog.indexOf(data.curCatalogItem)
-          console.log(index)
           vscroll.scrollToIndex(index)
           setTimeout(() => {
             const selected = document.querySelector('.catalog-item.active')
@@ -833,7 +837,7 @@
             
             const willBeSelected = document.querySelector(`.catalog-content .catalog-item[data-catalog-id=${JSON.stringify(data.curCatalogItem.id)}]`)
             willBeSelected && willBeSelected.classList.add('active')
-          }, 100)
+          }, 300)
           return;
         }
 

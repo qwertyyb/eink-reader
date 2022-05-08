@@ -131,8 +131,7 @@
  };
 
  VirtualList.prototype.scrollToIndex = function(index) {
-   console.log(index * this.itemHeight)
-    this.container.scrollTop = index * this.itemHeight;
+    this.container.scrollTop = index * this.itemHeight - this.container.getBoundingClientRect().height / 2 + this.itemHeight / 2;
  }
  
  VirtualList.createContainer = function(w, h) {
