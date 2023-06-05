@@ -4,12 +4,19 @@ import { render } from './txt-file.js'
 export const dataService = {
   async getBookList () {
     const list = await books.getList()
-    return list.map(item => {
+    const bookList = list.map(item => {
       return {
         ...item,
-        cover: 'https://via.placeholder.com/300x400?text=cover'
+        cover: 'https://via.placeholder.com/300x400?text=cover',
+        catalog: item.catalog.map(item => {
+          return {
+            ...item,
+            id: item.cursor + '',
+          }
+        })
       }
     })
+    return bookList
   },
   getCatalog (book) {
     const catalog = book.catelog.map(item => {
