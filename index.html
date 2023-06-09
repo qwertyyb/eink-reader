@@ -7,6 +7,7 @@
   <title>Eink Reader</title>
   <link rel="manifest" href="./manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="./css/components/virtual-scroll-list.css">
   <style>
     * {
       padding: 0;
@@ -18,6 +19,13 @@
       height: 100%;
       background-color: #fff;
     }
+    /* dark mode start */
+    html.dark-mode {
+      filter: invert(1) hue-rotate(180deg)
+    }
+    /* dark mode end */
+
+
     .page-container {
       position: relative;
     }
@@ -86,10 +94,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
-    .page-container.detail-page {
-      display: none;
-    }
     .navigator {
       position: fixed;
       top: 0;
@@ -107,9 +111,6 @@
     }
     .navigator #back-to-index {
       font-size: 32px;
-    }
-    .catalog {
-      display: none;
     }
     .catalog-content {
       position: absolute;
@@ -145,9 +146,6 @@
     .catalog-item.active .catalog-label {
       color: #fff;
     }
-    .control-wrapper {
-      display: none;
-    }
     .control {
       position: fixed;
       bottom: 0;
@@ -178,6 +176,7 @@
       width: 100%;
       height: 100%;
       overflow: auto;
+      max-height: 100vh;
     }
     .content {
       box-sizing: border-box;
@@ -216,8 +215,7 @@
       display: none;
     }
     .control .control-panel.font-panel {
-      /* display: flex; */
-      display: none;
+      display: flex;
       font-size: 20px;
       justify-content: space-around;
     }
@@ -311,118 +309,131 @@
   </style>
 </head>
 <body>
-  <div class="page-container shelf-page">
-    <div class="shelf-wrapper">
-      <div class="header">
-        <span id="import-file" class="material-icons">add</span>
-      </div>
-      <div class="self">
-        <div class="book-list">
-        </div>
-      </div>
-    </div>
-    <div class="type-tabs">
-      <div class="tab-item" id="local-books">
-        <span class="material-icons">menu_book</span>
-        本地
-      </div>
-      <div class="tab-item center">
-        <span class="material-icons">book</span>
-      </div>
-      <div class="tab-item" id="online-books">
-        <span class="material-icons">cloud</span>
-        在线
-      </div>
-    </div>
+  <div id="app">
+    <router-view></router-view>
   </div>
-
-  <div class="page-container detail-page">
-    <div class="navigator-wrapper" style="display:none">
-      <div class="navigator">
-        <div id="back-to-index" class="material-icons">arrow_back</div>
-      </div>
-    </div>
-    <div class="catalog">
-      <div class="mask"></div>
-      <div class="catalog-content">
-        <div class="catalog-item">
-          <div class="catalog-label">第一章 xxx</div>
+  <div style="display: none">
+    <div class="page-container shelf-page route-index">
+      <div class="shelf-wrapper">
+        <div class="header">
+          <span id="import-file"
+            @click="importLocalFile"
+            class="material-icons">add</span>
         </div>
-        <div class="catalog-item">
-          <div class="catalog-label">第一章 xxx</div>
-        </div>
-        <div class="catalog-item">
-          <div class="catalog-label">第一章 xxx</div>
-        </div>
-        <div class="catalog-item">
-          <div class="catalog-label">第一章 xxx</div>
-        </div>
-      </div>
-    </div>
-    <div class="content-wrapper">
-      <div class="content column" data-font="fangsong">
-        <div class="placeholder">
-          正在加载
-        </div>
-      </div>
-    </div>
-    <div class="control-wrapper">
-      <div class="control">
-        <div class="control-item" data-control="catalog">
-          <div class="control-icon material-icons">menu</div>
-          <div class="control-label">目录</div>
-        </div>
-        <div class="control-item" data-control="autoPlay">
-          <div class="control-icon material-icons">play_arrow</div>
-          <div class="control-label">自动翻页</div>
-        </div>
-        <div class="control-item" data-control="readSpeak">
-          <div class="control-icon material-icons">play_circle</div>
-          <div class="control-label">朗读</div>
-        </div>
-        <div class="control-item" data-control="font">
-          <span class="material-icons">text_format</span>
-          <div class="control-label">字体</div>
-        </div>
-        <div class="control-item" data-control="darkMode">
-          <span class="material-icons">dark_mode</span>
-          <div class="control-label">夜间</div>
-        </div>
-        <div class="control-item" data-control="fullscreen">
-          <span class="material-icons">fullscreen</span>
-          <div class="control-label">全屏</div>
-        </div>
-
-        <div class="control-panel play-panel" data-target-control="autoPlay">
-          <div class="speed">
-            <button class="material-icons speed-dec" data-action="dec">
-              remove
-            </button>
-            <span class="speed-value">24</span>
-            <button class="material-icons speed-inc" data-action="inc">
-              add
-            </button>
+        <div class="self">
+          <div class="book-list">
+            <div class="book-item"
+              v-for="(book, index) in bookList"
+              :key="index"
+              :data-book-id="book.id"
+              @click="toWatchBook(book, index, bookList)">
+              <img :src="book.cover" class="book-cover"/>
+              <div class="book-title">{{ book.title }}</div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="type-tabs">
+        <div class="tab-item" id="local-books" @click="changeTab('local')">
+          <span class="material-icons">menu_book</span>
+          本地
+        </div>
+        <div class="tab-item center">
+          <span class="material-icons">book</span>
+        </div>
+        <div class="tab-item" id="online-books" @click="changeTab('online')">
+          <span class="material-icons">cloud</span>
+          在线
+        </div>
+      </div>
+    </div>
 
-        <div class="control-panel font-panel" data-target-control="font">
-          <div class="font-family">
-            <select name="font">
-              <option value="SYST">思源宋体</option>
-              <option value="FZSS" selected>方正书宋</option>
-              <option value="FZFS">方正仿宋</option>
-              <option value="FZHT">方正黑体</option>
-              <option value="FZKT">方正楷体</option>
-            </select>
+    <div class="page-container detail-page route-book">
+      <div class="navigator-wrapper" v-show="panelVisible">
+        <div class="navigator">
+          <div id="back-to-index" class="material-icons">arrow_back</div>
+        </div>
+      </div>
+      <div class="catalog" v-if="visiblePanel === 'catalog'">
+        <div class="mask" @click="visiblePanel=null"></div>
+        <div class="catalog-content">
+          <virtual-scroll-list :list="catalog" v-slot="slotProps">
+            <div class="catalog-item"
+              @click="toCatalogItem(slotProps.item, slotProps.index)"
+              :class="{active: curCatalogItem && slotProps.item.id === curCatalogItem.id}"
+              :data-catalog-id="slotProps.item.id">
+              <div class="catalog-label">{{ slotProps.item.title }}</div>
+            </div>
+          </virtual-scroll-list>
+        </div>
+      </div>
+      <div class="content-wrapper" ref="contentWrapper" style="opacity: 0">
+        <div class="content" :data-font="settings.fontFamily"
+          :class="{ column: isBooxLeaf }"
+          ref="content"
+          v-html="content">
+        </div>
+      </div>
+      <div class="control-wrapper" v-show="panelVisible">
+        <div class="control">
+          <div class="control-item" data-control="catalog"
+            @click="visiblePanel='catalog'">
+            <div class="control-icon material-icons">menu</div>
+            <div class="control-label">目录</div>
           </div>
-          <div class="font-size">
-            <button class="material-icons text-dec">
-                text_decrease
-            </button>
-            <span class="text-size">24</span>
-            <button class="material-icons text-inc">
-                text_increase
-            </button>
+          <div class="control-item" data-control="autoPlay"
+            @click="actionHandler('autoPlay')">
+            <div class="control-icon material-icons">{{ controlState.autoPlay ? 'pause' : 'play_arrow' }}</div>
+            <div class="control-label">自动翻页</div>
+          </div>
+          <div class="control-item" data-control="readSpeak" @click="actionHandler('readSpeak')">
+            <div class="control-icon material-icons">{{ controlState.readSpeak ? 'pause_circle' : 'play_circle' }}</div>
+            <div class="control-label">朗读</div>
+          </div>
+          <div class="control-item" data-control="font" @click="visiblePanel='font'">
+            <span class="material-icons">text_format</span>
+            <div class="control-label">字体</div>
+          </div>
+          <div class="control-item" data-control="darkMode" @click="actionHandler('darkMode')">
+            <span class="material-icons">{{ controlState.darkMode ? 'light_mode' : 'dark_mode' }}</span>
+            <div class="control-label">{{ controlState.darkMode ? '白天' : '夜间' }}</div>
+          </div>
+          <div class="control-item" data-control="fullscreen" @click="actionHandler('fullscreen')">
+            <span class="material-icons">{{ controlState.fullscreen ? 'close_fullscreen' : 'fullscreen' }}</span>
+            <div class="control-label">{{ controlState.fullscreen ? '退出全屏' : '全屏' }}</div>
+          </div>
+
+          <div class="control-panel play-panel" data-target-control="autoPlay" v-if="visiblePanel === 'autoPlay'">
+            <div class="speed">
+              <button class="material-icons speed-dec" data-action="dec" @click="changeAutoPlayDuration(settings.duration - 1)">
+                remove
+              </button>
+              <span class="speed-value">{{ settings.autoPlayDuration }}</span>
+              <button class="material-icons speed-inc" data-action="inc" @click="changeAutoPlayDuration(settings.duration + 1)">
+                add
+              </button>
+            </div>
+          </div>
+
+          <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
+            <div class="font-family">
+              <select name="font" v-model="settings.fontFamily">
+                <option value="SYST">思源宋体</option>
+                <option value="FZSS" selected>方正书宋</option>
+                <option value="FZFS">方正仿宋</option>
+                <option value="FZHT">方正黑体</option>
+                <option value="FZKT">方正楷体</option>
+              </select>
+            </div>
+            <div class="font-size">
+              <button class="material-icons text-dec" @click="settings.fontSize -= 1">
+                  text_decrease
+              </button>
+              <span class="text-size">{{ settings.fontSize }}</span>
+              <button class="material-icons text-inc" @click="settings.fontSize += 1">
+                  text_increase
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -432,29 +443,244 @@
   <script src="./js/lib/zepto.min.js"></script>
   <script src="./js/lib/hammer.min.js"></script>
   <script src="./js/vlist.js"></script>
+  <script type="importmap">
+    { "imports": {
+        "vue":               "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+        "vue-router":        "https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js",
+        "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.4.5/lib/esm/index.js"
+    } }
+  </script>
   <script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
     import { parseAndStoreFile, services } from './index.js'
-    // const vConsole = new VConsole()
-    // console.log('hello')
+    import { createAutoPlay, darkMode, fullscreen, readSpeak } from './js/actions/index.js'
+    import { getSettings, saveAllSettings } from './js/utils/settings.js'
+    import { env } from './js/utils/env.js'
+    import VirtualScrollList from './js/components/virtual-scroll-list.js'
 
-    const data = {
-      curTab: 'local', // local | online
-      bookList: [],
-      curBook: null,
-      curCatalogItem: null,
+    const showToast = (msg, duration = 1500) => {
+      const toastEl = $(`<div style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100;border:1px solid #000;border-radius:4px;padding:4px 10px;background:#000;color:#fff;">${msg}</div>`)
+      const body = $('body').append(toastEl)
+      setTimeout(() => {
+        toastEl.remove()
+      }, duration)
     }
 
-    const refreshBookList = async () => {
-      const bookList = await services[data.curTab].getBookList()
-      renderer.bookList({ bookList })
-      data.bookList = bookList
+    const IndexPage = {
+      template: document.querySelector('.route-index').outerHTML,
+      data() {
+        return {
+          curTab: 'local', // local | online
+          bookList: [],
+          curBook: null,
+          curCatalogItem: null,
+        }
+      },
+      created() {
+        this.refreshBookList()
+      },
+      methods: {
+        async refreshBookList() {
+          const bookList = await services[this.curTab].getBookList()
+          this.bookList = bookList
+        },
+        changeTab(tab) {
+          this.curTab = tab
+          this.refreshBookList()
+        },
+        importLocalFile() {
+          const input = document.createElement('input')
+          input.type = 'file'
+          input.accept = '*.txt'
+          input.addEventListener('change', async e => {
+            const [file] = input.files || []
+            if(!file) return
+            await parseAndStoreFile(file)
+            this.refreshBookList()
+          })
+          input.style.display = 'none'
+          input.click()
+        },
+        toWatchBook(book, index, bookList) {
+          this.$router.push({
+            name: 'book',
+            params: {
+              server: this.curTab,
+              id: book.id
+            }
+          })
+        }
+      }
     }
 
-    let dataReady = new Promise(async (resolve) => {
-      if (data.bookList.length) return;
-      await refreshBookList()
-      resolve()
+    const BookPage = {
+      template: document.querySelector('.route-book').outerHTML,
+      props: {
+        server: String,
+        id: [String, Number]
+      },
+      components: {
+        VirtualScrollList
+      },
+      data() {
+        return {
+          book: null,
+          catalog: [],
+          content: '<div class="placeholder">正在加载</div>',
+          curCatalogItem: {},
+          panelVisible: false,
+          visiblePanel: null,
+
+          controlState: {
+            fullscreen: false,
+            darkMode: false,
+            readSpeak: false,
+            autoPlay: false
+          },
+
+          settings: getSettings(),
+          isBooxLeaf: env.isBooxLeaf()
+        }
+      },
+      watch: {
+        settings: {
+          deep: true,
+          handler() {
+            saveAllSettings(this.settings)
+          }
+        }
+      },
+      created() {
+        this.fetchBook()
+      },
+      mounted() {
+        this.initHammer()
+        this.initAction()
+      },
+      beforeUnmount() {
+        this.hammer && this.hammer.destroy()
+        this.actions.autoPlay.stop()
+        fullscreen.exit()
+        darkMode.exit()
+      },
+      methods: {
+        async fetchBook() {
+          const book = await services[this.server].getBookList().then(bookList => bookList.find(book => `${book.id}` === `${this.id}`))
+          if (!book) {
+            return showToast(`获取book失败: ${this.server}/${this.id}`)
+          }
+          const { catalog } = await services[this.server].getCatalog(book)
+          if (!catalog) {
+            return showToast(`获取目录失败: ${this.server}/${this.id}`)
+          }
+          this.catalog = catalog
+          this.book = book
+          const first = catalog[0]
+          if (first) {
+            this.toCatalogItem(first, 0, catalog)
+          }
+        },
+        async toCatalogItem(item, index, catalog) {
+          this.curCatalogItem = item
+          const { content } = await services[this.server].getContent(item, this.book)
+          this.content = content
+          this.visiblePanel = null
+          this.panelVisible = false
+          this.$refs.content.scrollTop = 0
+          this.$refs.content.scrollLeft = 0
+        },
+        changeAutoPlayDuration(duration) {
+          this.settings.autoPlayDuration = duration
+          this.actions.autoPlay.updateInterval(duration)
+        },
+        initHammer() {
+          const contentTapHandler = (event) => {
+            if (env.isBooxLeaf) {
+              // 左、中、右
+              const { x } = event.center
+              const centerLeft = window.innerWidth / 3
+              const centerRight = 2 * centerLeft
+              const isLeft = x < centerLeft
+              const isRight = x > centerRight
+              if (isLeft) return prevPage()
+              if (isRight) return nextPage()
+            }
+            if (this.actions.autoPlay.isPlaying()) {
+              this.visiblePanel = 'autoPlay'
+            }
+            this.panelVisible = !this.panelVisible
+          }
+          const hammer = new Hammer(this.$refs.contentWrapper)
+          if (env.isBooxLeaf) {
+            hammer.on('swipeleft', () => nextPage())
+            hammer.on('swiperight', () => prevPage())
+          }
+          hammer.on('tap', contentTapHandler)
+          this.hammer = hammer
+        },
+        initAction() {
+          this.actions = {
+            autoPlay: createAutoPlay({
+              nextPage: () => this.pageHandler(direction),
+              scrollVertical: () => this.$refs.contentWrapper.scrollTop += 1
+            })
+          }
+        },
+        async actionHandler(control) {
+          // action: readSpeak | darkMode | fullscreen | autoPlay
+          if (control === 'fullscreen') {
+            await fullscreen.toggle()
+            this.controlState.fullscreen = fullscreen.isActivated()
+          }
+          if (control === 'darkMode') {
+            darkMode.toggle()
+            this.controlState.darkMode = darkMode.isActivated
+          }
+          if (control === 'readSpeak') {
+            readSpeak.toggle()
+            this.controlState.readSpeak = readSpeak.isSpeaking()
+          } else if (control === 'autoPlay') {
+            this.visiblePanel = 'autoPlay'
+            this.actions.autoPlay.toggle()
+            this.controlState.autoPlay = this.actions.autoPlay.isPlaying()
+          }
+        },
+        pageHandler (direction) {
+          const content = this.$refs.content
+          const pageWidth = content.offsetWidth
+          const curPage = Math.round(content.scrollLeft / pageWidth)
+          const originScroll = content.scrollLeft;
+          if (direction === 'prev') {
+            content.scrollLeft = (curPage - 1) * pageWidth;
+            if (content.scrollLeft === originScroll) {
+              showToast('已是第一页')
+            }
+          } else if (direction === 'next') {
+            content.scrollLeft = (curPage + 1) * pageWidth;
+            if (content.scrollLeft === originScroll) {
+              showToast('已是最后一页')
+            }
+          }
+        }
+      }
+    }
+
+    const routes = [
+      { path: '/', name: 'home', component: IndexPage },
+      { path: '/book/:server/:id', name: 'book', component: BookPage, props: true },
+    ]
+
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes,
     })
+
+    const app = createApp({})
+
+    app.use(router)
+
+    app.mount('#app')
 
     if ('serviceWorker' in navigator && new URL(location.href).searchParams.get('no-cache') !== '1') {
       navigator.serviceWorker.register('sw.js')
@@ -485,79 +711,6 @@
       })
     }
 
-    const router = {
-      '/': {
-        el: '.page-container.shelf-page',
-        async created() {
-          
-        }
-      },
-      '/detail': {
-        el: '.page-container.detail-page',
-        async created(query) {
-          const bookId = query.bookId
-          if (!bookId) {
-            return alert('错误的链接')
-          }
-          await dataReady;
-          if (!data.curBook || data.curBook.id !== bookId) {
-            data.curBook = data.bookList.find(item => item.id === bookId)
-          }
-          if (!data.curBook) {
-            return alert('错误的book id')
-          }
-          if (!data.curBook.catalog) {
-            const { catalog } = await services[data.curTab].getCatalog(data.curBook)
-            data.curBook.catalog = catalog
-          }
-          renderer.catalog({ catalog: data.curBook.catalog })
-          const lastReadInfo = lastRead.getLastRead(bookId)
-          const [first] = data.curBook.catalog
-          let lastReadCatalogItem = first;
-          if (lastReadInfo) {
-            lastReadCatalogItem = data.curBook.catalog.find(item => item.id === lastReadInfo.chapter) || first
-          }
-          readCatalogItem(lastReadCatalogItem)
-        },
-        deactivate() {
-          player.stop()
-          fullscreen.exit()
-          darkMode.exit()
-        }
-      }
-    }
-
-    const readCatalogItem = async (catalogItem, bookId = data.curBook.id) => {
-      if (!catalogItem.content) {
-        const { content } = await services[data.curTab].getContent(catalogItem, data.curBook)
-        catalogItem.content = content
-      }
-      renderer.content(catalogItem)
-      data.curCatalogItem = catalogItem
-      lastRead.saveRead(bookId, { chapter: catalogItem.id })
-    }
-
-    const pushPage = (path, query = {}) => {
-      location.hash = `#${path}?query=${JSON.stringify(query)}`
-    }
-
-    const activeRoutePage = (event) => {
-      const hash = location.hash || '#/'
-      const [path, search = ''] = hash.substring(1).split('?');
-      if (event) {
-        const [,oldPath,] = event.oldURL.split(/[#?]/)
-        router[oldPath] && router[oldPath].deactivate && router[oldPath].deactivate()
-      }
-      $(Object.values(router).map(item => item.el).join(',')).hide();
-      const route = router[path]
-      $(route.el).show();
-      const params = new URLSearchParams(search)
-      route.created(JSON.parse(params.get('query') || '{}'))
-    }
-    window.addEventListener('hashchange', (event) => {
-      activeRoutePage(event)
-    })
-
     const jsonp = (data) => {
       return new Promise((resolve, reject) => {
         $.ajax({
@@ -580,414 +733,8 @@
       })
     }
 
-    const getSettings = () => {
-      const defaultSettings = {
-        fontFamily: 'SYST',
-        fontSize: 24,
 
-        autoPlayDuration: 24, // 24s
-      }
-      const settings = JSON.parse(localStorage.getItem('settings') || '{}')
-
-      return {
-        ...defaultSettings,
-        ...settings,
-      }
-    }
-
-    const saveSettings = (name, value) => {
-      localStorage.setItem('settings', JSON.stringify({
-        ...getSettings(),
-        [name]: value,
-      }))
-    }
-
-    const renderer = (() => {
-      return {
-        bookList: ({ bookList }) => {
-          $('.book-list').empty()
-            .append(bookList.map(book => $(`
-              <div class="book-item" data-book-id=${JSON.stringify(book.id)}>
-                <img src="${book.cover}" class="book-cover"/>
-                <div class="book-title">${book.title}</div>
-              </div>
-          `)))
-        },
-        catalog: ({ catalog }) => {
-          var list = new VirtualList({
-            h: window.innerHeight,
-            itemHeight: 48,
-            totalRows: catalog.length,
-            generatorFn: function(row) {
-              const { title, id } = catalog[row];
-              const item = document.createElement('div')
-              item.classList.add('catalog-item')
-              item.dataset.catalogId = id
-              const labelDom = document.createElement('div')
-              labelDom.classList.add('catalog-label')
-              labelDom.textContent = title
-              item.appendChild(labelDom)
-              return item
-            }
-          });
-          $('.catalog-content').empty()
-            .append(list.container)
-        },
-        content: ({ content }) => {
-          $('.content').empty().html(content)
-          $('.content').scrollLeft(0)
-          $('.content-wrapper').scrollTop(0)
-        }
-      }
-    })()
-
-    const pageNav = (direction) => {
-      const content = document.querySelector('.content')
-      const pageWidth = content.offsetWidth
-      const curPage = Math.round(content.scrollLeft / pageWidth)
-      const originScroll = content.scrollLeft;
-      if (direction === 'prev') {
-        content.scrollLeft = (curPage - 1) * pageWidth;
-        if (content.scrollLeft === originScroll) {
-          toast.show('已是第一页')
-        }
-      } else if (direction === 'next') {
-        content.scrollLeft = (curPage + 1) * pageWidth;
-        if (content.scrollLeft === originScroll) {
-          toast.show('已是最后一页')
-        }
-      }
-    }
-    const prevPage = () => pageNav('prev')
-    const nextPage = () => pageNav('next')
-    const scrollV = () => {
-      $('.content-wrapper').scrollTop($('.content-wrapper').scrollTop() + 1)
-    }
-    const isHorizontial = () => $('.content').hasClass('column')
-
-    const player = (() => {
-      let interval = null;
-      const isPlaying = () => !!interval;
-      const stop = () => {
-        interval && clearInterval(interval)
-        interval = null
-      }
-      const start = () => {
-        stop()
-        if (isHorizontial()) {
-          interval = setInterval(() => {
-            nextPage()
-          }, getSettings().autoPlayDuration * 1000)
-        } else {
-          interval = setInterval(() => {
-            scrollV()
-          }, getSettings().autoPlayDuration)
-        }
-      }
-      const updateInterval = s => {
-        saveSettings('autoPlayDuration', s)
-        if (isPlaying()) {
-          start()
-        }
-      }
-      return {
-        interval: () => getSettings().autoPlayDuration,
-        isPlaying,
-        start,
-        stop,
-        updateInterval,
-      }
-    })()
-
-    const fullscreen = {
-      enter() {
-        if (!document.fullscreenElement) {
-          return document.documentElement.requestFullscreen();
-        }
-      },
-      exit() {
-        if (document.exitFullscreen && this.isActivated()) {
-          return document.exitFullscreen();
-        }
-      },
-      isActivated() {
-        return !!document.fullscreenElement
-      },
-      toggle() {
-        return this.isActivated() ? this.exit() : this.enter()
-      }
-    }
-
-    const darkMode = {
-      enter() {
-        $('html').css({
-          filter: 'invert(1) hue-rotate(180deg)'
-        })
-      },
-      exit() {
-        $('html').css({
-          filter: 'initial'
-        })
-      },
-      isActivated() {
-        return $('html').css('filter') === 'invert(1) hue-rotate(180deg)'
-      },
-      toggle() {
-        return this.isActivated() ? this.exit() : this.enter()
-      }
-    }
-
-    const toast = {
-      show(msg, duration = 1500) {
-        const toastEl = $(`<div style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100;border:1px solid #000;border-radius:4px;padding:4px 10px;background:#000;color:#fff;">${msg}</div>`)
-        const body = $('body').append(toastEl)
-        setTimeout(() => {
-          toastEl.remove()
-        }, duration)
-      }
-    }
-
-    const lastRead = {
-      getLastRead(bookId) {
-        const lastReadInfo = JSON.parse(localStorage.getItem('lastRead') || '{}')
-        return lastReadInfo[bookId]
-      },
-      saveRead(bookId, { chapter }) {
-        const lastReadInfo = JSON.parse(localStorage.getItem('lastRead') || '{}')
-        lastReadInfo[bookId] = { chapter }
-        localStorage.setItem('lastRead', JSON.stringify(lastReadInfo))
-      }
-    }
-
-    const pwa = {
-      isPwa: () => window.matchMedia('(display-mode: standalone)').matches
-    }
-
-    const readSpeak = (() => {
-      const getFirst = () => {
-        return Array.from(document.querySelectorAll('.content > p'))
-          .find(item => item.getBoundingClientRect().x > 0)
-      }
-
-      const createUtterance = (p, readyNext) => {
-        const utterThis = new SpeechSynthesisUtterance(p.textContent);
-        let nextTriggered = false
-        utterThis.addEventListener('boundary', event => {
-          if (event.charIndex > event.utterance.text.length - 10 && !nextTriggered) {
-            nextTriggered = true
-            readyNext(p)
-          }
-        })
-        utterThis.addEventListener('start', event => {
-          Array.from(document.querySelectorAll('.content p.reading'))
-            .forEach(el => el.classList.remove('reading'))
-          p.classList.add('reading')
-          console.log('scrollIntoView')
-          p.scrollIntoView({ block: 'center' })
-        })
-        utterThis.addEventListener('end', event => {
-          p.classList.remove('reading')
-        })
-        return utterThis
-      }
-      const isEnd = p => p.parentNode.lastElementChild === p
-      const readyNext = (prevP) => {
-        if (isEnd(prevP)) return;
-        const nextP = prevP.nextElementSibling
-        const utterance = createUtterance(nextP, readyNext)
-        window.speechSynthesis.speak(utterance)
-      }
-      const speak = (first) => {
-        const utterance = createUtterance(first, readyNext)
-        window.speechSynthesis.speak(utterance)
-      }
-      return {
-        start() {
-          const first = getFirst()
-          speak(first)
-        },
-        stop() {
-          window.speechSynthesis.cancel()
-        },
-        toggle() {
-          if (window.speechSynthesis.speaking) {
-            return this.stop()
-          }
-          this.start()
-        },
-        isSpeaking() {
-          return window.speechSynthesis.speaking
-        }
-      }
-    })()
-
-    const env = {
-      isBooxLeaf: navigator.userAgent.includes('Leaf')
-    }
-
-    $('.page-container.shelf-page .book-list').on('click', '[data-book-id]', event => {
-      const bookId = $(event.currentTarget).data('bookId')
-      pushPage('/detail', { bookId })
-    })
-
-    $('#back-to-index').on('click', () => {
-      pushPage('/')
-    })
-    $('.control').on('click', '.control-item', (() => {
-      return async event => {
-        const control = $(event.currentTarget).data('control')
-        console.log(control)
-        if (control === 'catalog') {
-          $('.catalog').toggle()
-          const vscroll = document.querySelector('.catalog-content > div').vscroll
-          const index = data.curBook.catalog.indexOf(data.curCatalogItem)
-          vscroll.scrollToIndex(index)
-          setTimeout(() => {
-            const selected = document.querySelector('.catalog-item.active')
-            selected && selected.classList.remove('active')
-            
-            const willBeSelected = document.querySelector(`.catalog-content .catalog-item[data-catalog-id=${JSON.stringify(data.curCatalogItem.id)}]`)
-            willBeSelected && willBeSelected.classList.add('active')
-          }, 300)
-          return;
-        }
-
-        if (control === 'font') {
-          if ($('.font-panel').css('display') === 'none') {
-            $('.control-panel').hide()
-            return $('.font-panel').css({ display: 'flex' })
-          }
-          return $('.font-panel').hide()
-        }
-        if (control === 'autoPlay') {
-          player.isPlaying() ? player.stop() : player.start()
-          $(event.currentTarget)
-            .find('.material-icons')
-            .text(
-            player.isPlaying() ? 'pause' : 'play_arrow')
-          $('.control-panel').hide();
-          $('.control-panel.play-panel').show()
-        }
-        if (control === 'fullscreen') {
-          await fullscreen.toggle()
-          const icon = fullscreen.isActivated() ? 'close_fullscreen' : 'fullscreen'
-          $(event.currentTarget).find('.material-icons').text(icon)
-        }
-        if (control === 'darkMode') {
-          darkMode.toggle()
-          const icon = darkMode.isActivated() ? 'light_mode' : 'dark_mode'
-          $(event.currentTarget).find('.material-icons').text(icon)
-        }
-        if (control === 'readSpeak') {
-          readSpeak.toggle()
-          const icon = readSpeak.isSpeaking() ? 'pause_circle' : 'play_circle'
-          $(event.currentTarget).find('.material-icons').text(icon)
-        }
-      }
-    })())
-    $('.catalog .mask').on('click', (event) => {
-      $('.catalog').hide()
-    })
-    $('.catalog').on('click', '.catalog-item', async event => {
-      const catalogId = $(event.currentTarget).data('catalogId') + ''
-      if (!catalogId) return;
-      const catalogItem = (data.curBook.catalog || []).find(catalog => catalog.id + '' === catalogId + '');
-      readCatalogItem(catalogItem)
-      $('.catalog').hide()
-    })
-    $('.control-panel.font-panel .font-family select').on('change', event => {
-      const font = $(event.currentTarget).val()
-      $('.content').data('font', font)
-      saveSettings('fontFamily', font)
-    })
-    $('.control-panel.font-panel .font-size button').on('click', event => {
-      const target = $(event.currentTarget)
-      let textSize = parseInt(target.siblings('.text-size').text())
-      if (target.hasClass('text-dec')) {
-        textSize -= 1
-      } else {
-        textSize += 1
-      }
-      target.siblings('.text-size').text(textSize)
-      document.querySelector('.content').style.fontSize = textSize + 'px'
-      saveSettings('fontSize', textSize)
-    })
-    $('.control-panel.play-panel button').on('click', event => {
-      const action = $(event.currentTarget).data('action')
-      const settings = getSettings()
-      const newDuration = action === 'dec'
-        ? settings.autoPlayDuration - 1
-        : action === 'inc'
-          ? settings.autoPlayDuration + 1
-          : settings.autoPlayDuration
-      player.updateInterval(newDuration);
-      $('.control-panel.play-panel .speed-value').text(newDuration + 's')
-    })
-    $('#import-file').on('click', () => {
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.accept = '*.txt'
-      input.addEventListener('change', async e => {
-        const [file] = input.files || []
-        if(!file) return
-        await parseAndStoreFile(file)
-        refreshBookList()
-      })
-      input.style.display = 'none'
-      input.click()
-    })
-    $('#local-books').on('click', () => {
-      data.curTab = 'local'
-      refreshBookList()
-    })
-    $('#online-books').on('click', () => {
-      data.curTab = 'online'
-      refreshBookList()
-    })
-    const contentTapHandler = (event) => {
-      if (env.isBooxLeaf) {
-        // 左、中、右
-        const { x } = event.center
-        const centerLeft = window.innerWidth / 3
-        const centerRight = 2 * centerLeft
-        const isLeft = x < centerLeft
-        const isRight = x > centerRight
-        if (isLeft) return prevPage()
-        if (isRight) return nextPage()
-      }
-      if (player.isPlaying()) {
-        $('.control-panel').hide()
-        $('.control-panel.play-panel').show()
-      }
-      $('.navigator-wrapper').toggle()
-      $('.control-wrapper').toggle()
-    }
-    const hammer = new Hammer(document.querySelector('.content-wrapper'))
-    if (env.isBooxLeaf) {
-      hammer.on('swipeleft', () => nextPage())
-      hammer.on('swiperight', () => prevPage())
-    }
-    hammer.on('tap', contentTapHandler)
-
-    const applySettings = () => {
-      const settings = getSettings()
-      $('.content').data('font', settings.fontFamily)
-      $('.content').css({ fontSize: settings.fontSize + 'px' })
-      $('.control-panel.font-panel .font-family select').val(settings.fontFamily)
-      $('.control-panel.font-panel .font-size .text-size').text(settings.fontSize)
-      $('.control-panel.play-panel .speed-value').text(settings.autoPlayDuration + 's')
-    }
-
-    const envHandler = () => {
-      if (!env.isBooxLeaf) {
-        return $('.content').removeClass('column')
-      }
-    }
-    envHandler()
-
-    activeRoutePage();
     window.onload = () => {
-      applySettings()
       if (!localStorage.getItem('proxyUrl')) {
         const input = window.prompt('请输入proxyUrl')
         if (!input) return;

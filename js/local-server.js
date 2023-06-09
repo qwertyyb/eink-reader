@@ -19,7 +19,7 @@ export const dataService = {
     return bookList
   },
   getCatalog (book) {
-    const catalog = book.catelog.map(item => {
+    const catalog = book.catalog.map(item => {
       return {
         ...item,
         id: item.cursor + ''

@@ -1,0 +1,4 @@
+.virtual-scroll-list-wrapper {
+  max-height: 100%;
+  overflow: auto;
+}
