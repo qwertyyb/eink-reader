@@ -1,0 +1,43 @@
+
+.catalog-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-right: 1px solid #000;
+  width: 70vw;
+  max-width: 300px;
+  background-color: #fff;
+  z-index: 10;
+  height: 100vh;
+}
+.catalog-content-wrapper {
+  height: 100vh;
+  overflow: auto;
+  content-visibility: auto;
+}
+.catalog-content > div {
+  box-sizing: border-box;
+}
+.catalog-item {
+  padding: 0 10px;
+  border-bottom: 1px solid #000;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+.catalog-item .catalog-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.catalog-item.active {
+  color: #fff;
+  background: #000;
+}
+.catalog-item.active .catalog-label {
+  color: #fff;
+}

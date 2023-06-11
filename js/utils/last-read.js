@@ -3,19 +3,23 @@ const createLastReadBooks = () => ({
     const lastReadInfo = JSON.parse(localStorage.getItem('lastReadBooks') || '{}')
     return lastReadInfo[bookId]
   },
-  saveRead(bookId, { catalogId, cursor }) {
+  set(bookId, { catalogId, cursor }) {
     const lastReadInfo = JSON.parse(localStorage.getItem('lastReadBooks') || '{}')
     lastReadInfo[bookId] = { catalogId, cursor }
-    localStorage.setItem('lastRead', JSON.stringify(lastReadInfo))
+    localStorage.setItem('lastReadBooks', JSON.stringify(lastReadInfo))
   }
 })
 
 const createLastReadBook = () => ({
-  getBookId() {
-    return (localStorage.getItem('lastReadBookId') || {}).bookId
+  get() {
+    try {
+      return JSON.parse(localStorage.getItem('lastReadBook'))
+    } catch(err) {
+      return null
+    }
   },
-  setBookId(bookId) {
-    return localStorage.setItem('lastReadBookId', JSON.stringify({ bookId }))
+  set({ bookId, server }) {
+    return localStorage.setItem('lastReadBook', JSON.stringify({ bookId, server }))
   }
 })
 

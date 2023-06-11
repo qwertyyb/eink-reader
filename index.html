@@ -7,7 +7,7 @@
   <title>Eink Reader</title>
   <link rel="manifest" href="./manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="./css/components/virtual-scroll-list.css">
+  <link rel="stylesheet" href="./css/components/index.css">
   <style>
     * {
       padding: 0;
@@ -46,8 +46,8 @@
       align-items: center;
     }
     .page-container.shelf-page .type-tabs .tab-item.center {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       margin-top: -60px;
       background: #fff;
@@ -99,52 +99,18 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 60px;
+      height: 48px;
       width: 100%;
       display: flex;
       box-sizing: border-box;
       align-items: center;
-      padding: 0 20px;
+      padding: 0 12px;
       background: #fff;
       border-bottom: 1px solid #000;
       z-index: 10;
     }
     .navigator #back-to-index {
-      font-size: 32px;
-    }
-    .catalog-content {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      border-right: 1px solid #000;
-      width: 70vw;
-      max-width: 300px;
-      background-color: #fff;
-      z-index: 10;
-      max-height: 100vh;
-      overflow: auto;
-      content-visibility: auto;
-    }
-    .catalog-content > div {
-      box-sizing: border-box;
-    }
-    .catalog-item {
-      padding: 0 10px;
-      border-bottom: 1px solid #000;
-      cursor: pointer;
-      width: 100%;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      height: 48px;
-    }
-    .catalog-item.active {
-      color: #fff;
-      background: #000;
-    }
-    .catalog-item.active .catalog-label {
-      color: #fff;
+      font-size: 28px;
     }
     .control {
       position: fixed;
@@ -152,10 +118,11 @@
       left: 0;
       right: 0;
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
       z-index: 6;
-      height: 60px;
+      padding: 0 12px;
+      height: 48px;
       background-color: #fff;
       border-top: 1px solid #000;
       text-align: center;
@@ -181,9 +148,9 @@
     .content {
       box-sizing: border-box;
       height: 100%;
-      margin-left: 20px;
-      margin-right: 20px;
-      width: calc(100vw - 40px);
+      margin-left: 12px;
+      margin-right: 12px;
+      width: calc(100vw - 24px);
     }
     .content.column {
       margin-top: 20px;
@@ -194,10 +161,6 @@
       height: calc(100% - 40px);
     }
     .content .placeholder {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
       width: 100%;
       z-index: 4;
       display: flex;
@@ -210,7 +173,7 @@
       bottom: 100%;
       right: 0;
       background: #fff;
-      padding: 30px 0;
+      padding: 16px 0;
       border-top: 1px solid #000;
       display: none;
     }
@@ -284,11 +247,7 @@
       color: black;
       user-select: text;
     }
-    .content > p {
-      text-indent: 2em;
-      letter-spacing: 1px;
-    }
-    .content > p.reading span {
+    .content p.reading {
       background: yellow;
     }
     [data-font="SYST"] {
@@ -312,7 +271,7 @@
   <div id="app">
     <router-view></router-view>
   </div>
-  <div style="display: none">
+  <div style="display: none" id="components">
     <div class="page-container shelf-page route-index">
       <div class="shelf-wrapper">
         <div class="header">
@@ -326,7 +285,7 @@
               v-for="(book, index) in bookList"
               :key="index"
               :data-book-id="book.id"
-              @click="toWatchBook(book, index, bookList)">
+              @click="toReadBook(book, index, bookList)">
               <img :src="book.cover" class="book-cover"/>
               <div class="book-title">{{ book.title }}</div>
             </div>
@@ -338,7 +297,7 @@
           <span class="material-icons">menu_book</span>
           本地
         </div>
-        <div class="tab-item center">
+        <div class="tab-item center" @click="toLastReadBook" v-if="lastReadBook">
           <span class="material-icons">book</span>
         </div>
         <div class="tab-item" id="online-books" @click="changeTab('online')">
@@ -351,24 +310,18 @@
     <div class="page-container detail-page route-book">
       <div class="navigator-wrapper" v-show="panelVisible">
         <div class="navigator">
-          <div id="back-to-index" class="material-icons">arrow_back</div>
+          <div id="back-to-index" class="material-icons"
+            @click="$router.replace('/')">arrow_back</div>
         </div>
       </div>
-      <div class="catalog" v-if="visiblePanel === 'catalog'">
-        <div class="mask" @click="visiblePanel=null"></div>
-        <div class="catalog-content">
-          <virtual-scroll-list :list="catalog" v-slot="slotProps">
-            <div class="catalog-item"
-              @click="toCatalogItem(slotProps.item, slotProps.index)"
-              :class="{active: curCatalogItem && slotProps.item.id === curCatalogItem.id}"
-              :data-catalog-id="slotProps.item.id">
-              <div class="catalog-label">{{ slotProps.item.title }}</div>
-            </div>
-          </virtual-scroll-list>
-        </div>
-      </div>
-      <div class="content-wrapper" ref="contentWrapper" style="opacity: 0">
+      <catalog-dialog :catalog="catalog"
+        :selected-item="curCatalogItem"
+        :visible="visiblePanel === 'catalog'"
+        @to-catalog-item="toCatalogItem"
+        @close="visiblePanel=null"></catalog-dialog>
+      <div class="content-wrapper" ref="contentWrapper" @scroll="scrollHandler">
         <div class="content" :data-font="settings.fontFamily"
+          :style="{fontSize: settings.fontSize + 'px'}"
           :class="{ column: isBooxLeaf }"
           ref="content"
           v-html="content">
@@ -377,39 +330,39 @@
       <div class="control-wrapper" v-show="panelVisible">
         <div class="control">
           <div class="control-item" data-control="catalog"
-            @click="visiblePanel='catalog'">
+            @click="actionHandler('catalog')">
             <div class="control-icon material-icons">menu</div>
-            <div class="control-label">目录</div>
+            <div class="control-label"></div>
           </div>
           <div class="control-item" data-control="autoPlay"
             @click="actionHandler('autoPlay')">
             <div class="control-icon material-icons">{{ controlState.autoPlay ? 'pause' : 'play_arrow' }}</div>
-            <div class="control-label">自动翻页</div>
+            <div class="control-label"></div>
           </div>
           <div class="control-item" data-control="readSpeak" @click="actionHandler('readSpeak')">
             <div class="control-icon material-icons">{{ controlState.readSpeak ? 'pause_circle' : 'play_circle' }}</div>
-            <div class="control-label">朗读</div>
+            <div class="control-label"></div>
           </div>
           <div class="control-item" data-control="font" @click="visiblePanel='font'">
             <span class="material-icons">text_format</span>
-            <div class="control-label">字体</div>
+            <div class="control-label"></div>
           </div>
           <div class="control-item" data-control="darkMode" @click="actionHandler('darkMode')">
             <span class="material-icons">{{ controlState.darkMode ? 'light_mode' : 'dark_mode' }}</span>
-            <div class="control-label">{{ controlState.darkMode ? '白天' : '夜间' }}</div>
+            <div class="control-label"></div>
           </div>
           <div class="control-item" data-control="fullscreen" @click="actionHandler('fullscreen')">
             <span class="material-icons">{{ controlState.fullscreen ? 'close_fullscreen' : 'fullscreen' }}</span>
-            <div class="control-label">{{ controlState.fullscreen ? '退出全屏' : '全屏' }}</div>
+            <div class="control-label"></div>
           </div>
 
           <div class="control-panel play-panel" data-target-control="autoPlay" v-if="visiblePanel === 'autoPlay'">
             <div class="speed">
-              <button class="material-icons speed-dec" data-action="dec" @click="changeAutoPlayDuration(settings.duration - 1)">
+              <button class="material-icons speed-dec" data-action="dec" @click="changeAutoPlayDuration(settings.autoPlayDuration - 1)">
                 remove
               </button>
               <span class="speed-value">{{ settings.autoPlayDuration }}</span>
-              <button class="material-icons speed-inc" data-action="inc" @click="changeAutoPlayDuration(settings.duration + 1)">
+              <button class="material-icons speed-inc" data-action="inc" @click="changeAutoPlayDuration(settings.autoPlayDuration + 1)">
                 add
               </button>
             </div>
@@ -438,6 +391,28 @@
         </div>
       </div>
     </div>
+
+
+    <div class="catalog" v-show="visible">
+      <div class="mask" @click="$emit('close')"></div>
+      <div class="catalog-content">
+        <virtual-list
+          class="catalog-content-wrapper"
+          data-key="id"
+          :data-sources="catalog"
+          ref="catalog"
+          :estimate-size="48">
+          <template #="{ source, index }">
+            <div class="catalog-item"
+              @click="$emit('to-catalog-item', source, index)"
+              :class="{active: selectedItem && `${source.id}` === `${selectedItem.id}`}"
+              :data-catalog-id="source.id">
+              <div class="catalog-label">{{ source.title }}</div>
+            </div>
+          </template>
+        </virtual-list>
+      </div>
+    </div>
   </div>
   <script src="./js/lib/vconsole.min.js"></script>
   <script src="./js/lib/zepto.min.js"></script>
@@ -453,11 +428,13 @@
   <script type="module">
     import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
     import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
+    import VirtualScrollList from 'https://unpkg.com/vue-virtual-list-v3@1.5.1/dist/index.js'
     import { parseAndStoreFile, services } from './index.js'
     import { createAutoPlay, darkMode, fullscreen, readSpeak } from './js/actions/index.js'
     import { getSettings, saveAllSettings } from './js/utils/settings.js'
     import { env } from './js/utils/env.js'
-    import VirtualScrollList from './js/components/virtual-scroll-list.js'
+    import { lastReadBooks, lastReadBook } from './js/utils/last-read.js'
+    import CatalogDialog from './js/components/catalog-dialog.js'
 
     const showToast = (msg, duration = 1500) => {
       const toastEl = $(`<div style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100;border:1px solid #000;border-radius:4px;padding:4px 10px;background:#000;color:#fff;">${msg}</div>`)
@@ -473,8 +450,7 @@
         return {
           curTab: 'local', // local | online
           bookList: [],
-          curBook: null,
-          curCatalogItem: null,
+          lastReadBook: lastReadBook.get()
         }
       },
       created() {
@@ -502,7 +478,16 @@
           input.style.display = 'none'
           input.click()
         },
-        toWatchBook(book, index, bookList) {
+        toLastReadBook() {
+          this.$router.push({
+            name: 'book',
+            params: {
+              server: this.lastReadBook.server,
+              id: this.lastReadBook.bookId
+            }
+          })
+        },
+        toReadBook(book, index, bookList) {
           this.$router.push({
             name: 'book',
             params: {
@@ -516,15 +501,17 @@
 
     const BookPage = {
       template: document.querySelector('.route-book').outerHTML,
+      components: {
+        CatalogDialog
+      },
       props: {
         server: String,
         id: [String, Number]
       },
-      components: {
-        VirtualScrollList
-      },
       data() {
         return {
+          inited: false,
+
           book: null,
           catalog: [],
           content: '<div class="placeholder">正在加载</div>',
@@ -551,8 +538,13 @@
           }
         }
       },
-      created() {
-        this.fetchBook()
+      async created() {
+        await this.fetchBook()
+        await this.startRead()
+        lastReadBook.set({
+          server: this.server,
+          bookId: this.id
+        })
       },
       mounted() {
         this.initHammer()
@@ -576,19 +568,34 @@
           }
           this.catalog = catalog
           this.book = book
-          const first = catalog[0]
-          if (first) {
-            this.toCatalogItem(first, 0, catalog)
-          }
         },
-        async toCatalogItem(item, index, catalog) {
+        async startRead() {
+          const { catalogId = this.catalog[0].id, cursor = 0 } = lastReadBooks.get(this.id) || {}
+          
+          let index = this.catalog.findIndex(item => `${item.id}` === `${catalogId}`)
+          index = index >= 0 ? index : 0
+          await this.toCatalogItem(this.catalog[index], index)
+
+          await this.$nextTick()
+
+          const el = document.querySelector(`.content [data-cursor="${cursor}"]`)
+
+          if (el) {
+            el.scrollIntoView()
+          }
+          // 等待滚动到位置后再监听滚动事件
+          setTimeout(() => {
+            this.inited = true
+          }, 300)
+        },
+        async toCatalogItem(item, index) {
           this.curCatalogItem = item
           const { content } = await services[this.server].getContent(item, this.book)
           this.content = content
           this.visiblePanel = null
           this.panelVisible = false
-          this.$refs.content.scrollTop = 0
-          this.$refs.content.scrollLeft = 0
+          await this.$nextTick()
+          this.$refs.contentWrapper.scrollTo(0, 0)
         },
         changeAutoPlayDuration(duration) {
           this.settings.autoPlayDuration = duration
@@ -596,15 +603,15 @@
         },
         initHammer() {
           const contentTapHandler = (event) => {
-            if (env.isBooxLeaf) {
+            if (env.isBooxLeaf()) {
               // 左、中、右
               const { x } = event.center
               const centerLeft = window.innerWidth / 3
               const centerRight = 2 * centerLeft
               const isLeft = x < centerLeft
               const isRight = x > centerRight
-              if (isLeft) return prevPage()
-              if (isRight) return nextPage()
+              if (isLeft) return this.pageHandler('prev')
+              if (isRight) return this.pageHandler('next')
             }
             if (this.actions.autoPlay.isPlaying()) {
               this.visiblePanel = 'autoPlay'
@@ -612,9 +619,9 @@
             this.panelVisible = !this.panelVisible
           }
           const hammer = new Hammer(this.$refs.contentWrapper)
-          if (env.isBooxLeaf) {
-            hammer.on('swipeleft', () => nextPage())
-            hammer.on('swiperight', () => prevPage())
+          if (env.isBooxLeaf()) {
+            hammer.on('swipeleft', () => this.pageHandler('next'))
+            hammer.on('swiperight', () => this.pageHandler('prev'))
           }
           hammer.on('tap', contentTapHandler)
           this.hammer = hammer
@@ -628,7 +635,7 @@
           }
         },
         async actionHandler(control) {
-          // action: readSpeak | darkMode | fullscreen | autoPlay
+          // action: readSpeak | darkMode | fullscreen | autoPlay | catalog
           if (control === 'fullscreen') {
             await fullscreen.toggle()
             this.controlState.fullscreen = fullscreen.isActivated()
@@ -638,13 +645,38 @@
             this.controlState.darkMode = darkMode.isActivated
           }
           if (control === 'readSpeak') {
-            readSpeak.toggle()
+            readSpeak.toggle(this.getCurrentP())
             this.controlState.readSpeak = readSpeak.isSpeaking()
           } else if (control === 'autoPlay') {
             this.visiblePanel = 'autoPlay'
             this.actions.autoPlay.toggle()
             this.controlState.autoPlay = this.actions.autoPlay.isPlaying()
+          } else if (control === 'catalog') {
+            this.visiblePanel = 'catalog'
           }
+        },
+        getCurrentP() {
+          // 找到距离上方最近的段落的cursor
+          const els = Array.from(document.querySelectorAll('.content [data-cursor]'))
+          const screenRect = document.documentElement.getBoundingClientRect()
+          let minLeft = Number.MAX_SAFE_INTEGER
+          let minTop = Number.MAX_SAFE_INTEGER
+          let target = null
+          els.forEach(el => {
+            const rect = el.getBoundingClientRect()
+            if (rect.top >= screenRect.top
+              && rect.left >= screenRect.left
+              && rect.bottom <= screenRect.bottom
+              && rect.right <= screenRect.right) {
+                // 在屏幕内
+                if (rect.left < minLeft || rect.top < minTop) {
+                  minTop = rect.top
+                  minLeft = rect.left
+                  target = el
+                }
+              }
+          })
+          return target;
         },
         pageHandler (direction) {
           const content = this.$refs.content
@@ -662,6 +694,15 @@
               showToast('已是最后一页')
             }
           }
+        },
+        scrollHandler(e) {
+          if (!this.inited) return;
+          const p = this.getCurrentP()
+          if (!p) return;
+
+          // 可以往前回溯一个段落
+          const cursor = p.previousElementSibling ? p.previousElementSibling.dataset.cursor : p.dataset.cursor
+          lastReadBooks.set(this.book.id, { catalogId: this.curCatalogItem.id, cursor })
         }
       }
     }
@@ -679,37 +720,38 @@
     const app = createApp({})
 
     app.use(router)
+    app.use(VirtualScrollList)
 
     app.mount('#app')
 
-    if ('serviceWorker' in navigator && new URL(location.href).searchParams.get('no-cache') !== '1') {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => {
-          console.log('service worker register successfully: ', reg)
-        })
-        .catch(err => {
-          console.error('service worker register failed: ', err)
-        })
+    // if ('serviceWorker' in navigator && new URL(location.href).searchParams.get('no-cache') !== '1') {
+    //   navigator.serviceWorker.register('sw.js')
+    //     .then(reg => {
+    //       console.log('service worker register successfully: ', reg)
+    //     })
+    //     .catch(err => {
+    //       console.error('service worker register failed: ', err)
+    //     })
 
-      const controller = {
-        prompt: window.prompt,
-        toast: (...args) => toast.show(...args)
-      }
-      navigator.serviceWorker.addEventListener('message', async event => {
-        const { type, method, payload, callback } = event
-        if (type === 'invoke') {
-          let result = await controller[method](...payload)
-          return navigator.serviceWorker.postMessage({
-            type: 'callback',
-            callback: callback,
-            result: result
-          })
-        }
-      })
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        toast.show('已更新, 刷新页面后可应用')
-      })
-    }
+    //   const controller = {
+    //     prompt: window.prompt,
+    //     toast: (...args) => toast.show(...args)
+    //   }
+    //   navigator.serviceWorker.addEventListener('message', async event => {
+    //     const { type, method, payload, callback } = event
+    //     if (type === 'invoke') {
+    //       let result = await controller[method](...payload)
+    //       return navigator.serviceWorker.postMessage({
+    //         type: 'callback',
+    //         callback: callback,
+    //         result: result
+    //       })
+    //     }
+    //   })
+    //   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    //     toast.show('已更新, 刷新页面后可应用')
+    //   })
+    // }
 
     const jsonp = (data) => {
       return new Promise((resolve, reject) => {

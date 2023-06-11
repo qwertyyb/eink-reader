@@ -1,9 +1,4 @@
-const createReadSpeak = (selector = '.content p') => {
-  const getFirst = () => {
-    return Array.from(document.querySelectorAll(selector))
-      .find(item => item.getBoundingClientRect().x > 0)
-  }
-
+const createReadSpeak = () => {
   const createUtterance = (p, readyNext) => {
     const utterThis = new SpeechSynthesisUtterance(p.textContent);
     let nextTriggered = false
@@ -23,11 +18,14 @@ const createReadSpeak = (selector = '.content p') => {
     utterThis.addEventListener('end', event => {
       p.classList.remove('reading')
     })
+    utterThis.addEventListener('pause', event => {
+      p.classList.remove('reading')
+    })
     return utterThis
   }
   const isEnd = p => p.parentNode.lastElementChild === p
   const readyNext = (prevP) => {
-    if (isEnd(prevP)) return;
+    if (isEnd(prevP)) return
     const nextP = prevP.nextElementSibling
     const utterance = createUtterance(nextP, readyNext)
     window.speechSynthesis.speak(utterance)
@@ -37,18 +35,17 @@ const createReadSpeak = (selector = '.content p') => {
     window.speechSynthesis.speak(utterance)
   }
   return {
-    start() {
-      const first = getFirst()
-      speak(first)
+    start(p) {
+      speak(p)
     },
     stop() {
       window.speechSynthesis.cancel()
     },
-    toggle() {
+    toggle(p) {
       if (window.speechSynthesis.speaking) {
         return this.stop()
       }
-      this.start()
+      this.start(p)
     },
     isSpeaking() {
       return window.speechSynthesis.speaking

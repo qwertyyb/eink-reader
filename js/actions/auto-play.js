@@ -21,7 +21,6 @@ export const createAutoPlay = ({ scrollVertical, nextPage } = {}) => {
     }
   }
   const updateInterval = s => {
-    saveSettings('autoPlayDuration', s)
     if (isPlaying()) {
       start()
     }

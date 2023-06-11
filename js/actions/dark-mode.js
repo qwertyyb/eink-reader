@@ -6,7 +6,7 @@ const createDarkMode = () => ({
     document.documentElement.classList.remove('dark-mode')
   },
   isActivated() {
-    document.documentElement.classList.contains('dark-mode')
+    return document.documentElement.classList.contains('dark-mode')
   },
   toggle() {
     return this.isActivated() ? this.exit() : this.enter()
