@@ -1,0 +1,169 @@
+.navigator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  width: 100%;
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  padding: 0 12px;
+  background: #fff;
+  border-bottom: 1px solid #000;
+  z-index: 10;
+}
+.navigator #back-to-index {
+  font-size: 28px;
+}
+.control {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 6;
+  padding: 0 12px;
+  height: 48px;
+  background-color: #fff;
+  border-top: 1px solid #000;
+  text-align: center;
+}
+.control .material-icons {
+  font-size: 32px;
+}
+.mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9;
+}
+.content-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.content {
+  box-sizing: border-box;
+  height: 100%;
+  margin-left: 12px;
+  margin-right: 12px;
+  width: calc(100vw - 24px);
+}
+.content.column {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  column-gap: 0;
+  column-width: calc(100vw - 40px);
+  overflow: hidden;
+  height: calc(100% - 40px);
+}
+.content .placeholder {
+  width: 100%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.control .control-panel {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  right: 0;
+  background: #fff;
+  padding: 16px 0;
+  border-top: 1px solid #000;
+  display: none;
+}
+.control .control-panel.font-panel {
+  display: flex;
+  font-size: 20px;
+  justify-content: space-around;
+}
+.control-panel.font-panel .font-family select {
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 22px;
+}
+.control-panel.font-panel .font-size {
+  display: flex;
+  align-items: center;
+}
+.control-panel.font-panel .font-size .text-size {
+  padding: 0 20px;
+}
+.control-panel.font-panel .font-size button {
+  border: 1px solid #000;
+  border-radius: 999px;
+  font-size: 24px;
+  padding: 6px;
+}
+
+.control-panel.play-panel {
+  display: flex;
+  justify-content: space-around;
+}
+.control-panel.play-panel button {
+  border: 1px solid #000;
+  border-radius: 999px;
+  font-size: 24px;
+  padding: 6px;
+}
+.control-panel.play-panel .speed {
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+@font-face {
+  font-family: "SourceHansSerifCN-VF";
+  src: url("../fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("../fonts/SourceHanSerifCN-VF.otf") format("otf");
+}
+@font-face {
+  font-family: "FZKTSC";
+  src: url("../fonts/FZKTSC.ttf") format("truetype");
+}
+@font-face {
+  font-family: "FZFSSC";
+  src: url("../fonts/FZFSSC.ttf") format("truetype");
+}
+@font-face {
+  font-family: "FZSSSC";
+  src: url("../fonts/FZSSSC.ttf") format("truetype");
+}
+@font-face {
+  font-family: "FZHTSC";
+  src: url("../fonts/FZHTSC.ttf") format("truetype");
+}
+.content {
+  line-height: 1.6;
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+  user-select: text;
+}
+.content p.reading {
+  background: yellow;
+}
+[data-font="SYST"] {
+  font-family: "SourceHansSerifCN-VF";
+}
+[data-font="FZKT"] {
+  font-family: "FZKTSC";
+}
+[data-font="FZFS"] {
+  font-family: "FZFSSC";
+}
+[data-font="FZSS"] {
+  font-family: "FZSSSC";
+}
+[data-font="FZHT"] {
+  font-family: "FZHTSC";
+}

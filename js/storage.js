@@ -1,7 +1,6 @@
 const databaseName = 'books'
 const version = 1;
 
-
 let db = null;
 
 const getDatabase = () => {
@@ -19,11 +18,9 @@ const getDatabase = () => {
     }
 
     request.onupgradeneeded = (event) => {
-      console.log('upgrade', event)
       db = event.target.result
       const objectStore = db.createObjectStore('books', { keyPath: 'id',  autoIncrement: true })
       objectStore.createIndex('title', 'title', { unique: true });
-      resolve(db)
     }
   })
 }

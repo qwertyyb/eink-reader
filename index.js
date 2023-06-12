@@ -1,15 +1,22 @@
-import { books } from './js/storage.js'
-import { parseTxtFile } from './js/txt-file.js'
-import { dataService as localDataService } from './js/local-server.js'
-import { dataService as onlineDataService } from './js/online-server.js'
+import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
+import VirtualList from 'https://unpkg.com/vue-virtual-list-v3@1.5.1/dist/index.js'
+import IndexPage from './js/pages/index.js'
+import BookPage from './js/pages/book.js'
 
-export const parseAndStoreFile = async (file) => {
-  const info = await parseTxtFile(file)
-  await books.add(info)
-  return info
-}
+const routes = [
+  { path: '/', name: 'home', component: IndexPage },
+  { path: '/book/:server/:id', name: 'book', component: BookPage, props: true },
+]
 
-export const services = {
-  local: localDataService,
-  online: onlineDataService
-}
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+})
+
+const app = createApp({})
+
+app.use(router)
+app.use(VirtualList)
+
+app.mount('#app')

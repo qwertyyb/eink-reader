@@ -1,0 +1,71 @@
+.page-container.shelf-page .type-tabs {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 54px;
+  border-top: 1px solid #bbb;
+}
+.page-container.shelf-page .type-tabs .tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.page-container.shelf-page .type-tabs .tab-item.center {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-top: -60px;
+  background: #fff;
+  border: 1px solid #000;
+  min-width: 100px;
+  min-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
+}
+.page-container.shelf-page .type-tabs .tab-item.center .material-icons {
+  font-size: 48px;
+}
+.page-container.shelf-page .book-list {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 103px);
+  column-gap: 13px;
+  row-gap: 13px;
+}
+.page-container.shelf-page .book-item .book-cover {
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+  width: 103px;
+  height: 137px;
+}
+.page-container.shelf-page .shelf-wrapper .header {
+  height: 48px;
+  border-bottom: 1px solid #bbb;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+}
+.page-container.shelf-page .shelf-wrapper .header #import-file {
+  font-size: 32px;
+}
+.book-item .book-cover {
+  width: 100%;
+  height: auto;
+}
+.book-item .book-title {
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.book-item .book-title .status-icon {
+  color: gray;
+}

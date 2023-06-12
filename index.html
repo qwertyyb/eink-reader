@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eink Reader</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no,viewport-fit=cover">
+  <title>EInk Reader</title>
   <link rel="manifest" href="./manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="./css/components/index.css">
@@ -14,9 +14,11 @@
       margin: 0;
       color: #000;
     }
+    html, body, #app, .page-container, .content-wrapper {
+      height: 100%;
+    }
     html, body, .page-container {
       width: 100%;
-      height: 100%;
       background-color: #fff;
     }
     /* dark mode start */
@@ -28,242 +30,6 @@
 
     .page-container {
       position: relative;
-    }
-    .page-container.shelf-page .type-tabs {
-      display: flex;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 54px;
-      border-top: 1px solid #bbb;
-    }
-    .page-container.shelf-page .type-tabs .tab-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .page-container.shelf-page .type-tabs .tab-item.center {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin-top: -60px;
-      background: #fff;
-      border: 1px solid #000;
-      min-width: 100px;
-      min-height: 100px;
-      max-width: 100px;
-      max-height: 100px;
-    }
-    .page-container.shelf-page .type-tabs .tab-item.center .material-icons {
-      font-size: 48px;
-    }
-    .page-container.shelf-page .book-list {
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, 140px);
-      column-gap: 20px;
-      row-gap: 20px;
-    }
-    .page-container.shelf-page .book-item .book-cover {
-      box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
-      width: 120px;
-      height: 160px;
-    }
-    .page-container.shelf-page .shelf-wrapper .header {
-      height: 48px;
-      border-bottom: 1px solid #bbb;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0 20px;
-    }
-    .page-container.shelf-page .shelf-wrapper .header #import-file {
-      font-size: 32px;
-    }
-    .book-item .book-cover {
-      width: 100%;
-      height: auto;
-    }
-    .book-item .book-title {
-      text-align: center;
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .navigator {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 48px;
-      width: 100%;
-      display: flex;
-      box-sizing: border-box;
-      align-items: center;
-      padding: 0 12px;
-      background: #fff;
-      border-bottom: 1px solid #000;
-      z-index: 10;
-    }
-    .navigator #back-to-index {
-      font-size: 28px;
-    }
-    .control {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 6;
-      padding: 0 12px;
-      height: 48px;
-      background-color: #fff;
-      border-top: 1px solid #000;
-      text-align: center;
-    }
-    .control .material-icons {
-      font-size: 32px;
-    }
-    .mask {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 9;
-    }
-    .content-wrapper {
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      max-height: 100vh;
-    }
-    .content {
-      box-sizing: border-box;
-      height: 100%;
-      margin-left: 12px;
-      margin-right: 12px;
-      width: calc(100vw - 24px);
-    }
-    .content.column {
-      margin-top: 20px;
-      margin-bottom: 20px;
-      column-gap: 0;
-      column-width: calc(100vw - 40px);
-      overflow: hidden;
-      height: calc(100% - 40px);
-    }
-    .content .placeholder {
-      width: 100%;
-      z-index: 4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .control .control-panel {
-      position: absolute;
-      left: 0;
-      bottom: 100%;
-      right: 0;
-      background: #fff;
-      padding: 16px 0;
-      border-top: 1px solid #000;
-      display: none;
-    }
-    .control .control-panel.font-panel {
-      display: flex;
-      font-size: 20px;
-      justify-content: space-around;
-    }
-    .control-panel.font-panel .font-family select {
-      border: 1px solid #000;
-      border-radius: 5px;
-      padding: 4px 8px;
-      font-size: 22px;
-    }
-    .control-panel.font-panel .font-size {
-      display: flex;
-      align-items: center;
-    }
-    .control-panel.font-panel .font-size .text-size {
-      padding: 0 20px;
-    }
-    .control-panel.font-panel .font-size button {
-      border: 1px solid #000;
-      border-radius: 999px;
-      font-size: 24px;
-      padding: 6px;
-    }
-
-    .control-panel.play-panel {
-      display: flex;
-      justify-content: space-around;
-    }
-    .control-panel.play-panel button {
-      border: 1px solid #000;
-      border-radius: 999px;
-      font-size: 24px;
-      padding: 6px;
-    }
-    .control-panel.play-panel .speed {
-      width: 90%;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-    }
-  </style>
-  <style id="theme">
-    @font-face {
-      font-family: "SourceHansSerifCN-VF";
-      src: url("./css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("./css/fonts/SourceHanSerifCN-VF.otf") format("otf");
-    }
-    @font-face {
-      font-family: "FZKTSC";
-      src: url("./css/fonts/FZKTSC.ttf") format("truetype");
-    }
-    @font-face {
-      font-family: "FZFSSC";
-      src: url("./css/fonts/FZFSSC.ttf") format("truetype");
-    }
-    @font-face {
-      font-family: "FZSSSC";
-      src: url("./css/fonts/FZSSSC.ttf") format("truetype");
-    }
-    @font-face {
-      font-family: "FZHTSC";
-      src: url("./css/fonts/FZHTSC.ttf") format("truetype");
-    }
-    .content {
-      line-height: 2;
-      font-size: 24px;
-      font-weight: bold;
-      color: black;
-      user-select: text;
-    }
-    .content p.reading {
-      background: yellow;
-    }
-    [data-font="SYST"] {
-      font-family: "SourceHansSerifCN-VF";
-    }
-    [data-font="FZKT"] {
-      font-family: "FZKTSC";
-    }
-    [data-font="FZFS"] {
-      font-family: "FZFSSC";
-    }
-    [data-font="FZSS"] {
-      font-family: "FZSSSC";
-    }
-    [data-font="FZHT"] {
-      font-family: "FZHTSC";
     }
   </style>
 </head>
@@ -287,7 +53,10 @@
               :data-book-id="book.id"
               @click="toReadBook(book, index, bookList)">
               <img :src="book.cover" class="book-cover"/>
-              <div class="book-title">{{ book.title }}</div>
+              <div class="book-title">
+                <span class="material-icons status-icon" v-if="book.downloaded">check_circle</span>
+                <span>{{ book.title }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -417,7 +186,6 @@
   <script src="./js/lib/vconsole.min.js"></script>
   <script src="./js/lib/zepto.min.js"></script>
   <script src="./js/lib/hammer.min.js"></script>
-  <script src="./js/vlist.js"></script>
   <script type="importmap">
     { "imports": {
         "vue":               "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
@@ -425,304 +193,7 @@
         "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.4.5/lib/esm/index.js"
     } }
   </script>
-  <script type="module">
-    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-    import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
-    import VirtualScrollList from 'https://unpkg.com/vue-virtual-list-v3@1.5.1/dist/index.js'
-    import { parseAndStoreFile, services } from './index.js'
-    import { createAutoPlay, darkMode, fullscreen, readSpeak } from './js/actions/index.js'
-    import { getSettings, saveAllSettings } from './js/utils/settings.js'
-    import { env } from './js/utils/env.js'
-    import { lastReadBooks, lastReadBook } from './js/utils/last-read.js'
-    import CatalogDialog from './js/components/catalog-dialog.js'
-
-    const showToast = (msg, duration = 1500) => {
-      const toastEl = $(`<div style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100;border:1px solid #000;border-radius:4px;padding:4px 10px;background:#000;color:#fff;">${msg}</div>`)
-      const body = $('body').append(toastEl)
-      setTimeout(() => {
-        toastEl.remove()
-      }, duration)
-    }
-
-    const IndexPage = {
-      template: document.querySelector('.route-index').outerHTML,
-      data() {
-        return {
-          curTab: 'local', // local | online
-          bookList: [],
-          lastReadBook: lastReadBook.get()
-        }
-      },
-      created() {
-        this.refreshBookList()
-      },
-      methods: {
-        async refreshBookList() {
-          const bookList = await services[this.curTab].getBookList()
-          this.bookList = bookList
-        },
-        changeTab(tab) {
-          this.curTab = tab
-          this.refreshBookList()
-        },
-        importLocalFile() {
-          const input = document.createElement('input')
-          input.type = 'file'
-          input.accept = '*.txt'
-          input.addEventListener('change', async e => {
-            const [file] = input.files || []
-            if(!file) return
-            await parseAndStoreFile(file)
-            this.refreshBookList()
-          })
-          input.style.display = 'none'
-          input.click()
-        },
-        toLastReadBook() {
-          this.$router.push({
-            name: 'book',
-            params: {
-              server: this.lastReadBook.server,
-              id: this.lastReadBook.bookId
-            }
-          })
-        },
-        toReadBook(book, index, bookList) {
-          this.$router.push({
-            name: 'book',
-            params: {
-              server: this.curTab,
-              id: book.id
-            }
-          })
-        }
-      }
-    }
-
-    const BookPage = {
-      template: document.querySelector('.route-book').outerHTML,
-      components: {
-        CatalogDialog
-      },
-      props: {
-        server: String,
-        id: [String, Number]
-      },
-      data() {
-        return {
-          inited: false,
-
-          book: null,
-          catalog: [],
-          content: '<div class="placeholder">正在加载</div>',
-          curCatalogItem: {},
-          panelVisible: false,
-          visiblePanel: null,
-
-          controlState: {
-            fullscreen: false,
-            darkMode: false,
-            readSpeak: false,
-            autoPlay: false
-          },
-
-          settings: getSettings(),
-          isBooxLeaf: env.isBooxLeaf()
-        }
-      },
-      watch: {
-        settings: {
-          deep: true,
-          handler() {
-            saveAllSettings(this.settings)
-          }
-        }
-      },
-      async created() {
-        await this.fetchBook()
-        await this.startRead()
-        lastReadBook.set({
-          server: this.server,
-          bookId: this.id
-        })
-      },
-      mounted() {
-        this.initHammer()
-        this.initAction()
-      },
-      beforeUnmount() {
-        this.hammer && this.hammer.destroy()
-        this.actions.autoPlay.stop()
-        fullscreen.exit()
-        darkMode.exit()
-      },
-      methods: {
-        async fetchBook() {
-          const book = await services[this.server].getBookList().then(bookList => bookList.find(book => `${book.id}` === `${this.id}`))
-          if (!book) {
-            return showToast(`获取book失败: ${this.server}/${this.id}`)
-          }
-          const { catalog } = await services[this.server].getCatalog(book)
-          if (!catalog) {
-            return showToast(`获取目录失败: ${this.server}/${this.id}`)
-          }
-          this.catalog = catalog
-          this.book = book
-        },
-        async startRead() {
-          const { catalogId = this.catalog[0].id, cursor = 0 } = lastReadBooks.get(this.id) || {}
-          
-          let index = this.catalog.findIndex(item => `${item.id}` === `${catalogId}`)
-          index = index >= 0 ? index : 0
-          await this.toCatalogItem(this.catalog[index], index)
-
-          await this.$nextTick()
-
-          const el = document.querySelector(`.content [data-cursor="${cursor}"]`)
-
-          if (el) {
-            el.scrollIntoView()
-          }
-          // 等待滚动到位置后再监听滚动事件
-          setTimeout(() => {
-            this.inited = true
-          }, 300)
-        },
-        async toCatalogItem(item, index) {
-          this.curCatalogItem = item
-          const { content } = await services[this.server].getContent(item, this.book)
-          this.content = content
-          this.visiblePanel = null
-          this.panelVisible = false
-          await this.$nextTick()
-          this.$refs.contentWrapper.scrollTo(0, 0)
-        },
-        changeAutoPlayDuration(duration) {
-          this.settings.autoPlayDuration = duration
-          this.actions.autoPlay.updateInterval(duration)
-        },
-        initHammer() {
-          const contentTapHandler = (event) => {
-            if (env.isBooxLeaf()) {
-              // 左、中、右
-              const { x } = event.center
-              const centerLeft = window.innerWidth / 3
-              const centerRight = 2 * centerLeft
-              const isLeft = x < centerLeft
-              const isRight = x > centerRight
-              if (isLeft) return this.pageHandler('prev')
-              if (isRight) return this.pageHandler('next')
-            }
-            if (this.actions.autoPlay.isPlaying()) {
-              this.visiblePanel = 'autoPlay'
-            }
-            this.panelVisible = !this.panelVisible
-          }
-          const hammer = new Hammer(this.$refs.contentWrapper)
-          if (env.isBooxLeaf()) {
-            hammer.on('swipeleft', () => this.pageHandler('next'))
-            hammer.on('swiperight', () => this.pageHandler('prev'))
-          }
-          hammer.on('tap', contentTapHandler)
-          this.hammer = hammer
-        },
-        initAction() {
-          this.actions = {
-            autoPlay: createAutoPlay({
-              nextPage: () => this.pageHandler(direction),
-              scrollVertical: () => this.$refs.contentWrapper.scrollTop += 1
-            })
-          }
-        },
-        async actionHandler(control) {
-          // action: readSpeak | darkMode | fullscreen | autoPlay | catalog
-          if (control === 'fullscreen') {
-            await fullscreen.toggle()
-            this.controlState.fullscreen = fullscreen.isActivated()
-          }
-          if (control === 'darkMode') {
-            darkMode.toggle()
-            this.controlState.darkMode = darkMode.isActivated
-          }
-          if (control === 'readSpeak') {
-            readSpeak.toggle(this.getCurrentP())
-            this.controlState.readSpeak = readSpeak.isSpeaking()
-          } else if (control === 'autoPlay') {
-            this.visiblePanel = 'autoPlay'
-            this.actions.autoPlay.toggle()
-            this.controlState.autoPlay = this.actions.autoPlay.isPlaying()
-          } else if (control === 'catalog') {
-            this.visiblePanel = 'catalog'
-          }
-        },
-        getCurrentP() {
-          // 找到距离上方最近的段落的cursor
-          const els = Array.from(document.querySelectorAll('.content [data-cursor]'))
-          const screenRect = document.documentElement.getBoundingClientRect()
-          let minLeft = Number.MAX_SAFE_INTEGER
-          let minTop = Number.MAX_SAFE_INTEGER
-          let target = null
-          els.forEach(el => {
-            const rect = el.getBoundingClientRect()
-            if (rect.top >= screenRect.top
-              && rect.left >= screenRect.left
-              && rect.bottom <= screenRect.bottom
-              && rect.right <= screenRect.right) {
-                // 在屏幕内
-                if (rect.left < minLeft || rect.top < minTop) {
-                  minTop = rect.top
-                  minLeft = rect.left
-                  target = el
-                }
-              }
-          })
-          return target;
-        },
-        pageHandler (direction) {
-          const content = this.$refs.content
-          const pageWidth = content.offsetWidth
-          const curPage = Math.round(content.scrollLeft / pageWidth)
-          const originScroll = content.scrollLeft;
-          if (direction === 'prev') {
-            content.scrollLeft = (curPage - 1) * pageWidth;
-            if (content.scrollLeft === originScroll) {
-              showToast('已是第一页')
-            }
-          } else if (direction === 'next') {
-            content.scrollLeft = (curPage + 1) * pageWidth;
-            if (content.scrollLeft === originScroll) {
-              showToast('已是最后一页')
-            }
-          }
-        },
-        scrollHandler(e) {
-          if (!this.inited) return;
-          const p = this.getCurrentP()
-          if (!p) return;
-
-          // 可以往前回溯一个段落
-          const cursor = p.previousElementSibling ? p.previousElementSibling.dataset.cursor : p.dataset.cursor
-          lastReadBooks.set(this.book.id, { catalogId: this.curCatalogItem.id, cursor })
-        }
-      }
-    }
-
-    const routes = [
-      { path: '/', name: 'home', component: IndexPage },
-      { path: '/book/:server/:id', name: 'book', component: BookPage, props: true },
-    ]
-
-    const router = createRouter({
-      history: createWebHashHistory(),
-      routes,
-    })
-
-    const app = createApp({})
-
-    app.use(router)
-    app.use(VirtualScrollList)
-
-    app.mount('#app')
+  <script type="module" src="./index.js">
 
     // if ('serviceWorker' in navigator && new URL(location.href).searchParams.get('no-cache') !== '1') {
     //   navigator.serviceWorker.register('sw.js')
@@ -753,39 +224,27 @@
     //   })
     // }
 
-    const jsonp = (data) => {
-      return new Promise((resolve, reject) => {
-        $.ajax({
-          url: localStorage.getItem('proxyUrl'),
-          dataType: 'jsonp',
-          data: {
-            format: 'string',
-            charset: 'gbk',
-            ...data
-          },
-          success: resolve,
-          error: (xhr, textStatus, errMessage) => {
-            alert('获取数据失败')
-            if (window.confirm('清除代理URL?')) {
-              localStorage.removeItem('proxyUrl')
-            }
-            reject(new Error('失败'))
-          }
-        })
-      })
-    }
-
-
-    window.onload = () => {
-      if (!localStorage.getItem('proxyUrl')) {
-        const input = window.prompt('请输入proxyUrl')
-        if (!input) return;
-        localStorage.setItem('proxyUrl', input)
-      }
-      if (!localStorage.getItem('proxyUrl')) {
-        return
-      }
-    }
+    // const jsonp = (data) => {
+    //   return new Promise((resolve, reject) => {
+    //     $.ajax({
+    //       url: localStorage.getItem('proxyUrl'),
+    //       dataType: 'jsonp',
+    //       data: {
+    //         format: 'string',
+    //         charset: 'gbk',
+    //         ...data
+    //       },
+    //       success: resolve,
+    //       error: (xhr, textStatus, errMessage) => {
+    //         alert('获取数据失败')
+    //         if (window.confirm('清除代理URL?')) {
+    //           localStorage.removeItem('proxyUrl')
+    //         }
+    //         reject(new Error('失败'))
+    //       }
+    //     })
+    //   })
+    // }
   </script>
 </body>
 </html>
