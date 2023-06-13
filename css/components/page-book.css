@@ -142,10 +142,13 @@
   font-family: "FZHTSC";
   src: url("../fonts/FZHTSC.ttf") format("truetype");
 }
+@font-face {
+  font-family: "LXWK";
+  src: url("../fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
+}
 .content {
   line-height: 1.6;
   font-size: 24px;
-  font-weight: bold;
   color: black;
   user-select: text;
 }
@@ -166,4 +169,7 @@
 }
 [data-font="FZHT"] {
   font-family: "FZHTSC";
+}
+[data-font="LXWK"] {
+  font-family: "LXWK";
 }

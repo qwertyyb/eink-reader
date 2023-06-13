@@ -5,3 +5,25 @@ export const showToast = (msg, duration = 1500) => {
     toastEl.remove()
   }, duration)
 }
+
+const jsonp = (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: localStorage.getItem('proxyUrl'),
+      dataType: 'jsonp',
+      data: {
+        format: 'string',
+        charset: 'gbk',
+        ...data
+      },
+      success: resolve,
+      error: (xhr, textStatus, errMessage) => {
+        alert('获取数据失败')
+        if (window.confirm('清除代理URL?')) {
+          localStorage.removeItem('proxyUrl')
+        }
+        reject(new Error('失败'))
+      }
+    })
+  })
+}

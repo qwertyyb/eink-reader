@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no,viewport-fit=cover">
+  <meta name="referrer" content="unsafe-url">
   <title>EInk Reader</title>
   <link rel="manifest" href="./manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -13,11 +14,6 @@
       padding: 0;
       margin: 0;
       color: #000;
-    }
-    body {
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-      box-sizing: border-box;
     }
     html, body, #app, .page-container, .content-wrapper {
       height: 100%;
@@ -150,6 +146,7 @@
                 <option value="FZFS">方正仿宋</option>
                 <option value="FZHT">方正黑体</option>
                 <option value="FZKT">方正楷体</option>
+                <option value="LXWK">落霞文楷</option>
               </select>
             </div>
             <div class="font-size">
@@ -198,58 +195,7 @@
         "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.4.5/lib/esm/index.js"
     } }
   </script>
-  <script type="module" src="./index.js">
-
-    // if ('serviceWorker' in navigator && new URL(location.href).searchParams.get('no-cache') !== '1') {
-    //   navigator.serviceWorker.register('sw.js')
-    //     .then(reg => {
-    //       console.log('service worker register successfully: ', reg)
-    //     })
-    //     .catch(err => {
-    //       console.error('service worker register failed: ', err)
-    //     })
-
-    //   const controller = {
-    //     prompt: window.prompt,
-    //     toast: (...args) => toast.show(...args)
-    //   }
-    //   navigator.serviceWorker.addEventListener('message', async event => {
-    //     const { type, method, payload, callback } = event
-    //     if (type === 'invoke') {
-    //       let result = await controller[method](...payload)
-    //       return navigator.serviceWorker.postMessage({
-    //         type: 'callback',
-    //         callback: callback,
-    //         result: result
-    //       })
-    //     }
-    //   })
-    //   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    //     toast.show('已更新, 刷新页面后可应用')
-    //   })
-    // }
-
-    // const jsonp = (data) => {
-    //   return new Promise((resolve, reject) => {
-    //     $.ajax({
-    //       url: localStorage.getItem('proxyUrl'),
-    //       dataType: 'jsonp',
-    //       data: {
-    //         format: 'string',
-    //         charset: 'gbk',
-    //         ...data
-    //       },
-    //       success: resolve,
-    //       error: (xhr, textStatus, errMessage) => {
-    //         alert('获取数据失败')
-    //         if (window.confirm('清除代理URL?')) {
-    //           localStorage.removeItem('proxyUrl')
-    //         }
-    //         reject(new Error('失败'))
-    //       }
-    //     })
-    //   })
-    // }
-  </script>
+  <script type="module" src="./index.js"></script>
+  <script type="module" src="./register-sw.js"></script>
 </body>
 </html>

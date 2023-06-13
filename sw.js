@@ -1,37 +1,34 @@
 const CACHE_NAME = 'v4';
 
+console.log('self', self)
+
 const resources = [
-  '/eink-reader/',
-  '/eink-reader/index.html',
-  '/eink-reader/css/fonts/FZFSSC.ttf',
-  '/eink-reader/css/fonts/FZHTSC.ttf',
-  '/eink-reader/css/fonts/FZKTSC.ttf',
-  '/eink-reader/css/fonts/FZSSSC.ttf',
-  '/eink-reader/css/fonts/SourceHanSerifCN-VF.otf',
-  '/eink-reader/css/fonts/SourceHanSerifCN-VF.otf.woff2',
-  '/eink-reader/js/vlist.js',
-  '/eink-reader/js/lib/zepto.min.js',
-  '/eink-reader/js/lib/vconsole.min.js',
-  '/eink-reader/js/lib/hammer.min.js',
-  '/eink-reader/assets/icons/192.svg',
-  '/eink-reader/assets/icons/512.svg',
 ]
 
-const bridge = {
-  invoke: (() => {
-    const callbacks = new Map();
+const createBridge = (calls = {}) => {
+  const callbacks = new Map()
 
-    self.addEventListener('message', event => {
-      const { type, callback, result } = event.data;
-      if (type === 'callback') {
-        const cb = callbacks.get(callback);
-        if (cb) {
-          cb(result);
-          callbacks.delete(callback);
-        }
+  self.addEventListener('message', async event => {
+    const { type, method, args, returnValue, callback } = event.data
+    if (type === 'invoke') {
+      const result = await (calls[method] && calls[method](...args))
+      return event.source.postMessage({
+        type: 'callback',
+        callback,
+        returnValue: result
+      })
+    }
+    if (type === 'callback') {
+      const cb = callbacks.get(callback);
+      if (cb) {
+        cb(returnValue);
+        callbacks.delete(callback);
       }
-    })
-    return (method, ...args) => {
+    }
+  })
+
+  return {
+    invoke (method, ...args) {
       return new Promise(resolve => {
         const callback = `callback_${Math.random()}`;
         callbacks.set(callback, resolve);
@@ -42,14 +39,21 @@ const bridge = {
                 type: 'invoke',
                 method,
                 callback,
-                payload: args,
+                args: args,
               })
             )
           );
       })
     }
-  })()
+  }
 }
+
+const bridge = createBridge({
+  async deleteAllCache() {
+    const cacheNames = await caches.keys()
+    return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)))
+  }
+})
 
 const logger = {
   info: (...args) => console.info('[sw]', ...args),
@@ -95,26 +99,27 @@ const resourceNeedCache = (request, response) => {
   return true;
 }
 
-const notUseCache = (request) => {
-  const isNoCache = request.url.includes('no-cache=1') || request.referrer.includes('no-cache=1')
-  return isNoCache
-}
 
 self.addEventListener('fetch', function(event) {
-  if (notUseCache(event.request)) return;
   if (!resourceNeedCache(event.request)) return;
   logger.info('fetch', event.request.url)
   event.respondWith(
-    caches.match(event.request).then(function(cachedResp) {
-      return cachedResp || fetch(event.request).then(function(response) {
-        if (!resourceNeedCache(event.request, response)) {
-          return response;
-        }
-        return caches.open('v1').then(function(cache) {
-          cache.put(event.request, response.clone());
-          return response;
-        });
-      });
-    })
+    self.clients.get(event.clientId)
+      .then(client => {
+        const disableCache = client && client.url.includes('cache=0')
+        if (disableCache) return fetch(event.request);
+        return caches.match(event.request).then(function(cachedResp) {
+          if (cachedResp) {
+            logger.info('cache find', event.request.url)
+            return cachedResp
+          }
+          return fetch(event.request).then(function(response) {
+            return caches.open(CACHE_NAME).then(function(cache) {
+              cache.put(event.request, response.clone());
+              return response;
+            });
+          });
+        })
+      })
   );
 });
