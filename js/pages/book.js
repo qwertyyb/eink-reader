@@ -4,6 +4,7 @@ import { createAutoPlay, darkMode, fullscreen, readSpeak } from '../actions/inde
 import { getSettings, saveAllSettings } from '../utils/settings.js'
 import { env } from '../utils/env.js'
 import { lastReadBooks, lastReadBook } from '../utils/last-read.js'
+import { showToast } from '../utils/index.js'
 import CatalogDialog from '../components/catalog-dialog.js'
 import CSelect from '../components/c-select.js'
 import COption from '../components/c-option.js'
@@ -108,6 +109,7 @@ export default {
       this.panelVisible = false
       await this.$nextTick()
       this.$refs.contentWrapper.scrollTo(0, 0)
+      this.scrollHandler()
     },
     changeAutoPlayDuration(duration) {
       this.settings.autoPlayDuration = duration
@@ -207,7 +209,12 @@ export default {
         }
       }
     },
-    scrollHandler(e) {
+    hScrollHandler() {
+      if (env.isBooxLeaf()) {
+        this.scrollHandler()
+      }
+    },
+    scrollHandler() {
       if (!this.inited) return;
       const p = this.getCurrentP()
       if (!p) return;

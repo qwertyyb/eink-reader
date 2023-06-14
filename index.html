@@ -108,6 +108,7 @@
           }"
           :class="{ column: isBooxLeaf }"
           ref="content"
+          @scroll="hScrollHandler"
           v-html="content">
         </div>
       </div>

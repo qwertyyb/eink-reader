@@ -180,7 +180,7 @@
   margin-top: 0.5em;
 }
 .content p[data-is-title] {
-  padding-top: max(env(safe-area-inset-top), 40px);
+  padding-top: env(safe-area-inset-top);
 }
 .content p:last-child {
   padding-bottom: env(safe-area-inset-bottom);
