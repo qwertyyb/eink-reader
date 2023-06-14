@@ -1,6 +1,6 @@
 import { services } from '../services/index.js'
 import { importFile } from '../services/local-server.js'
-import { showToast } from '../utils/index.js'
+import { formatSize, showToast } from '../utils/index.js'
 import { lastReadBook } from '../utils/last-read.js'
 
 export default {
@@ -18,7 +18,13 @@ export default {
   methods: {
     async refreshBookList() {
       const bookList = await services[this.curTab].getBookList()
-      this.bookList = bookList
+      this.bookList = bookList.map(book => {
+        return {
+          ...book,
+          total: 0,
+          progress: 0
+        }
+      })
     },
     changeTab(tab) {
       this.curTab = tab
@@ -57,7 +63,23 @@ export default {
         })
       } else {
         showToast('开始下载...')
-        await services[this.curTab].downloadRemoteBook(book)
+        let timeout = null
+        let lastExecTime = Date.now()
+        await services[this.curTab].downloadRemoteBook(book, (length, total) => {
+          timeout && clearTimeout(timeout)
+          if (Date.now() - lastExecTime > 200) {
+            lastExecTime = Date.now()
+            book.total = total
+            book.progress = length
+            book.fProgress = `${formatSize(length)}/${formatSize(total)}`
+            return;
+          }
+          timeout = setTimeout(() => {
+            book.total = total
+            book.progress = length
+            book.fProgress = `${formatSize(length)}/${formatSize(total)}`
+          }, 200)
+        })
         showToast(`${book.title}下载完成`)
         this.refreshBookList()
       }

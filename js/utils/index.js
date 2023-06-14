@@ -27,3 +27,13 @@ const jsonp = (data) => {
     })
   })
 }
+
+export const formatSize = (size) => {
+  const kB = size / 1024
+  const mB = kB / 1024
+
+  if (kB < 512) {
+    return kB.toFixed(2) + 'KB'
+  }
+  return mB.toFixed(2) + 'MB'
+}

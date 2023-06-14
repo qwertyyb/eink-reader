@@ -56,7 +56,15 @@
               :key="index"
               :data-book-id="book.id"
               @click="toReadBook(book, index, bookList)">
-              <img :src="book.cover" class="book-cover"/>
+              <div class="book-cover">
+                {{ book.title }}
+                <div class="download-progress-size" v-if="!book.downloaded && book.total && book.progress">
+                  {{ book.fProgress }}
+                </div>
+                <div class="download-progress-percent" v-if="!book.downloaded && book.total && book.progress">
+                  ({{ Math.round(book.progress/book.total * 100) + '%' }})
+                </div>
+              </div>
               <div class="book-title">
                 <span class="material-icons status-icon" v-if="book.downloaded">check_circle</span>
                 <span>{{ book.title }}</span>

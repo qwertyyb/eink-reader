@@ -65,9 +65,26 @@ export const render = (content, startCursor, endCursor) => {
     .join('\n') + '</article>'
 }
 
-export const download = async (book) => {
-  const response = await fetch(book.downloadUrl)
-  const arrayBuffer = await response.arrayBuffer()
+const downloadWithProgress = async (url, onUpdate) => {
+  const response = await fetch(url)
+  const total = +response.headers.get('Content-Length')
+  const result = new Uint8Array(total)
+  let progress = 0
+  const reader = response.body.getReader()
+  while(true) {
+    const { done, value } = await reader.read()
+    if (done) {
+      break;
+    }
+    result.set(value, progress)
+    progress += value.length
+    onUpdate && onUpdate(progress, total)
+  }
+  return result
+}
+
+export const download = async (book, onUpdate) => {
+  const arrayBuffer = await downloadWithProgress(book.downloadUrl, onUpdate)
   const content = await decodeText(arrayBuffer)
   const catalog = parseCatalog(content)
   return {

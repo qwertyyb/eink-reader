@@ -21,8 +21,8 @@ export const dataService = {
     })
     return bookList
   },
-  async downloadRemoteBook(book) {
-    const { id, title, cover, content, catalog } = await download(book)
+  async downloadRemoteBook(book, onUpdate) {
+    const { id, title, cover, content, catalog } = await download(book, onUpdate)
     books.add({ id, title, cover, title, content, catalog })
     return {
       id, title, cover
