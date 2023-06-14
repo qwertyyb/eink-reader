@@ -1,0 +1,8 @@
+.c-option {
+  height: 42px;
+  line-height: 42px;
+}
+.c-option.selected {
+  background: #000;
+  color: #fff;
+}

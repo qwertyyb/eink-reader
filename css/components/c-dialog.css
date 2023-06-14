@@ -1,0 +1,19 @@
+.c-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.c-dialog .c-dialog-content {
+  background: #fff;
+  width: 100%;
+  z-index: 10;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+/* .content {
+  opacity: 0;
+} */

@@ -16,6 +16,8 @@ const router = createRouter({
 
 const app = createApp({})
 
+app.config.unwrapInjectedRef = true
+
 app.use(router)
 app.use(VirtualList)
 

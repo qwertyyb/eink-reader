@@ -1,3 +1,6 @@
+.page-container.shelf-page {
+  height: 100vh;
+}
 .page-container.shelf-page .type-tabs {
   display: flex;
   position: fixed;
@@ -14,6 +17,14 @@
   justify-content: center;
   align-items: center;
 }
+.page-container.shelf-page::before {
+  content: " ";
+  display: block;
+  width: 100%;
+  height: env(safe-area-inset-top);
+  background: #000;
+}
+
 .page-container.shelf-page .type-tabs .tab-item.center {
   width: 80px;
   height: 80px;

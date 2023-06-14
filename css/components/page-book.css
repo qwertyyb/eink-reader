@@ -1,3 +1,7 @@
+.page-container.route-book, .content-wrapper {
+  height: 100vh;
+}
+
 .navigator {
   position: fixed;
   top: 0;
@@ -12,13 +16,15 @@
   background: #fff;
   border-bottom: 1px solid #000;
   z-index: 10;
+  padding-top: env(safe-area-inset-top);
+  box-sizing: content-box;
 }
 .navigator #back-to-index {
   font-size: 28px;
 }
 .control {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
+  bottom: 0;
   left: 0;
   right: 0;
   display: flex;
@@ -30,6 +36,8 @@
   background-color: #fff;
   border-top: 1px solid #000;
   text-align: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: content-box;
 }
 .control .material-icons {
   font-size: 32px;
@@ -85,24 +93,37 @@
   font-size: 20px;
   justify-content: space-around;
 }
-.control-panel.font-panel .font-family select {
-  border: 1px solid #000;
-  border-radius: 5px;
-  padding: 4px 8px;
-  font-size: 22px;
+.control-panel.font-panel .font-family {
+  display: flex;
+  align-items: center;
+}
+.control-panel.font-panel .font-weight {
+  display: flex;
+  align-items: center;
+  font-weight: bolder;
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+  border-radius: 4px;
+}
+.control-panel.font-panel .font-weight.selected {
+  background: #000;
+  color: #fff;
 }
 .control-panel.font-panel .font-size {
   display: flex;
   align-items: center;
 }
 .control-panel.font-panel .font-size .text-size {
-  padding: 0 20px;
+  width: 48px;
+  text-align: center;
 }
 .control-panel.font-panel .font-size button {
-  border: 1px solid #000;
-  border-radius: 999px;
   font-size: 24px;
   padding: 6px;
+  background: transparent;
+  border: none;
+  outline: none;
 }
 
 .control-panel.play-panel {
@@ -151,6 +172,18 @@
   font-size: 24px;
   color: black;
   user-select: text;
+}
+.content p {
+  text-indent: 2em;
+}
+.content p + p {
+  margin-top: 0.5em;
+}
+.content p[data-is-title] {
+  padding-top: max(env(safe-area-inset-top), 40px);
+}
+.content p:last-child {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 .content p.reading {
   background: yellow;

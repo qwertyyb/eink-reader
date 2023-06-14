@@ -61,7 +61,7 @@ export const parseTxtFile = async (file, { tocReg = /^第.+章/ } = {}) => {
 export const render = (content, startCursor, endCursor) => {
   return '<article>' + content.split('\n')
     .slice(startCursor, endCursor)
-    .map((line, i) => `<p data-cursor=${JSON.stringify(startCursor + i)}>${line}</p>`)
+    .map((line, i) => `<p data-cursor=${JSON.stringify(startCursor + i)}${i === 0 ? ' data-is-title' : ' '}>${line.trim()}</p>`)
     .join('\n') + '</article>'
 }
 

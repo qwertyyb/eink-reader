@@ -5,11 +5,16 @@ import { getSettings, saveAllSettings } from '../utils/settings.js'
 import { env } from '../utils/env.js'
 import { lastReadBooks, lastReadBook } from '../utils/last-read.js'
 import CatalogDialog from '../components/catalog-dialog.js'
+import CSelect from '../components/c-select.js'
+import COption from '../components/c-option.js'
 
 export default {
   template: document.querySelector('#components .route-book').outerHTML,
   components: {
-    CatalogDialog
+    CatalogDialog,
+    // SelectorDialog,
+    CSelect,
+    COption
   },
   props: {
     server: String,

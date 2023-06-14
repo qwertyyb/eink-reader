@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="referrer" content="unsafe-url">
   <title>EInk Reader</title>
   <link rel="manifest" href="./manifest.json">
@@ -15,8 +17,9 @@
       margin: 0;
       color: #000;
     }
-    html, body, #app, .page-container, .content-wrapper {
-      height: 100%;
+    html, body {
+      height: 100vh;
+      overflow: hidden;
     }
     html, body, .page-container {
       width: 100%;
@@ -91,7 +94,10 @@
         @close="visiblePanel=null"></catalog-dialog>
       <div class="content-wrapper" ref="contentWrapper" @scroll="scrollHandler">
         <div class="content" :data-font="settings.fontFamily"
-          :style="{fontSize: settings.fontSize + 'px'}"
+          :style="{
+            fontSize: settings.fontSize + 'px',
+            fontWeight: settings.bold ? 'bold' : 'normal'
+          }"
           :class="{ column: isBooxLeaf }"
           ref="content"
           v-html="content">
@@ -140,14 +146,18 @@
 
           <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
             <div class="font-family">
-              <select name="font" v-model="settings.fontFamily">
-                <option value="SYST">思源宋体</option>
-                <option value="FZSS" selected>方正书宋</option>
-                <option value="FZFS">方正仿宋</option>
-                <option value="FZHT">方正黑体</option>
-                <option value="FZKT">方正楷体</option>
-                <option value="LXWK">落霞文楷</option>
-              </select>
+              <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
+                <c-option value="SYST" data-font="SYST">思源宋体</c-option>
+                <c-option value="FZSS" data-font="FZSS">方正书宋</c-option>
+                <c-option value="FZFS" data-font="FZFS">方正仿宋</c-option>
+                <c-option value="FZHT" data-font="FZHT">方正黑体</c-option>
+                <c-option value="FZKT" data-font="FZKT">方正楷体</c-option>
+                <c-option value="LXWK" data-font="LXWK">落霞文楷</c-option>
+              </c-select>
+              <span class="material-icons">chevron_right</span>
+            </div>
+            <div class="font-weight" :class="{ selected: settings.bold }" @click="settings.bold=!settings.bold">
+              B
             </div>
             <div class="font-size">
               <button class="material-icons text-dec" @click="settings.fontSize -= 1">
@@ -184,6 +194,13 @@
         </virtual-list>
       </div>
     </div>
+
+    <div class="c-dialog">
+      <div class="mask" @click="$emit('close')"></div>
+      <div class="c-dialog-content">
+        <slot></slot>
+      </div>
+    </div>
   </div>
   <script src="./js/lib/vconsole.min.js"></script>
   <script src="./js/lib/zepto.min.js"></script>
@@ -196,6 +213,6 @@
     } }
   </script>
   <script type="module" src="./index.js"></script>
-  <script type="module" src="./register-sw.js"></script>
+  <!-- <script type="module" src="./register-sw.js"></script> -->
 </body>
 </html>

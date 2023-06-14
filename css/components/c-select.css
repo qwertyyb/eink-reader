@@ -1,0 +1,4 @@
+.c-select {
+  display: flex;
+  flex-direction: column;
+}
