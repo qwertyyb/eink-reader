@@ -194,7 +194,7 @@ export default {
     },
     pageHandler (direction) {
       const content = this.$refs.content
-      const pageWidth = content.offsetWidth
+      const pageWidth = content.getBoundingClientRect().width
       const curPage = Math.round(content.scrollLeft / pageWidth)
       const originScroll = content.scrollLeft;
       if (direction === 'prev') {
