@@ -68,7 +68,7 @@ export const render = (content, startCursor, endCursor) => {
 const downloadWithProgress = async (url, onUpdate) => {
   const response = await fetch(url)
   const total = +response.headers.get('Content-Length')
-  const result = new Uint8Array(total)
+  const result = []
   let progress = 0
   const reader = response.body.getReader()
   while(true) {
@@ -76,11 +76,20 @@ const downloadWithProgress = async (url, onUpdate) => {
     if (done) {
       break;
     }
-    result.set(value, progress)
+    result.push(value)
     progress += value.length
     onUpdate && onUpdate(progress, total)
   }
-  return result
+
+  let data = new Uint8Array(progress)
+
+  let position = 0
+  result.forEach(item => {
+    data.set(item, position)
+    position += item.length
+  })
+
+  return data
 }
 
 export const download = async (book, onUpdate) => {
