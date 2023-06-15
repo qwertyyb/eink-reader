@@ -156,6 +156,9 @@
           <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
             <div class="font-family">
               <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
+                <template v-slot:label="{ label }">
+                  <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
+                </template>
                 <c-option value="SYST" data-font="SYST">思源宋体</c-option>
                 <c-option value="FZSS" data-font="FZSS">方正书宋</c-option>
                 <c-option value="FZFS" data-font="FZFS">方正仿宋</c-option>

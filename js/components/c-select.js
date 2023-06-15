@@ -3,7 +3,9 @@ import CDialog from './c-dialog.js'
 
 export default {
   template: `<div class="c-select">
-    <div class="c-select-label" @click="optionsVisible=true">{{ valueLabel }}</div>
+    <div class="c-select-label" @click="optionsVisible=true">
+      <slot name="label" :label="valueLabel">{{ valueLabel }}</slot>
+    </div>
     <c-dialog v-show="optionsVisible" @close="optionsVisible=false">
       <div class="c-option-list">
         <slot></slot>
