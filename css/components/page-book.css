@@ -165,8 +165,20 @@
 }
 @font-face {
   font-family: "LXWK";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Light.ttf") format("truetype");
+  font-weight: lighter;
 }
+@font-face {
+  font-family: "LXWK";
+  src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Regular.ttf") format("truetype");
+  font-weight: normal;
+}
+@font-face {
+  font-family: "LXWK";
+  src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+
 .content {
   line-height: 1.6;
   font-size: 24px;
