@@ -145,27 +145,27 @@
 
 @font-face {
   font-family: "SourceHansSerifCN-VF";
-  src: url("../fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("../fonts/SourceHanSerifCN-VF.otf") format("otf");
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf") format("otf");
 }
 @font-face {
   font-family: "FZKTSC";
-  src: url("../fonts/FZKTSC.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZKTSC.ttf") format("truetype");
 }
 @font-face {
   font-family: "FZFSSC";
-  src: url("../fonts/FZFSSC.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZFSSC.ttf") format("truetype");
 }
 @font-face {
   font-family: "FZSSSC";
-  src: url("../fonts/FZSSSC.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZSSSC.ttf") format("truetype");
 }
 @font-face {
   font-family: "FZHTSC";
-  src: url("../fonts/FZHTSC.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZHTSC.ttf") format("truetype");
 }
 @font-face {
   font-family: "LXWK";
-  src: url("../fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
 }
 .content {
   line-height: 1.6;
