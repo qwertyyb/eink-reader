@@ -104,13 +104,14 @@ export default {
 
       const el = document.querySelector(`.content [data-cursor="${cursor}"]`)
 
+      console.log(el)
       if (el) {
         el.scrollIntoView()
       }
       // 等待滚动到位置后再监听滚动事件
       setTimeout(() => {
         this.inited = true
-        this.startProgressObserver()
+        // this.startProgressObserver()
       }, 300)
     },
     async toCatalogItem(item, index) {
@@ -227,8 +228,15 @@ export default {
       const p = this.getCurrentP()
       if (!p) return;
 
-      // 可以往前回溯一个段落
-      const cursor = p.previousElementSibling ? p.previousElementSibling.dataset.cursor : p.dataset.cursor
+      const cursor = +p.dataset.cursor
+      const chapterIndex = this.chapterList.findIndex((chapter, index) => {
+        if (index >= this.chapterList.length - 1) return true
+        return cursor >= chapter.cursor && cursor < this.chapterList[index + 1].cursor
+      })
+      if (chapterIndex !== -1) {
+        this.chapterIndex = chapterIndex
+      }
+      
       lastReadBooks.set(this.book.id, { catalogId: this.chapter.id, cursor })
     },
     needAppendNextChapter() {
@@ -265,42 +273,8 @@ export default {
         this.saveLastRead()
       }
     },
-    startProgressObserver() {
-      const createProgressObserver = () => {
-        if (this.progressObserver) {
-          this.progressObserver.disconnect()
-        }
-
-        const progressObserver = new IntersectionObserver((entries) => {
-          requestIdleCallback(() => {
-            let chapterIndex = this.curChapterIndex
-            const chapterEntry = [...entries].reverse().find(entry => entry.target.dataset.chapterIndex)
-            if (chapterEntry) {
-              chapterIndex = +chapterEntry.target.dataset.chapterIndex
-            }
-            let last = entries[entries.length - 1]
-            const cursor = +last.target.dataset.cursor
-            this.curChapterIndex = chapterIndex
-            const chapter = this.chapterList[chapterIndex]
-            lastReadBooks.set(this.book.id, { catalogId: chapter.id, cursor })
-          })
-        })
-        this.$refs.content.querySelectorAll('[data-cursor]').forEach(dom => {
-          progressObserver.observe(dom)
-        })
-        this.progressObserver = progressObserver
-      }
-
-      const mutationObserver  = new MutationObserver(() => {
-        console.log('oooo')
-        createProgressObserver()
-      })
-      mutationObserver.observe(this.$refs.content, { childList: true })
-
-      createProgressObserver()
-    },
     scrollHandler() {
-      // this.saveLastRead()
+      this.saveLastRead()
       if (this.needAppendNextChapter()) {
         this.appendNextChapter()
       }

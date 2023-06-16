@@ -18,6 +18,9 @@
   height: 100vh;
   overflow: auto;
   content-visibility: auto;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 .catalog-content > div {
   box-sizing: border-box;
