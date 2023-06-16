@@ -104,7 +104,7 @@
         <div class="content" :data-font="settings.fontFamily"
           :style="{
             fontSize: settings.fontSize + 'px',
-            fontWeight: settings.bold ? 'bold' : 'normal'
+            fontWeight: settings.bold
           }"
           :class="{ column: isBooxLeaf }"
           ref="content"
@@ -154,31 +154,38 @@
           </div>
 
           <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
-            <div class="font-family">
-              <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
-                <template v-slot:label="{ label }">
-                  <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
-                </template>
-                <c-option value="SYST" data-font="SYST">思源宋体</c-option>
-                <c-option value="FZSS" data-font="FZSS">方正书宋</c-option>
-                <c-option value="FZFS" data-font="FZFS">方正仿宋</c-option>
-                <c-option value="FZHT" data-font="FZHT">方正黑体</c-option>
-                <c-option value="FZKT" data-font="FZKT">方正楷体</c-option>
-                <c-option value="LXWK" data-font="LXWK">落霞文楷</c-option>
-              </c-select>
-              <span class="material-icons">chevron_right</span>
+            <div class="font-weight">
+              <div class="lighter-btn">B-</div>
+              <c-progress
+                :steps="[100, 200, 300, 400, 500, 600, 700, 800, 900]"
+                style="flex: 1"
+                v-model="settings.bold"></c-progress>
+              <div class="bolder-btn">B+</div>
             </div>
-            <div class="font-weight" :class="{ selected: settings.bold }" @click="settings.bold=!settings.bold">
-              B
-            </div>
-            <div class="font-size">
-              <button class="material-icons text-dec" @click="settings.fontSize -= 1">
-                  text_decrease
-              </button>
-              <span class="text-size">{{ settings.fontSize }}</span>
-              <button class="material-icons text-inc" @click="settings.fontSize += 1">
-                  text_increase
-              </button>
+            <div class="font-family-size">
+              <div class="font-family">
+                <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
+                  <template v-slot:label="{ label }">
+                    <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
+                  </template>
+                  <c-option value="SYST" data-font="SYST">思源宋体</c-option>
+                  <c-option value="FZSS" data-font="FZSS">方正书宋</c-option>
+                  <c-option value="FZFS" data-font="FZFS">方正仿宋</c-option>
+                  <c-option value="FZHT" data-font="FZHT">方正黑体</c-option>
+                  <c-option value="FZKT" data-font="FZKT">方正楷体</c-option>
+                  <c-option value="LXWK" data-font="LXWK">落霞文楷</c-option>
+                </c-select>
+                <span class="material-icons">chevron_right</span>
+              </div>
+              <div class="font-size">
+                <button class="material-icons text-dec" @click="settings.fontSize -= 1">
+                    text_decrease
+                </button>
+                <span class="text-size">{{ settings.fontSize }}</span>
+                <button class="material-icons text-inc" @click="settings.fontSize += 1">
+                    text_increase
+                </button>
+              </div>
             </div>
           </div>
         </div>

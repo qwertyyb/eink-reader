@@ -8,6 +8,7 @@ import { showToast } from '../utils/index.js'
 import CatalogDialog from '../components/catalog-dialog.js'
 import CSelect from '../components/c-select.js'
 import COption from '../components/c-option.js'
+import CProgress from '../components/c-progress.js'
 
 export default {
   template: document.querySelector('#components .route-book').outerHTML,
@@ -15,7 +16,8 @@ export default {
     CatalogDialog,
     // SelectorDialog,
     CSelect,
-    COption
+    COption,
+    CProgress
   },
   props: {
     server: String,

@@ -92,6 +92,16 @@
   display: flex;
   font-size: 20px;
   justify-content: space-around;
+  flex-direction: column;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.control-panel.font-panel > div {
+  width: 100%;
+}
+.control-panel.font-panel .font-family-size {
+  display: flex;
+  justify-content: space-between;
 }
 .control-panel.font-panel .font-family {
   display: flex;
@@ -100,11 +110,14 @@
 .control-panel.font-panel .font-weight {
   display: flex;
   align-items: center;
-  font-weight: bolder;
-  width: 36px;
-  height: 36px;
-  justify-content: center;
-  border-radius: 4px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.control-panel.font-panel .lighter-btn {
+  margin-right: 10px;
+}
+.control-panel.font-panel .bolder-btn {
+  margin-left: 10px;
 }
 .control-panel.font-panel .font-weight.selected {
   background: #000;
