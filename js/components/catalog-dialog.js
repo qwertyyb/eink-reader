@@ -6,22 +6,29 @@ export default {
       type: Array,
       default: () => []
     },
-    selectedItem: {
-      type: Object,
-      default: () =>({})
-    }
+    selectedIndex: {
+      type: Number,
+      default: 0
+    },
   },
   watch: {
-    selectedItem() {
+    selectedIndex() {
       this.refresh()
+    },
+    list() {
+      return this.catalog.map((item, index) => {
+        return {
+          ...item,
+          selected: index === this.selectedIndex
+        }
+      })
     }
   },
   methods: {
     async refresh() {
       // 等待页面更新完成
       await this.$nextTick()
-      const index = Math.max(0, this.catalog.findIndex(item => `${item.id}` === `${this.selectedItem.id}`) - 2)
-      this.$refs.catalog.scrollToIndex(index)
+      this.$refs.catalog.scrollToIndex(Math.max(0, this.selectedIndex - 2))
     }
   }
 }

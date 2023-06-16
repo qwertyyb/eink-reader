@@ -205,7 +205,7 @@
 .content p + p {
   margin-top: 0.5em;
 }
-.content p[data-is-title] {
+.content h3.chapter-title {
   padding-top: env(safe-area-inset-top);
 }
 .content p:last-child {

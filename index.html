@@ -96,7 +96,7 @@
         </div>
       </div>
       <catalog-dialog :catalog="chapterList"
-        :selected-item="chapter"
+        :selected-index="curChapterIndex"
         :visible="visiblePanel === 'catalog'"
         @to-catalog-item="toCatalogItem"
         @close="visiblePanel=null"></catalog-dialog>
@@ -205,7 +205,7 @@
           <template #="{ source, index }">
             <div class="catalog-item"
               @click="$emit('to-catalog-item', source, index)"
-              :class="{active: selectedItem && `${source.id}` === `${selectedItem.id}`}"
+              :class="{active: index === selectedIndex}"
               :data-catalog-id="source.id">
               <div class="catalog-label">{{ source.title }}</div>
             </div>

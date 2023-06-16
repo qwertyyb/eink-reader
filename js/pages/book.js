@@ -29,6 +29,7 @@ export default {
 
       book: null,
       chapterList: [],
+      startChapterIndex: 0,
       curChapterIndex: 0,
       panelVisible: false,
       visiblePanel: null,
@@ -49,7 +50,7 @@ export default {
       return this.chapterList[this.curChapterIndex]
     },
     content() {
-      return this.chapterList.slice(this.curChapterIndex, this.curChapterIndex + 20).map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>';
+      return this.chapterList.slice(this.startChapterIndex, this.curChapterIndex + 20).map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>';
     }
   },
   watch: {
@@ -117,6 +118,7 @@ export default {
       }, 300)
     },
     async toCatalogItem(item, index) {
+      this.startChapterIndex = index
       this.curChapterIndex = index
       this.chapterList[this.curChapterIndex].status = 'loading'
       const { content } = await services[this.server].getContent(item, this.curChapterIndex, this.book)
@@ -185,9 +187,19 @@ export default {
         this.visiblePanel = 'catalog'
       }
     },
-    getCurrentP() {
-      // 找到距离上方最近的段落的cursor
-      const els = Array.from(document.querySelectorAll('.content [data-cursor]'))
+    getCurrentProgress() {
+      // 1. 找到当前的章节
+      const chapterEls = this.$refs.content.querySelectorAll('.chapter')
+      const chapterEl = Array.from(chapterEls)
+        .reverse()
+        .find((el) => {
+          const { top, left } = el.getBoundingClientRect()
+          return top < 0 || left < 0
+        })
+      if (!chapterEl) return
+
+      // 2. 找到章节中最靠近上方的段落
+      const els = Array.from(chapterEl.querySelectorAll('.content [data-cursor]'))
       const screenRect = document.documentElement.getBoundingClientRect()
       let minLeft = Number.MAX_SAFE_INTEGER
       let minTop = Number.MAX_SAFE_INTEGER
@@ -206,7 +218,11 @@ export default {
             }
           }
       })
-      return target;
+      return {
+        chapterIndex: +chapterEl.dataset.chapterIndex,
+        chapter: this.chapterList[+chapterEl.dataset.chapterIndex],
+        cursor: target?.dataset.cursor
+      }
     },
     pageHandler (direction) {
       const content = this.$refs.content
@@ -225,21 +241,14 @@ export default {
         }
       }
     },
-    saveLastRead() {
+    updateProgress() {
       if (!this.inited) return;
-      const p = this.getCurrentP()
-      if (!p) return;
+      const { chapter, cursor, chapterIndex } = this.getCurrentProgress() || {}
+      if (!chapter || !cursor) return;
 
-      const cursor = +p.dataset.cursor
-      const chapterIndex = this.chapterList.findIndex((chapter, index) => {
-        if (index >= this.chapterList.length - 1) return true
-        return cursor >= chapter.cursor && cursor < this.chapterList[index + 1].cursor
-      })
-      if (chapterIndex !== -1) {
-        this.chapterIndex = chapterIndex
-      }
+      this.curChapterIndex = chapterIndex
       
-      lastReadBooks.set(this.book.id, { catalogId: this.chapter.id, cursor })
+      lastReadBooks.set(this.book.id, { catalogId: chapter.id, cursor })
     },
     needAppendNextChapter() {
       if (env.isBooxLeaf()) {
@@ -272,11 +281,11 @@ export default {
     },
     hScrollHandler() {
       if (env.isBooxLeaf()) {
-        this.saveLastRead()
+        this.updateProgress()
       }
     },
     scrollHandler() {
-      this.saveLastRead()
+      this.updateProgress()
       if (this.needAppendNextChapter()) {
         this.appendNextChapter()
       }

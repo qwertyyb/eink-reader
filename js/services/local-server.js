@@ -3,7 +3,7 @@ import { parseTxtFile, download } from '../txt-file.js'
 import { remoteBooks } from '../../books/index.js'
 
 const render = (content, chapterIndex, startCursor, endCursor) => {
-  return '<div class="chapter">' + content.split('\n')
+  return `<div class="chapter" data-chapter-index=${JSON.stringify(chapterIndex)}>` + content.split('\n')
     .slice(startCursor, endCursor)
     .map((line, i) => {
       const str = line.trim()
