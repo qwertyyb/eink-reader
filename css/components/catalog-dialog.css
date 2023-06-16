@@ -1,3 +1,6 @@
+.catalog {
+  position: relative;
+}
 
 .catalog-content {
   position: absolute;

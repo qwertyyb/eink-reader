@@ -26,9 +26,8 @@ export default {
       inited: false,
 
       book: null,
-      catalog: [],
-      content: '<div class="placeholder">正在加载</div>',
-      curCatalogItem: {},
+      chapterList: [],
+      curChapterIndex: 0,
       panelVisible: false,
       visiblePanel: null,
 
@@ -41,6 +40,14 @@ export default {
 
       settings: getSettings(),
       isBooxLeaf: env.isBooxLeaf()
+    }
+  },
+  computed: {
+    chapter() {
+      return this.chapterList[this.curChapterIndex]
+    },
+    content() {
+      return this.chapterList.slice(this.curChapterIndex, this.curChapterIndex + 20).map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>';
     }
   },
   watch: {
@@ -79,15 +86,19 @@ export default {
       if (!catalog) {
         return showToast(`获取目录失败: ${this.server}/${this.id}`)
       }
-      this.catalog = catalog
+      this.chapterList = catalog.map(item => ({
+        ...item,
+        status: 'default', // default | loading | loaded
+        content: '',
+      }))
       this.book = book
     },
     async startRead() {
-      const { catalogId = this.catalog[0].id, cursor = 0 } = lastReadBooks.get(this.id) || {}
+      const { catalogId = this.chapterList[0].id, cursor = 0 } = lastReadBooks.get(this.id) || {}
       
-      let index = this.catalog.findIndex(item => `${item.id}` === `${catalogId}`)
+      let index = this.chapterList.findIndex(item => `${item.id}` === `${catalogId}`)
       index = index >= 0 ? index : 0
-      await this.toCatalogItem(this.catalog[index], index)
+      await this.toCatalogItem(this.chapterList[index], index)
 
       await this.$nextTick()
 
@@ -99,17 +110,19 @@ export default {
       // 等待滚动到位置后再监听滚动事件
       setTimeout(() => {
         this.inited = true
+        this.startProgressObserver()
       }, 300)
     },
     async toCatalogItem(item, index) {
-      this.curCatalogItem = item
-      const { content } = await services[this.server].getContent(item, this.book)
-      this.content = content
+      this.curChapterIndex = index
+      this.chapterList[this.curChapterIndex].status = 'loading'
+      const { content } = await services[this.server].getContent(item, this.curChapterIndex, this.book)
+      this.chapterList[this.curChapterIndex].status = 'loaded'
+      this.chapterList[this.curChapterIndex].content = content
       this.visiblePanel = null
       this.panelVisible = false
       await this.$nextTick()
       this.$refs.contentWrapper.scrollTo(0, 0)
-      this.scrollHandler()
     },
     changeAutoPlayDuration(duration) {
       this.settings.autoPlayDuration = duration
@@ -209,19 +222,88 @@ export default {
         }
       }
     },
-    hScrollHandler() {
-      if (env.isBooxLeaf()) {
-        this.scrollHandler()
-      }
-    },
-    scrollHandler() {
+    saveLastRead() {
       if (!this.inited) return;
       const p = this.getCurrentP()
       if (!p) return;
 
       // 可以往前回溯一个段落
       const cursor = p.previousElementSibling ? p.previousElementSibling.dataset.cursor : p.dataset.cursor
-      lastReadBooks.set(this.book.id, { catalogId: this.curCatalogItem.id, cursor })
+      lastReadBooks.set(this.book.id, { catalogId: this.chapter.id, cursor })
+    },
+    needAppendNextChapter() {
+      if (env.isBooxLeaf()) {
+        const content = this.$refs.content
+        const pageWidth = content.getBoundingClientRect().width
+        const curPage = Math.round(content.scrollLeft / pageWidth)
+        const totalPage = Math.round(content.scrollWidth / page)
+        return totalPage - curPage <= 1
+      }
+      const contentWrapper = this.$refs.contentWrapper
+      return contentWrapper.scrollHeight - contentWrapper.scrollTop - contentWrapper.clientHeight <= 50
+    },
+    async appendNextChapter() {
+      let nextIndex = -1
+      for (let i = this.curChapterIndex; i < this.chapterList.length; i += 1) {
+        if (this.chapterList[i].status === 'loading') {
+          break;
+        }
+        if (this.chapterList[i].status === 'default') {
+          nextIndex = i;
+          break;
+        }
+      }
+      if (nextIndex < 0) return;
+
+      this.chapterList[nextIndex].status = 'loading'
+      const { content } = await services[this.server].getContent(this.chapterList[nextIndex], nextIndex, this.book)
+      this.chapterList[nextIndex].status = 'loaded'
+      this.chapterList[nextIndex].content = content
+    },
+    hScrollHandler() {
+      if (env.isBooxLeaf()) {
+        this.saveLastRead()
+      }
+    },
+    startProgressObserver() {
+      const createProgressObserver = () => {
+        if (this.progressObserver) {
+          this.progressObserver.disconnect()
+        }
+
+        const progressObserver = new IntersectionObserver((entries) => {
+          requestIdleCallback(() => {
+            let chapterIndex = this.curChapterIndex
+            const chapterEntry = [...entries].reverse().find(entry => entry.target.dataset.chapterIndex)
+            if (chapterEntry) {
+              chapterIndex = +chapterEntry.target.dataset.chapterIndex
+            }
+            let last = entries[entries.length - 1]
+            const cursor = +last.target.dataset.cursor
+            this.curChapterIndex = chapterIndex
+            const chapter = this.chapterList[chapterIndex]
+            lastReadBooks.set(this.book.id, { catalogId: chapter.id, cursor })
+          })
+        })
+        this.$refs.content.querySelectorAll('[data-cursor]').forEach(dom => {
+          progressObserver.observe(dom)
+        })
+        this.progressObserver = progressObserver
+      }
+
+      const mutationObserver  = new MutationObserver(() => {
+        console.log('oooo')
+        createProgressObserver()
+      })
+      mutationObserver.observe(this.$refs.content, { childList: true })
+
+      createProgressObserver()
+    },
+    scrollHandler() {
+      // this.saveLastRead()
+      if (this.needAppendNextChapter()) {
+        this.appendNextChapter()
+      }
     }
   }
 }

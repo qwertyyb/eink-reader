@@ -95,8 +95,8 @@
             @click="$router.replace('/')">arrow_back</div>
         </div>
       </div>
-      <catalog-dialog :catalog="catalog"
-        :selected-item="curCatalogItem"
+      <catalog-dialog :catalog="chapterList"
+        :selected-item="chapter"
         :visible="visiblePanel === 'catalog'"
         @to-catalog-item="toCatalogItem"
         @close="visiblePanel=null"></catalog-dialog>
@@ -186,7 +186,7 @@
     </div>
 
 
-    <div class="catalog" v-show="visible">
+    <div class="catalog" :style="{ zIndex: visible ? 1 : -1}">
       <div class="mask" @click="$emit('close')"></div>
       <div class="catalog-content">
         <virtual-list

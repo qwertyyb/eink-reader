@@ -175,6 +175,7 @@
 }
 .content p {
   text-indent: 2em;
+  content-visibility: auto;
 }
 .content p + p {
   margin-top: 0.5em;

@@ -1,6 +1,17 @@
 import { books } from '../storage.js'
-import { render, parseTxtFile, download } from '../txt-file.js'
+import { parseTxtFile, download } from '../txt-file.js'
 import { remoteBooks } from '../../books/index.js'
+
+const render = (content, chapterIndex, startCursor, endCursor) => {
+  return '<div class="chapter">' + content.split('\n')
+    .slice(startCursor, endCursor)
+    .map((line, i) => {
+      const str = line.trim()
+      if (i === 0) return `<h4 data-cursor=${JSON.stringify(startCursor + i)} data-chapter-index=${JSON.stringify(chapterIndex)} class="chapter-title">${str}</h4>`
+      return `<p data-cursor=${JSON.stringify(startCursor + i)}>${line.trim()}</p>`
+    })
+    .join('\n') + '</div>'
+}
 
 export const dataService = {
   async getBookList () {
@@ -37,12 +48,12 @@ export const dataService = {
     })
     return { catalog }
   },
-  async getContent (catalogItem, book) {
+  async getContent (chapter, chapterIndex, book) {
     const { content } = await books.get(book.id)
-    const index = book.catalog.findIndex(item => item.cursor === catalogItem.cursor)
+    const index = book.catalog.findIndex(item => item.cursor === chapter.cursor)
     const next = book.catalog[index + 1]
-    const startCursor = catalogItem.cursor
-    return { content: render(content, startCursor, next && next.cursor || undefined) }
+    const startCursor = chapter.cursor
+    return { content: render(content, chapterIndex, startCursor, next && next.cursor || undefined) }
   }
 }
 

@@ -12,16 +12,15 @@ export default {
     }
   },
   watch: {
-    visible() {
-      if (!this.visible) return;
+    selectedItem() {
       this.refresh()
     }
   },
   methods: {
     async refresh() {
       // 等待页面更新完成
-      await new Promise(resolve => setTimeout(resolve, 100))
-      const index = Math.max(0, this.catalog.findIndex(item => `${item.id}` === `${this.selectedItem.id}`))
+      await this.$nextTick()
+      const index = Math.max(0, this.catalog.findIndex(item => `${item.id}` === `${this.selectedItem.id}`) - 2)
       this.$refs.catalog.scrollToIndex(index)
     }
   }
