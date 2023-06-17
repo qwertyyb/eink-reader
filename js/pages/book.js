@@ -128,6 +128,7 @@ export default {
       this.panelVisible = false
       await this.$nextTick()
       this.$refs.contentWrapper.scrollTo(0, 0)
+      this.updateProgress()
     },
     changeFontWeight(action) {
       if (action === 'dec') {
@@ -202,7 +203,7 @@ export default {
         .find((el) => {
           const { top, left } = el.getBoundingClientRect()
           return top < 0 || left < 0
-        })
+        }) || chapterEls[0]
       if (!chapterEl) return
 
       // 2. 找到章节中最靠近上方的段落

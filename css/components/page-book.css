@@ -201,12 +201,31 @@
   font-family: "LXWK SCREEN";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
 }
+@font-face {
+  font-family: "975MARU";
+  src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Regular.ttf");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "975MARU";
+  src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Medium.ttf");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "975MARU";
+  src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Bold.ttf");
+  font-weight: 900;
+}
+
 
 .content {
   line-height: 1.6;
   font-size: 24px;
   color: black;
   user-select: text;
+}
+.content .chapter {
+  margin-bottom: env(safe-area-inset-bottom);
 }
 .content p {
   text-indent: 2em;
@@ -217,9 +236,6 @@
 }
 .content h4.chapter-title {
   padding-top: env(safe-area-inset-top);
-}
-.content p:last-child {
-  padding-bottom: env(safe-area-inset-bottom);
 }
 .content p.reading {
   background: yellow;
@@ -244,4 +260,7 @@
 }
 [data-font="LXWK SCREEN"] {
   font-family: "LXWK SCREEN";
+}
+[data-font="975MARU"] {
+  font-family: "975MARU";
 }
