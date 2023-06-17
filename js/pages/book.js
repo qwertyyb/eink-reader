@@ -129,6 +129,13 @@ export default {
       await this.$nextTick()
       this.$refs.contentWrapper.scrollTo(0, 0)
     },
+    changeFontWeight(action) {
+      if (action === 'dec') {
+        this.settings.fontWeight = Math.max(100, this.settings.fontWeight - 100)
+      } else if (action === 'inc') {
+        this.settings.fontWeight = Math.min(900, this.settings.fontWeight + 100)
+      }
+    },
     changeAutoPlayDuration(duration) {
       this.settings.autoPlayDuration = duration
       this.actions.autoPlay.updateInterval(duration)

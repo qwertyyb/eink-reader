@@ -1,5 +1,5 @@
 export default {
-  template: `<div class="c-progress" @click.self="onTap" @touchmove="onMove">
+  template: `<div class="c-progress" @click="onTap" @touchmove="onMove">
     <div class="c-progress-line"></div>
     <div class="c-progress-indicator" :style="{left: left}"></div>
   </div>`,

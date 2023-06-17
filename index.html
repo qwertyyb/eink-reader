@@ -104,7 +104,7 @@
         <div class="content" :data-font="settings.fontFamily"
           :style="{
             fontSize: settings.fontSize + 'px',
-            fontWeight: settings.bold
+            fontWeight: settings.fontWeight
           }"
           :class="{ column: isBooxLeaf }"
           ref="content"
@@ -155,12 +155,12 @@
 
           <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
             <div class="font-weight">
-              <div class="lighter-btn">B-</div>
+              <div class="lighter-btn" @click="changeFontWeight('dec')">B-</div>
               <c-progress
                 :steps="[100, 200, 300, 400, 500, 600, 700, 800, 900]"
                 style="flex: 1"
-                v-model="settings.bold"></c-progress>
-              <div class="bolder-btn">B+</div>
+                v-model="settings.fontWeight"></c-progress>
+              <div class="bolder-btn" @click="changeFontWeight('inc')">B+</div>
             </div>
             <div class="font-family-size">
               <div class="font-family">
