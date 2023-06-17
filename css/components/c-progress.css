@@ -1,15 +1,22 @@
 .c-progress {
+  display: flex;
+  height: 10px;
+  align-items: center;
+  position: relative;
+}
+
+.c-progress .c-progress-line {
   height: 3px;
   background: #000;
-  position: relative;
   border-radius: 9999px;
+  width: 100%;
 }
 .c-progress .c-progress-indicator {
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 9999px;
-  top: -2px;
+  top: 1px;
   left: 50%;
   background: #000;
 }

@@ -107,6 +107,12 @@
   display: flex;
   align-items: center;
 }
+.control-panel.font-panel .font-family .font-family-label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: calc(100vw - 240px);
+}
 .control-panel.font-panel .font-weight {
   display: flex;
   align-items: center;
@@ -191,6 +197,10 @@
   src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Bold.ttf") format("truetype");
   font-weight: bold;
 }
+@font-face {
+  font-family: "LXWK SCREEN";
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
+}
 
 .content {
   line-height: 1.6;
@@ -231,4 +241,7 @@
 }
 [data-font="LXWK"] {
   font-family: "LXWK";
+}
+[data-font="LXWK SCREEN"] {
+  font-family: "LXWK SCREEN";
 }
