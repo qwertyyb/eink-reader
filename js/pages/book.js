@@ -263,8 +263,8 @@ export default {
         const content = this.$refs.content
         const pageWidth = content.getBoundingClientRect().width
         const curPage = Math.round(content.scrollLeft / pageWidth)
-        const totalPage = Math.round(content.scrollWidth / page)
-        return totalPage - curPage <= 1
+        const totalPage = Math.round(content.scrollWidth / pageWidth)
+        return totalPage - curPage <= 2
       }
       const contentWrapper = this.$refs.contentWrapper
       return contentWrapper.scrollHeight - contentWrapper.scrollTop - contentWrapper.clientHeight <= 50
@@ -290,6 +290,9 @@ export default {
     hScrollHandler() {
       if (env.isBooxLeaf()) {
         this.updateProgress()
+        if (this.needAppendNextChapter()) {
+          this.appendNextChapter()
+        }
       }
     },
     scrollHandler() {
