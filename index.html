@@ -10,6 +10,17 @@
   <title>EInk Reader</title>
   <link rel="manifest" href="./manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    html {
+      --page-height: 100%;
+    }
+
+    @media (display-mode: standalone) {
+      html {
+        --page-height: 100vh;
+      }
+    }
+  </style>
   <link rel="stylesheet" href="./css/components/index.css">
   <style>
     * {
@@ -17,8 +28,8 @@
       margin: 0;
       color: #000;
     }
-    html, body {
-      height: 100vh;
+    html, body, #app {
+      height: var(--page-height);
       overflow: hidden;
     }
     html, body, .page-container {
@@ -43,32 +54,30 @@
   </div>
   <div style="display: none" id="components">
     <div class="page-container shelf-page route-index">
-      <div class="shelf-wrapper">
-        <div class="header">
-          <span id="import-file"
-            @click="importLocalFile"
-            class="material-icons">add</span>
-        </div>
-        <div class="self">
-          <div class="book-list">
-            <div class="book-item"
-              v-for="(book, index) in bookList"
-              :key="index"
-              :data-book-id="book.id"
-              @click="toReadBook(book, index, bookList)">
-              <div class="book-cover">
-                {{ book.title }}
-                <div class="download-progress-size" v-if="!book.downloaded && book.total && book.progress">
-                  {{ book.fProgress }}
-                </div>
-                <div class="download-progress-percent" v-if="!book.downloaded && book.total && book.progress">
-                  ({{ Math.round(book.progress/book.total * 100) + '%' }})
-                </div>
+      <div class="header">
+        <span id="import-file"
+          @click="importLocalFile"
+          class="material-icons">add</span>
+      </div>
+      <div class="shelf">
+        <div class="book-list">
+          <div class="book-item"
+            v-for="(book, index) in bookList"
+            :key="index"
+            :data-book-id="book.id"
+            @click="toReadBook(book, index, bookList)">
+            <div class="book-cover">
+              {{ book.title }}
+              <div class="download-progress-size" v-if="!book.downloaded && book.total && book.progress">
+                {{ book.fProgress }}
               </div>
-              <div class="book-title">
-                <span class="material-icons status-icon" v-if="book.downloaded">check_circle</span>
-                <span>{{ book.title }}</span>
+              <div class="download-progress-percent" v-if="!book.downloaded && book.total && book.progress">
+                ({{ Math.round(book.progress/book.total * 100) + '%' }})
               </div>
+            </div>
+            <div class="book-title">
+              <span class="material-icons status-icon" v-if="book.downloaded">check_circle</span>
+              <span>{{ book.title }}</span>
             </div>
           </div>
         </div>
@@ -235,6 +244,6 @@
     } }
   </script>
   <script type="module" src="./index.js"></script>
-  <!-- <script type="module" src="./register-sw.js"></script> -->
+  <script type="module" src="./register-sw.js"></script>
 </body>
 </html>
