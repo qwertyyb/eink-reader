@@ -46,11 +46,35 @@
     .page-container {
       position: relative;
     }
+
+    .enable-anim .slide-down-enter-from,
+    .enable-anim .slide-down-leave-to {
+      transform: translateY(-100%);
+    }
+    .enable-anim .slide-down-enter-active,
+    .enable-anim .slide-down-leave-active,
+    .enable-anim .slide-up-enter-active,
+    .enable-anim .slide-up-leave-active {
+      will-change: transform;
+      transition: transform .2s;
+    }
+    .enable-anim .slide-down-enter-to,
+    .enable-anim .slide-down-leave-from,
+    .enable-anim .slide-up-enter-to,
+    .enable-anim .slide-up-leave-from {
+      transform: translateY(0)
+    }
+
+    .enable-anim .slide-up-enter-from,
+    .enable-anim .slide-up-leave-to {
+      transform: translateY(100%);
+    }
   </style>
 </head>
 <body>
   <div id="app">
-    <router-view></router-view>
+    <router-view>
+    </router-view>
   </div>
   <div style="display: none" id="components">
     <div class="page-container shelf-page route-index">
@@ -74,10 +98,7 @@
               <div class="download-progress-percent" v-if="!book.downloaded && book.total && book.progress">
                 ({{ Math.round(book.progress/book.total * 100) + '%' }})
               </div>
-            </div>
-            <div class="book-title">
-              <span class="material-icons status-icon" v-if="book.downloaded">check_circle</span>
-              <span>{{ book.title }}</span>
+              <div class="downloaded-label">已下载</div>
             </div>
           </div>
         </div>
@@ -98,12 +119,12 @@
     </div>
 
     <div class="page-container detail-page route-book">
-      <div class="navigator-wrapper" v-show="panelVisible">
-        <div class="navigator">
+      <transition name="slide-down">
+        <div class="navigator" v-if="panelVisible">
           <div id="back-to-index" class="material-icons"
             @click="$router.replace('/')">arrow_back</div>
         </div>
-      </div>
+      </transition>
       <catalog-dialog :catalog="chapterList"
         :selected-index="curChapterIndex"
         :visible="visiblePanel === 'catalog'"
@@ -121,8 +142,8 @@
           v-html="content">
         </div>
       </div>
-      <div class="control-wrapper" v-show="panelVisible">
-        <div class="control">
+      <transition name="slide-up">
+        <div class="control" v-if="panelVisible">
           <div class="control-item" data-control="catalog"
             @click="actionHandler('catalog')">
             <div class="control-icon material-icons">menu</div>
@@ -200,7 +221,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
 
 

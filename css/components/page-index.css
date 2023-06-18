@@ -63,13 +63,12 @@
   text-align: center;
   padding-top: 10px;
 }
-.page-container.shelf-page .book-item .book-cover .download-progress-size {
+.page-container.shelf-page .book-item .book-cover .download-progress-size,
+.page-container.shelf-page .book-item .book-cover .download-progress-percent, 
+.page-container.shelf-page .book-item .book-cover .downloaded-label {
   white-space: pre-wrap;
   font-size: 10px;
-}
-.page-container.shelf-page .book-item .book-cover .download-progress-percent {
-  white-space: pre-wrap;
-  font-size: 10px;
+  margin-top: 6px;
 }
 .page-container.shelf-page .header {
   height: 48px;
@@ -88,16 +87,6 @@
   width: 100%;
   height: auto;
 }
-.book-item .book-title {
-  text-align: center;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.book-item .book-title .status-icon {
+.book-item .status-icon {
   color: gray;
 }

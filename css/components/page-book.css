@@ -1,5 +1,7 @@
 .page-container.route-book, .content-wrapper {
   height: 100vh;
+  position: relative;
+  z-index: 2;
 }
 
 .navigator {
@@ -55,6 +57,9 @@
   width: 100%;
   height: 100%;
   overflow: auto;
+  position: relative;
+  z-index: 2;
+  background: #fff;
 }
 .content {
   box-sizing: border-box;
