@@ -1,0 +1,9 @@
+.about-dialog .about {
+  text-align: center;
+}
+.about-dialog .about > * {
+  margin-bottom: 16px;
+}
+.about-dialog .about .version {
+  font-size: 12px;
+}

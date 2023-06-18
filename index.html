@@ -79,6 +79,7 @@
   <div style="display: none" id="components">
     <div class="page-container shelf-page route-index">
       <div class="header">
+        <span class="material-icons" @click="aboutDialogVisible=true">info</span>
         <span id="import-file"
           @click="importLocalFile"
           class="material-icons">add</span>
@@ -116,6 +117,7 @@
           在线
         </div>
       </div>
+      <about-dialog :visible="aboutDialogVisible" @close="aboutDialogVisible=false"></about-dialog>
     </div>
 
     <div class="page-container detail-page route-book">
