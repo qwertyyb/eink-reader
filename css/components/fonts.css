@@ -3,19 +3,19 @@
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf") format("otf");
 }
 @font-face {
-  font-family: "FZKTSC";
+  font-family: "FZKT";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZKTSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "FZFSSC";
+  font-family: "FZFS";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZFSSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "FZSSSC";
+  font-family: "FZSS";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZSSSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "FZHTSC";
+  font-family: "FZHT";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZHTSC.ttf") format("truetype");
 }
 @font-face {

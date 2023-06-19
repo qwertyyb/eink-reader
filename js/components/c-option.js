@@ -4,7 +4,7 @@ export default {
     value: [Number, String],
     label: [Number, String]
   },
-  inject: ['selectedValue'],
+  inject: ['selectedValue', 'onOptionSelected', 'updateSelectedLabel'],
   computed: {
     selected() {
       return this.selectedValue === this.value
@@ -20,11 +20,11 @@ export default {
   },
   methods: {
     select() {
-      this.$parent && this.$parent.$parent.onOptionSelected(this.value, { label: this.label || this.$el.textContent.trim() })
+      this.onOptionSelected && this.onOptionSelected(this.value, { label: this.label || this.$el.textContent.trim() })
     },
     updateSelectLabel() {
       if (this.selected) {
-        this.$parent.$parent.valueLabel = this.label || this.$el.textContent.trim()
+        this.updateSelectedLabel(this.label || this.$el.textContent.trim())
       }
     }
   }

@@ -1,0 +1,20 @@
+.fonts-dialog.c-dialog .fonts-wrapper {
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 20px;
+}
+.fonts-dialog.c-dialog .fonts {
+  list-style: none;
+}
+.fonts-dialog.c-dialog .fonts .font-item {
+  padding: 6px 0;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+.fonts-dialog.c-dialog .fonts .font-item + .font-item {
+  border-top: 1px solid #bbb;
+}
+.fonts-dialog.c-dialog .download-all-btn {
+  text-align: center;
+}

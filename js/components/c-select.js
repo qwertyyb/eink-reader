@@ -28,7 +28,9 @@ export default {
   },
   provide() {
     return {
-      selectedValue: computed(() => this.value)
+      selectedValue: computed(() => this.value),
+      onOptionSelected: this.onOptionSelected,
+      updateSelectedLabel: (label) => this.valueLabel = label
     }
   },
   methods: {

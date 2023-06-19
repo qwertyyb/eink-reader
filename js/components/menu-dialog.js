@@ -1,12 +1,14 @@
 import { bridge } from "../../register-sw.js"
 import CDialog from "./c-dialog.js"
 import AboutDialog from "./about-dialog.js"
+import FontsDialog from "./fonts-dialog.js"
 import { showToast } from "../utils/index.js"
 
 export default {
   components: {
     CDialog,
-    AboutDialog
+    AboutDialog,
+    FontsDialog,
   },
   template: /*html*/`
     <c-dialog :visible="visible"
@@ -14,11 +16,12 @@ export default {
       anim="slide-right"
       @close="$emit('close')">
       <ul class="menu">
-        <li class="menu-item">字体管理</li>
+        <li class="menu-item" @click="dialog='fonts'">字体管理</li>
         <li class="menu-item" @click="clearCache()">清除缓存</li>
         <li class="menu-item" @click="aboutDialogVisible=true">关于EInk Reader</li>
       </ul>
-      <about-dialog :visible="aboutDialogVisible" @close="aboutDialogVisible=false"></about-dialog>
+      <about-dialog :visible="dialog==='about'" @close="dialog=null"></about-dialog>
+      <fonts-dialog :visible="dialog==='fonts'" @close="dialog=null"></fonts-dialog>
     </c-dialog>
   `,
   props: {
@@ -26,7 +29,7 @@ export default {
   },
   data() {
     return {
-      aboutDialogVisible: false
+      dialog: null
     }
   },
   methods: {
