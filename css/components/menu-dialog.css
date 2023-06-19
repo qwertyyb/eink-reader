@@ -1,0 +1,18 @@
+.menu-dialog .menu {
+  height: 100vh;
+  box-sizing: border-box;
+  padding-top: max(30vh, env(safe-area-inset-top));
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.menu-dialog .menu {
+  list-style: none;
+}
+.menu-dialog .menu-item {
+  padding: 8px 0;
+  font-size: 18px;
+}

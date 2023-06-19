@@ -1,8 +1,18 @@
+.about-dialog.c-dialog .c-dialog-content {
+  width: 100%;
+}
 .about-dialog .about {
   text-align: center;
+  height: 160px;
+  padding: 20px 0 0 0;
+  box-sizing: content-box;
 }
 .about-dialog .about > * {
   margin-bottom: 16px;
+}
+.about-dialog .about .logo {
+  width: 64px;
+  height: 64px;
 }
 .about-dialog .about .version {
   font-size: 12px;

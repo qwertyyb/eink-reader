@@ -167,61 +167,6 @@
   justify-content: space-around;
 }
 
-@font-face {
-  font-family: "SourceHansSerifCN-VF";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf") format("otf");
-}
-@font-face {
-  font-family: "FZKTSC";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZKTSC.ttf") format("truetype");
-}
-@font-face {
-  font-family: "FZFSSC";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZFSSC.ttf") format("truetype");
-}
-@font-face {
-  font-family: "FZSSSC";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZSSSC.ttf") format("truetype");
-}
-@font-face {
-  font-family: "FZHTSC";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZHTSC.ttf") format("truetype");
-}
-@font-face {
-  font-family: "LXWK";
-  src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Light.ttf") format("truetype");
-  font-weight: lighter;
-}
-@font-face {
-  font-family: "LXWK";
-  src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Regular.ttf") format("truetype");
-  font-weight: normal;
-}
-@font-face {
-  font-family: "LXWK";
-  src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Bold.ttf") format("truetype");
-  font-weight: bold;
-}
-@font-face {
-  font-family: "LXWK SCREEN";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
-}
-@font-face {
-  font-family: "975MARU";
-  src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Regular.ttf");
-  font-weight: 300;
-}
-@font-face {
-  font-family: "975MARU";
-  src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Medium.ttf");
-  font-weight: 600;
-}
-@font-face {
-  font-family: "975MARU";
-  src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Bold.ttf");
-  font-weight: 900;
-}
-
 
 .content {
   line-height: 1.6;
@@ -244,28 +189,4 @@
 }
 .content p.reading {
   background: yellow;
-}
-[data-font="SYST"] {
-  font-family: "SourceHansSerifCN-VF";
-}
-[data-font="FZKT"] {
-  font-family: "FZKTSC";
-}
-[data-font="FZFS"] {
-  font-family: "FZFSSC";
-}
-[data-font="FZSS"] {
-  font-family: "FZSSSC";
-}
-[data-font="FZHT"] {
-  font-family: "FZHTSC";
-}
-[data-font="LXWK"] {
-  font-family: "LXWK";
-}
-[data-font="LXWK SCREEN"] {
-  font-family: "LXWK SCREEN";
-}
-[data-font="975MARU"] {
-  font-family: "975MARU";
 }

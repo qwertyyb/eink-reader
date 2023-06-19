@@ -9,6 +9,7 @@ const createBridge = (calls = {}) => {
   const callbacks = new Map()
 
   self.addEventListener('message', async event => {
+    logger.info('message received', event.data)
     const { type, method, args, returnValue, callback } = event.data
     if (type === 'invoke') {
       const result = await (calls[method] && calls[method](...args))

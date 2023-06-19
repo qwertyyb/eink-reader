@@ -2,11 +2,11 @@ import { services } from '../services/index.js'
 import { importFile } from '../services/local-server.js'
 import { formatSize, showToast } from '../utils/index.js'
 import { lastReadBook } from '../utils/last-read.js'
-import AboutDialog from '../components/about-dialog.js'
+import MenuDialog from '../components/menu-dialog.js'
 
 export default {
   components: {
-    AboutDialog
+    MenuDialog
   },
   template: document.querySelector('#components .route-index').outerHTML,
   data() {
@@ -14,7 +14,7 @@ export default {
       curTab: 'local', // local | online
       bookList: [],
       lastReadBook: lastReadBook.get(),
-      aboutDialogVisible: false
+      menuDialogVisible: false
     }
   },
   created() {

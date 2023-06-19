@@ -6,7 +6,7 @@ export default {
     <div class="c-select-label" @click="optionsVisible=true">
       <slot name="label" :label="valueLabel">{{ valueLabel }}</slot>
     </div>
-    <c-dialog v-show="optionsVisible" @close="optionsVisible=false">
+    <c-dialog :visible="optionsVisible" @close="optionsVisible=false" class="c-select-dialog">
       <div class="c-option-list">
         <slot></slot>
       </div>

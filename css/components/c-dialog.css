@@ -10,7 +10,6 @@
 
 .c-dialog .c-dialog-content {
   background: #fff;
-  width: 100%;
   z-index: 10;
   padding-bottom: env(safe-area-inset-bottom);
 }

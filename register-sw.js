@@ -1,49 +1,5 @@
 import { showToast } from './js/utils/index.js'
 
-export const createBridge = (calls = {}) => {
-  const callbacks = new Map()
-
-  self.addEventListener('message', async event => {
-    const { type, method, args, returnValue, callback } = event.data
-    if (type === 'invoke') {
-      const result = await calls[method] && calls[method](...args)
-      return event.source.postMessage({
-        type: 'callback',
-        callback,
-        returnValue: result
-      })
-    }
-    if (type === 'callback') {
-      const cb = callbacks.get(callback);
-      if (cb) {
-        cb(result);
-        callbacks.delete(callback);
-      }
-    }
-  })
-
-  return {
-    invoke (method, ...args) {
-      return new Promise(resolve => {
-        const callback = `callback_${Math.random()}`;
-        callbacks.set(callback, resolve);
-        navigator.serviceWorker.ready.then(reg => {
-          reg.active && reg.active.postMessage({
-            type: 'invoke',
-            method,
-            args
-          })
-        })
-      })
-    }
-  }
-}
-
-const bridge = createBridge({
-  toast: (...args) => showToast(...args),
-  prompt: window.prompt
-})
-
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js')
     .then(reg => {
@@ -65,3 +21,48 @@ if ('serviceWorker' in navigator) {
     })
   }
 }
+
+export const createBridge = (calls = {}) => {
+  const callbacks = new Map()
+
+  navigator.serviceWorker.addEventListener('message', async event => {
+    const { type, method, args, returnValue, callback } = event.data
+    if (type === 'invoke') {
+      const result = await calls[method] && calls[method](...args)
+      return event.source.postMessage({
+        type: 'callback',
+        callback,
+        returnValue: result
+      })
+    }
+    if (type === 'callback') {
+      const cb = callbacks.get(callback);
+      if (cb) {
+        cb(returnValue);
+        callbacks.delete(callback);
+      }
+    }
+  })
+
+  return {
+    invoke (method, ...args) {
+      return new Promise(resolve => {
+        const callback = `callback_${Math.random()}`;
+        callbacks.set(callback, resolve);
+        navigator.serviceWorker.ready.then(reg => {
+          reg.active && reg.active.postMessage({
+            type: 'invoke',
+            callback,
+            method,
+            args
+          })
+        })
+      })
+    }
+  }
+}
+
+export const bridge = createBridge({
+  toast: (...args) => showToast(...args),
+  prompt: window.prompt
+})

@@ -11,17 +11,35 @@ export default {
       default: 0
     },
   },
+  data() {
+    return {
+      anim: '', // slide-right | slide-left
+      zIndex: -1,
+      maskAnim: '', // fade-in | fade-out
+    }
+  },
   watch: {
     selectedIndex() {
       this.refresh()
     },
-    list() {
-      return this.catalog.map((item, index) => {
-        return {
-          ...item,
-          selected: index === this.selectedIndex
-        }
-      })
+    visible() {
+      if (this.visible) {
+        this.zIndex = 10
+        this.anim = 'slide-right'
+        this.maskAnim = 'fade-in'
+        setTimeout(() => {
+          this.anim = ''
+          this.maskAnim = ''
+        }, 200)
+      } else {
+        this.anim = 'slide-left'
+        this.maskAnim = 'fade-out'
+        setTimeout(() => {
+          this.zIndex = -1
+          this.anim = ''
+          this.maskAnim = ''
+        }, 200)
+      }
     }
   },
   methods: {
@@ -29,6 +47,6 @@ export default {
       // 等待页面更新完成
       await this.$nextTick()
       this.$refs.catalog.scrollToIndex(Math.max(0, this.selectedIndex - 2))
-    }
+    },
   }
 }

@@ -80,6 +80,10 @@
   box-sizing: border-box;
   flex-shrink: 0;
 }
+.page-container.shelf-page .header .logo {
+  width: 24px;
+  height: 24px;
+}
 .page-container.shelf-page .header #import-file {
   font-size: 32px;
 }

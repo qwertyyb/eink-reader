@@ -46,29 +46,6 @@
     .page-container {
       position: relative;
     }
-
-    .enable-anim .slide-down-enter-from,
-    .enable-anim .slide-down-leave-to {
-      transform: translateY(-100%);
-    }
-    .enable-anim .slide-down-enter-active,
-    .enable-anim .slide-down-leave-active,
-    .enable-anim .slide-up-enter-active,
-    .enable-anim .slide-up-leave-active {
-      will-change: transform;
-      transition: transform .2s;
-    }
-    .enable-anim .slide-down-enter-to,
-    .enable-anim .slide-down-leave-from,
-    .enable-anim .slide-up-enter-to,
-    .enable-anim .slide-up-leave-from {
-      transform: translateY(0)
-    }
-
-    .enable-anim .slide-up-enter-from,
-    .enable-anim .slide-up-leave-to {
-      transform: translateY(100%);
-    }
   </style>
 </head>
 <body>
@@ -79,7 +56,9 @@
   <div style="display: none" id="components">
     <div class="page-container shelf-page route-index">
       <div class="header">
-        <span class="material-icons" @click="aboutDialogVisible=true">info</span>
+        <img class="logo"
+          @click="menuDialogVisible=true"
+          src="https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/assets/icons/128.png" />
         <span id="import-file"
           @click="importLocalFile"
           class="material-icons">add</span>
@@ -99,7 +78,7 @@
               <div class="download-progress-percent" v-if="!book.downloaded && book.total && book.progress">
                 ({{ Math.round(book.progress/book.total * 100) + '%' }})
               </div>
-              <div class="downloaded-label">已下载</div>
+              <div class="downloaded-label" v-if="book.downloaded">已下载</div>
             </div>
           </div>
         </div>
@@ -117,7 +96,7 @@
           在线
         </div>
       </div>
-      <about-dialog :visible="aboutDialogVisible" @close="aboutDialogVisible=false"></about-dialog>
+      <menu-dialog :visible="menuDialogVisible" @close="menuDialogVisible=false"></menu-dialog>
     </div>
 
     <div class="page-container detail-page route-book">
@@ -227,9 +206,9 @@
     </div>
 
 
-    <div class="catalog" :style="{ zIndex: visible ? 10 : -1}">
-      <div class="mask" @click="$emit('close')"></div>
-      <div class="catalog-content">
+    <div class="catalog" :style="{ zIndex: zIndex}">
+      <div class="mask" :class="maskAnim" @click="$emit('close')"></div>
+      <div class="catalog-content" :class="anim">
         <virtual-list
           class="catalog-content-wrapper"
           data-key="id"
@@ -245,13 +224,6 @@
             </div>
           </template>
         </virtual-list>
-      </div>
-    </div>
-
-    <div class="c-dialog">
-      <div class="mask" @click="$emit('close')"></div>
-      <div class="c-dialog-content">
-        <slot></slot>
       </div>
     </div>
   </div>

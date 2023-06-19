@@ -2,3 +2,6 @@
   display: flex;
   flex-direction: column;
 }
+.c-select-dialog.c-dialog .c-dialog-content {
+  width: 100%;
+}

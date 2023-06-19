@@ -1,3 +1,5 @@
+@import url("./fonts.css");
+@import url("./animation.css");
 @import url("./page-index.css");
 @import url("./page-book.css");
 @import url("./catalog-dialog.css");
@@ -6,3 +8,4 @@
 @import url("./c-option.css");
 @import url("./c-progress.css");
 @import url("./about-dialog.css");
+@import url("./menu-dialog.css");
