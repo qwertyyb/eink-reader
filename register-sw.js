@@ -23,6 +23,11 @@ if ('serviceWorker' in navigator) {
 }
 
 export const createBridge = (calls = {}) => {
+  if (!navigator.serviceWorker) {
+    return {
+      invoke() {}
+    }
+  }
   const callbacks = new Map()
 
   navigator.serviceWorker.addEventListener('message', async event => {
