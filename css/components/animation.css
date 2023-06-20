@@ -9,7 +9,7 @@
 .enable-anim .slide-right-enter-active,
 .enable-anim .slide-right-leave-active {
   will-change: transform;
-  transition: transform .2s;
+  transition: transform .2s ease-out;
 }
 .enable-anim .slide-down-enter-to,
 .enable-anim .slide-down-leave-from,
@@ -39,7 +39,7 @@
 .enable-anim .fade-in-enter-active,
 .enable-anim .fade-in-leave-active {
   will-change: opacity;
-  transition: opacity .2s;
+  transition: opacity .2s ease-out;
 }
 .enable-anim .fade-in-enter-to,
 .enable-anim .fade-in-leave-from {
@@ -63,14 +63,14 @@
   }
 }
 .enable-anim .slide-right {
-  animation: slide-right .2s forwards;
+  animation: slide-right .2s forwards ease-out;
 }
 .enable-anim .slide-left {
-  animation: slide-right .2s reverse forwards;
+  animation: slide-right .2s reverse forwards ease-out;
 }
 .enable-anim .fade-in {
-  animation: fade-in .2s forwards;
+  animation: fade-in .2s forwards ease-out;
 }
 .enable-anim .fade-out {
-  animation: fade-in .2s reverse forwards;
+  animation: fade-in .2s reverse forwards ease-out;
 }
