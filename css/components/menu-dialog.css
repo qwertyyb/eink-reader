@@ -1,6 +1,6 @@
 .menu-dialog .menu {
   box-sizing: border-box;
-  padding: 0 20px env(safe-area-inset-bottom) 20px;
+  padding: 0 20px;
   padding-right: 28px;
   display: flex;
   width: 100vw;

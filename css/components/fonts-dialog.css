@@ -1,7 +1,7 @@
 .fonts-dialog.c-dialog .fonts-wrapper {
   width: 100vw;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
 }
 .fonts-dialog.c-dialog .fonts {
   list-style: none;
