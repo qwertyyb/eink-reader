@@ -13,12 +13,11 @@ export default {
   template: /*html*/`
     <c-dialog :visible="visible"
       class="menu-dialog"
-      anim="slide-right"
       @close="$emit('close')">
       <ul class="menu">
         <li class="menu-item" @click="dialog='fonts'">字体管理</li>
         <li class="menu-item" @click="clearCache()">清除缓存</li>
-        <li class="menu-item" @click="aboutDialogVisible=true">关于EInk Reader</li>
+        <li class="menu-item" @click="dialog='about'">关于EInk Reader</li>
       </ul>
       <about-dialog :visible="dialog==='about'" @close="dialog=null"></about-dialog>
       <fonts-dialog :visible="dialog==='fonts'" @close="dialog=null"></fonts-dialog>

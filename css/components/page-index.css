@@ -55,6 +55,9 @@
   row-gap: 13px;
   padding-bottom: calc(54px + env(safe-area-inset-bottom));
 }
+.page-container.shelf-page .book-item {
+  position: relative;
+}
 .page-container.shelf-page .book-item .book-cover {
   width: 103px;
   height: 137px;
@@ -63,9 +66,24 @@
   text-align: center;
   padding-top: 10px;
 }
+.page-container.shelf-page .book-item .action-mask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .3);
+}
+.page-container.shelf-page .book-item .action-label {
+  color: #fff;
+}
 .page-container.shelf-page .book-item .book-cover .download-progress-size,
 .page-container.shelf-page .book-item .book-cover .download-progress-percent, 
-.page-container.shelf-page .book-item .book-cover .downloaded-label {
+.page-container.shelf-page .book-item .book-cover .downloaded-label, 
+.page-container.shelf-page .book-item .action-label {
   white-space: pre-wrap;
   font-size: 10px;
   margin-top: 6px;
@@ -83,6 +101,11 @@
 .page-container.shelf-page .header .logo {
   width: 24px;
   height: 24px;
+}
+.page-container.shelf-page .header .select {
+  margin-left: auto;
+  margin-right: 6px;
+  font-size: 20px;
 }
 .page-container.shelf-page .header #import-file {
   font-size: 32px;

@@ -1,79 +1,79 @@
 @font-face {
-  font-family: "SourceHansSerifCN-VF";
-  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2"), url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf") format("otf");
+  font-family: "思源宋体";
+  src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/SourceHanSerifCN-VF.otf.woff2") format("woff2");
 }
 @font-face {
-  font-family: "FZKT";
+  font-family: "方正楷体";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZKTSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "FZFS";
+  font-family: "方正仿宋";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZFSSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "FZSS";
+  font-family: "方正书宋";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZSSSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "FZHT";
+  font-family: "方正黑体";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/FZHTSC.ttf") format("truetype");
 }
 @font-face {
-  font-family: "LXWK";
+  font-family: "落霞文楷";
   src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Light.ttf") format("truetype");
-  font-weight: lighter;
+  font-weight: 100;
 }
 @font-face {
-  font-family: "LXWK";
+  font-family: "落霞文楷";
   src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Regular.ttf") format("truetype");
-  font-weight: normal;
+  font-weight: 400;
 }
 @font-face {
-  font-family: "LXWK";
+  font-family: "落霞文楷";
   src: url("https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai/fonts/TTF/LXGWWenKai-Bold.ttf") format("truetype");
-  font-weight: bold;
+  font-weight: 700;
 }
 @font-face {
-  font-family: "LXWK SCREEN";
+  font-family: "落霞文楷 屏幕阅读版";
   src: url("https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/css/fonts/LXGWWenKaiGBScreenR.ttf") format("truetype");
 }
 @font-face {
-  font-family: "975MARU";
+  font-family: "975圆体";
   src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Regular.ttf");
-  font-weight: 300;
+  font-weight: 200;
 }
 @font-face {
-  font-family: "975MARU";
+  font-family: "975圆体";
   src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Medium.ttf");
-  font-weight: 600;
+  font-weight: 500;
 }
 @font-face {
-  font-family: "975MARU";
+  font-family: "975圆体";
   src: url("https://cdn.jsdelivr.net/gh/lxgw/975maru/TTF%20SC/975MaruSC-Bold.ttf");
-  font-weight: 900;
+  font-weight: 800;
 }
 
-[data-font="SYST"] {
-  font-family: "SourceHansSerifCN-VF";
+[data-font="思源宋体"] {
+  font-family: "思源宋体";
 }
-[data-font="FZKT"] {
-  font-family: "FZKTSC";
+[data-font="方正楷体"] {
+  font-family: "方正楷体";
 }
-[data-font="FZFS"] {
-  font-family: "FZFSSC";
+[data-font="方正仿宋"] {
+  font-family: "方正仿宋";
 }
-[data-font="FZSS"] {
-  font-family: "FZSSSC";
+[data-font="方正书宋"] {
+  font-family: "方正书宋";
 }
-[data-font="FZHT"] {
-  font-family: "FZHTSC";
+[data-font="方正黑体"] {
+  font-family: "方正黑体";
 }
-[data-font="LXWK"] {
-  font-family: "LXWK";
+[data-font="落霞文楷"] {
+  font-family: "落霞文楷";
 }
-[data-font="LXWK SCREEN"] {
-  font-family: "LXWK SCREEN";
+[data-font="落霞文楷 屏幕阅读版"] {
+  font-family: "落霞文楷 屏幕阅读版";
 }
-[data-font="975MARU"] {
-  font-family: "975MARU";
+[data-font="975圆体"] {
+  font-family: "975圆体";
 }

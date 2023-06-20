@@ -1,11 +1,10 @@
 .menu-dialog .menu {
-  height: 100vh;
   box-sizing: border-box;
-  padding-top: max(30vh, env(safe-area-inset-top));
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: max(16px, env(safe-area-inset-left));
+  padding: 0 20px env(safe-area-inset-bottom) 20px;
   padding-right: 28px;
   display: flex;
+  width: 100vw;
+  box-sizing: border-box;
   flex-direction: column;
   justify-content: flex-end;
 }

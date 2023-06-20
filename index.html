@@ -60,6 +60,8 @@
         <img class="logo"
           @click="menuDialogVisible=true"
           src="https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/assets/icons/128.png" />
+        <span class="select" @click="mode='select'" v-if="mode==='read'">选择</span>
+        <span class="select" @click="mode='read'" v-if="mode==='select'">取消</span>
         <span id="import-file"
           @click="importLocalFile"
           class="material-icons">add</span>
@@ -69,9 +71,9 @@
           <div class="book-item"
             v-for="(book, index) in bookList"
             :key="index"
-            :data-book-id="book.id"
-            @click="toReadBook(book, index, bookList)">
-            <div class="book-cover">
+            :data-book-id="book.id">
+            <div class="book-cover"
+              @click="toReadBook(book, index, bookList)">
               {{ book.title }}
               <div class="download-progress-size" v-if="!book.downloaded && book.total && book.progress">
                 {{ book.fProgress }}
@@ -80,6 +82,11 @@
                 ({{ Math.round(book.progress/book.total * 100) + '%' }})
               </div>
               <div class="downloaded-label" v-if="book.downloaded">已下载</div>
+            </div>
+            <div class="action-mask"
+              @click="removeLocalBook(book, index)"
+              v-if="mode==='select' && book.downloaded">
+              <div class="action-label">点击删除本地缓存</div>
             </div>
           </div>
         </div>
@@ -148,10 +155,10 @@
             <span class="material-icons">{{ controlState.darkMode ? 'light_mode' : 'dark_mode' }}</span>
             <div class="control-label"></div>
           </div>
-          <div class="control-item" data-control="fullscreen" @click="actionHandler('fullscreen')">
+          <!-- <div class="control-item" data-control="fullscreen" @click="actionHandler('fullscreen')">
             <span class="material-icons">{{ controlState.fullscreen ? 'close_fullscreen' : 'fullscreen' }}</span>
             <div class="control-label"></div>
-          </div>
+          </div> -->
 
           <div class="control-panel play-panel" data-target-control="autoPlay" v-if="visiblePanel === 'autoPlay'">
             <div class="speed">
@@ -180,14 +187,14 @@
                   <template v-slot:label="{ label }">
                     <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
                   </template>
-                  <c-option value="SYST" data-font="SYST">思源宋体</c-option>
-                  <c-option value="FZSS" data-font="FZSS">方正书宋</c-option>
-                  <c-option value="FZFS" data-font="FZFS">方正仿宋</c-option>
-                  <c-option value="FZHT" data-font="FZHT">方正黑体</c-option>
-                  <c-option value="FZKT" data-font="FZKT">方正楷体</c-option>
-                  <c-option value="LXWK" data-font="LXWK">落霞文楷</c-option>
-                  <c-option value="LXWK SCREEN" data-font="LXWK SCREEN">落霞文楷 屏幕阅读版</c-option>
-                  <c-option value="975MARU" data-font="975MARU">975圆体</c-option>
+                  <c-option value="思源宋体" data-font="思源宋体">思源宋体</c-option>
+                  <c-option value="方正书宋" data-font="方正书宋">方正书宋</c-option>
+                  <c-option value="方正仿宋" data-font="方正仿宋">方正仿宋</c-option>
+                  <c-option value="方正黑体" data-font="方正黑体">方正黑体</c-option>
+                  <c-option value="方正楷体" data-font="方正楷体">方正楷体</c-option>
+                  <c-option value="落霞文楷" data-font="落霞文楷">落霞文楷</c-option>
+                  <c-option value="落霞文楷 屏幕阅读版" data-font="落霞文楷 屏幕阅读版">落霞文楷 屏幕阅读版</c-option>
+                  <c-option value="975圆体" data-font="975圆体">975圆体</c-option>
                 </c-select>
                 <span class="material-icons">chevron_right</span>
               </div>

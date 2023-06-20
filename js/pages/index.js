@@ -14,7 +14,8 @@ export default {
       curTab: 'local', // local | online
       bookList: [],
       lastReadBook: lastReadBook.get(),
-      menuDialogVisible: false
+      menuDialogVisible: false,
+      mode: 'read' // read | select
     }
   },
   created() {
@@ -88,6 +89,10 @@ export default {
         showToast(`${book.title}下载完成`)
         this.refreshBookList()
       }
+    },
+    async removeLocalBook(book, index) {
+      await services.local.removeLocalBook(book)
+      this.refreshBookList()
     }
   }
 }

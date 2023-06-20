@@ -53,6 +53,16 @@ const bridge = createBridge({
   async deleteAllCache() {
     const cacheNames = await caches.keys()
     return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)))
+  },
+  async checkCachedUrls(urls) {
+    const results = await Promise.all(urls.map(async url => {
+      const response = await caches.match(url)
+      return !!response
+    }))
+    return urls.reduce((obj, url, index) => ({
+      ...obj,
+      [url]: results[index]
+    }), {})
   }
 })
 

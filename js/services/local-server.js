@@ -32,6 +32,9 @@ export const dataService = {
     })
     return bookList
   },
+  async removeLocalBook(book) {
+    return books.remove(book.id)
+  },
   async downloadRemoteBook(book, onUpdate) {
     const { id, title, cover, content, catalog } = await download(book, onUpdate)
     books.add({ id, title, cover, title, content, catalog })
