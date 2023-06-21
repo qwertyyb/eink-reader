@@ -71,7 +71,8 @@ const bridge = createBridge({
     const response = await fetch(updateUrl)
     const text = await response.text()
     const remoteVersion = text.match(/export\sconst\sversion\s=\s'(.*)'/)?.[1]
-    if (remoteVersion && remoteVersion !== localVersion) {
+    logger.info('checkUpdates', remoteVersion, localVersion)
+    if (remoteVersion && localVersion && remoteVersion !== localVersion) {
       return {
         hasUpdates: true,
         version: remoteVersion,

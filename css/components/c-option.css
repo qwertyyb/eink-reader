@@ -1,6 +1,7 @@
 .c-option {
   height: 42px;
   line-height: 42px;
+  text-align: center;
 }
 .c-option.selected {
   background: #000;
