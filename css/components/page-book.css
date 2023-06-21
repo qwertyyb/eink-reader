@@ -1,3 +1,4 @@
+
 .page-container.route-book, .content-wrapper {
   height: 100vh;
   position: relative;
@@ -23,26 +24,6 @@
 }
 .navigator #back-to-index {
   font-size: 28px;
-}
-.control {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 6;
-  padding: 0 12px;
-  height: 48px;
-  background-color: #fff;
-  border-top: 1px solid #000;
-  text-align: center;
-  padding-bottom: env(safe-area-inset-bottom);
-  box-sizing: content-box;
-}
-.control .material-icons {
-  font-size: 32px;
 }
 .mask {
   position: fixed;
@@ -83,15 +64,35 @@
   align-items: center;
   justify-content: center;
 }
-.control .control-panel {
-  position: absolute;
+
+.control {
+  --control-height: 48px;
+  position: fixed;
+  bottom: 0;
   left: 0;
-  bottom: 100%;
   right: 0;
+  z-index: 6;
+}
+.control .control-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  height: var(--control-height);
+  background-color: #fff;
+  border-top: 1px solid #000;
+  text-align: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: content-box;
+}
+.control .material-icons {
+  font-size: 32px;
+}
+.control .control-panel {
   background: #fff;
   padding: 16px 0;
   border-top: 1px solid #000;
-  display: none;
+  box-sizing: content-box;
 }
 .control .control-panel.font-panel {
   display: flex;
