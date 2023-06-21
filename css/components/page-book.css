@@ -22,6 +22,20 @@
   padding-top: env(safe-area-inset-top);
   box-sizing: content-box;
 }
+.navigator::before {
+  content: " ";
+  display: block;
+  width: 100vw;
+  height: env(safe-area-inset-top);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #000;
+}
+html.dark-mode .navigator::before {
+  background-color: #fff;
+}
 .navigator #back-to-index {
   font-size: 28px;
 }
