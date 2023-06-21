@@ -1,4 +1,5 @@
 import CDialog from './c-dialog.js'
+import { version } from '../../constant.js'
 
 export default {
   components: {
@@ -12,8 +13,13 @@ export default {
       <div class="about">
         <img class="logo" src="https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/assets/icons/128.png" />
         <h3 class="name">EInk Reader</h3>
-        <p class="version">v202306182205</p>
+        <p class="version">v{{ version }}</p>
       </div>
     </c-dialog>
-  `
+  `,
+  data() {
+    return {
+      version
+    }
+  }
 }
