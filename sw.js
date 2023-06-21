@@ -63,6 +63,25 @@ const bridge = createBridge({
       ...obj,
       [url]: results[index]
     }), {})
+  },
+  async checkUpdates() {
+    const updateUrl = self.origin + (self.origin.includes('localhost') ? '/constant.js' : '/eink-reader/constant.js')
+    const cachedResponse = await caches.match(updateUrl)
+    const localVersion = (await cachedResponse?.text())?.match(/export\sconst\sversion\s=\s'(.*)'/)?.[1]
+    const response = await fetch(updateUrl)
+    const text = await response.text()
+    const remoteVersion = text.match(/export\sconst\sversion\s=\s'(.*)'/)?.[1]
+    if (remoteVersion && remoteVersion !== localVersion) {
+      return {
+        hasUpdates: true,
+        version: remoteVersion,
+        changelog: ''
+      }
+    }
+    return {
+      hasUpdates: false,
+      version: localVersion,
+    }
   }
 })
 

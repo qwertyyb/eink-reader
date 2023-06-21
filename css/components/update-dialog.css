@@ -1,0 +1,27 @@
+.c-dialog.update-dialog .c-dialog-content {
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 20px;
+}
+.c-dialog.update-dialog .update-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+.c-dialog.update-dialog .version-info {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.c-dialog.update-dialog .update-actions {
+  display: flex;
+  justify-content: space-between;
+}
+.c-dialog.update-dialog .update-actions button {
+  border: none;
+  font-size: 18px;
+  flex: 1;
+  padding: 6px 0;
+}
+.c-dialog.update-dialog .update-actions .confirm-btn {
+  margin-left: 20px;
+}
