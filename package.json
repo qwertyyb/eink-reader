@@ -1,0 +1,27 @@
+{
+  "name": "eink-reader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "http-server -c-1 .",
+    "version": "node scripts/update-version.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qwertyyb/eink-reader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qwertyyb/eink-reader/issues"
+  },
+  "homepage": "https://github.com/qwertyyb/eink-reader#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "husky": "^8.0.3"
+  }
+}
