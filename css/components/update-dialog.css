@@ -1,7 +1,7 @@
 .c-dialog.update-dialog .c-dialog-content {
   width: 100vw;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 20px 20px max(20px, env(safe-area-inset-bottom)) 20px;
 }
 .c-dialog.update-dialog .update-title {
   font-size: 18px;
