@@ -1,6 +1,6 @@
 
 .page-container.detail-page {
-  width: var(--height);
+  width: 100vw;
 }
 .page-container.detail-page, .content-wrapper {
   height: var(--height);
