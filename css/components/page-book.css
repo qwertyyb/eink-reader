@@ -1,6 +1,9 @@
 
-.page-container.route-book, .content-wrapper {
-  height: 100vh;
+.page-container.detail-page {
+  width: var(--height);
+}
+.page-container.detail-page, .content-wrapper {
+  height: var(--height);
   position: relative;
   z-index: 2;
 }
@@ -58,7 +61,6 @@ html.dark-mode .navigator::before {
 }
 .content {
   box-sizing: border-box;
-  height: 100%;
   margin-left: 12px;
   margin-right: 12px;
   width: calc(100vw - 24px);

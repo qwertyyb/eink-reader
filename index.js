@@ -1,13 +1,28 @@
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
 import VirtualList from 'https://unpkg.com/vue-virtual-list-v3@1.5.1/dist/index.js'
-import IndexPage from './js/pages/index.js'
-import BookPage from './js/pages/book.js'
+import PageIndex from './js/pages/index.js'
+import PageBook from './js/pages/book.js'
 import { env } from './js/utils/env.js'
 
+const EmptyComponent = {
+  template: '<div></div>'
+}
+
 const routes = [
-  { path: '/', name: 'home', component: IndexPage, meta: { transitionName: 'slide-right' } },
-  { path: '/book/:server/:id', name: 'book', component: BookPage, props: true, meta: { transitionName: 'slide-left' } },
+  {
+    path: '/',
+    name: 'home',
+    component: PageIndex,
+    meta: { transitionName: 'slide-right' }
+  },
+  {
+    path: '/book/:server/:id',
+    name: 'book',
+    component: PageIndex,
+    props: true,
+    meta: { transitionName: 'slide-left' }
+  },
 ]
 
 const router = createRouter({
@@ -15,7 +30,14 @@ const router = createRouter({
   routes,
 })
 
-const app = createApp({})
+const App = {
+  template: document.getElementById('app').outerHTML,
+  components: {
+    PageBook
+  }
+}
+
+const app = createApp(App)
 
 app.config.unwrapInjectedRef = true
 

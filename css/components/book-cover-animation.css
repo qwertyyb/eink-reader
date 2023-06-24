@@ -1,0 +1,41 @@
+.book-cover-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.book-cover-animation .book-cover-animation-wrapper {
+  --height: 125vw;
+  position: relative;
+  width: fit-content;
+  perspective: 800px;
+  transform-origin: top left;
+  width: 100vw;
+  height: var(--height);
+}
+.book-cover-animation.done .book-cover-animation-wrapper {
+  --height: 100vh;
+}
+.book-cover-animation .book-cover-wrapper {
+  position: relative;
+  z-index: 2;
+  transform-origin: top left;
+}
+.book-cover-animation .book-contents-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  z-index: 1;
+  overflow: hidden;
+}
+.book-cover-animation .book-contents {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}

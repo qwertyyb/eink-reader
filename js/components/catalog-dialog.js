@@ -1,5 +1,28 @@
+import { env } from "../utils/env.js"
+
 export default {
-  template: document.querySelector('#components .catalog').outerHTML,
+  template: /*html*/`
+    <div class="catalog" :style="{ zIndex: zIndex}">
+      <div class="mask" :class="maskAnim" @click="$emit('close')"></div>
+      <div class="catalog-content" :class="anim">
+        <virtual-list
+          class="catalog-content-wrapper"
+          data-key="id"
+          :data-sources="catalog"
+          ref="catalog"
+          :estimate-size="48">
+          <template #="{ source, index }">
+            <div class="catalog-item"
+              @click="$emit('to-catalog-item', source, index)"
+              :class="{active: index === selectedIndex}"
+              :data-catalog-id="source.id">
+              <div class="catalog-label">{{ source.title }}</div>
+            </div>
+          </template>
+        </virtual-list>
+      </div>
+    </div>
+  `,
   props: {
     visible: Boolean,
     catalog: {
@@ -25,6 +48,9 @@ export default {
     visible() {
       if (this.visible) {
         this.zIndex = 10
+        if (env.isBooxLeaf()) {
+          return
+        }
         this.anim = 'slide-right'
         this.maskAnim = 'fade-in'
         setTimeout(() => {
@@ -32,6 +58,10 @@ export default {
           this.maskAnim = ''
         }, 200)
       } else {
+        if (env.isBooxLeaf()) {
+          this.zIndex = -1
+          return
+        }
         this.anim = 'slide-left'
         this.maskAnim = 'fade-out'
         setTimeout(() => {

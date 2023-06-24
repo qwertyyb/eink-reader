@@ -9,19 +9,20 @@ import CatalogDialog from '../components/catalog-dialog.js'
 import CSelect from '../components/c-select.js'
 import COption from '../components/c-option.js'
 import CProgress from '../components/c-progress.js'
+import BookCoverAnimation from '../components/book-cover-animation.js'
 
 export default {
   template: document.querySelector('#components .route-book').outerHTML,
   components: {
     CatalogDialog,
-    // SelectorDialog,
+    BookCoverAnimation,
     CSelect,
     COption,
     CProgress
   },
   props: {
     server: String,
-    id: [String, Number]
+    id: [String, Number],
   },
   data() {
     return {
@@ -51,6 +52,9 @@ export default {
     },
     content() {
       return this.chapterList.slice(this.startChapterIndex, this.curChapterIndex + 20).map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>';
+    },
+    rect() {
+      return this.$route.query && this.$route.query.rect && JSON.parse(this.$route.query.rect)
     }
   },
   watch: {
@@ -69,18 +73,15 @@ export default {
       bookId: this.id
     })
   },
-  mounted() {
-    this.initHammer()
-    this.initAction()
-  },
   beforeUnmount() {
     this.hammer && this.hammer.destroy()
-    this.actions.autoPlay.stop()
+    this.actions && this.actions.autoPlay && this.actions.autoPlay.stop()
     fullscreen.exit()
     darkMode.exit()
   },
   methods: {
     async fetchBook() {
+
       const book = await services[this.server].getBookList().then(bookList => bookList.find(book => `${book.id}` === `${this.id}`))
       if (!book) {
         return showToast(`获取book失败: ${this.server}/${this.id}`)
@@ -111,10 +112,11 @@ export default {
       if (el) {
         el.scrollIntoView()
       }
+      this.initHammer()
+      this.initAction()
       // 等待滚动到位置后再监听滚动事件
       setTimeout(() => {
         this.inited = true
-        // this.startProgressObserver()
       }, 300)
     },
     async toCatalogItem(item, index) {

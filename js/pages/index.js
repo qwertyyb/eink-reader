@@ -3,10 +3,13 @@ import { importFile } from '../services/local-server.js'
 import { formatSize, showToast } from '../utils/index.js'
 import { lastReadBook } from '../utils/last-read.js'
 import MenuDialog from '../components/menu-dialog.js'
+import BookCover from '../components/book-cover.js'
+import { env } from '../utils/env.js'
 
 export default {
   components: {
-    MenuDialog
+    MenuDialog,
+    BookCover
   },
   template: document.querySelector('#components .route-index').outerHTML,
   data() {
@@ -60,11 +63,20 @@ export default {
     },
     async toReadBook(book, index, bookList) {
       if (book.downloaded) {
+        let rect = null
+        if (!env.isBooxLeaf()) {
+          const bookDom = this.$el.querySelector(`.book-list .book-item[data-book-id="${book.id}"]`)
+          const { top, left, width, height } = bookDom.getBoundingClientRect()
+          rect = { top, left, width, height }
+        }
         this.$router.push({
           name: 'book',
           params: {
             server: this.curTab,
             id: book.id
+          },
+          query: {
+            rect: rect ? JSON.stringify(rect) : null
           }
         })
       } else {

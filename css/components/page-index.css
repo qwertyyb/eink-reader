@@ -49,22 +49,19 @@
 }
 .page-container.shelf-page .book-list {
   padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 103px);
-  column-gap: 13px;
-  row-gap: 13px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
   padding-bottom: calc(54px + env(safe-area-inset-bottom));
+  position: relative;
+  box-sizing: border-box;
 }
 .page-container.shelf-page .book-item {
   position: relative;
+  margin-bottom: 20px;
 }
-.page-container.shelf-page .book-item .book-cover {
-  width: 103px;
-  height: 137px;
-  box-sizing: border-box;
-  border: 1px solid #000;
-  text-align: center;
-  padding-top: 10px;
+.page-container.shelf-page .book-item:last-child {
+  margin-right: auto;
 }
 .page-container.shelf-page .book-item .action-mask {
   position: absolute;
@@ -80,9 +77,6 @@
 .page-container.shelf-page .book-item .action-label {
   color: #fff;
 }
-.page-container.shelf-page .book-item .book-cover .download-progress-size,
-.page-container.shelf-page .book-item .book-cover .download-progress-percent, 
-.page-container.shelf-page .book-item .book-cover .downloaded-label, 
 .page-container.shelf-page .book-item .action-label {
   white-space: pre-wrap;
   font-size: 10px;
@@ -109,10 +103,6 @@
 }
 .page-container.shelf-page .header #import-file {
   font-size: 32px;
-}
-.book-item .book-cover {
-  width: 100%;
-  height: auto;
 }
 .book-item .status-icon {
   color: gray;

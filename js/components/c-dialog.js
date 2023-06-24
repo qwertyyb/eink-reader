@@ -1,9 +1,10 @@
 export default {
   template: /*html*/`
-  <transition name="fade-in">
+  <transition name="fade-in"
+    @enter="contentVisible=true">
     <div class="c-dialog" v-if="containerVisible">
       <div class="mask" @click="$emit('close')"></div>
-      <transition :name="anim">
+      <transition :name="anim" @after-leave="containerVisible=false">
         <div class="c-dialog-content" v-if="contentVisible">
           <slot></slot>
         </div>
@@ -28,14 +29,8 @@ export default {
     visible() {
       if (this.visible) {
         this.containerVisible = true
-        setTimeout(() => {
-          this.contentVisible = this.containerVisible
-        })
       } else {
         this.contentVisible = false
-        setTimeout(() => {
-          this.containerVisible = false
-        }, 200)
       }
     }
   }
