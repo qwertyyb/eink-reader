@@ -7,7 +7,7 @@
   background: rgba(0, 0, 0, 0.6);
 }
 .book-cover-animation .book-cover-animation-wrapper {
-  --height: 125vw;
+  --height: 140vw;
   position: relative;
   width: fit-content;
   perspective: 800px;
