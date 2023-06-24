@@ -68,6 +68,7 @@ export default {
           const bookDom = this.$el.querySelector(`.book-list .book-item[data-book-id="${book.id}"]`)
           const { top, left, width, height } = bookDom.getBoundingClientRect()
           rect = { top, left, width, height }
+          bookDom.style.opacity = 0
         }
         this.$router.push({
           name: 'book',

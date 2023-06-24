@@ -55,7 +55,8 @@ export default {
         const offsetY = (ph / 2) + 'px'
         const coverScale = width / pw
         this.coverScale = coverScale
-        console.log(coverScale, 1/coverScale)
+        const shelfBook = document.querySelector(`.book-list .book-item[data-book-id="${this.book.id}"]`)
+        shelfBook && (shelfBook.style.opacity = 0)
         await this.$refs.bw.animate([
           { transform: `scale(${coverScale}) translate(${left/coverScale}px, ${top/coverScale}px)`, },
           { transform: `scale(0.5) translate(${offsetX}, ${offsetY})` },
@@ -70,7 +71,6 @@ export default {
         this.$refs.cover.style.transform = 'rotateY(-180deg)'
 
         // // 动画3. 缩放书本内容
-        const maxScale = pw / width;
         await this.$refs.bw.animate([
           { transform: `scale(0.5) translate(${offsetX}, ${offsetY})` },
           { transform: `none`}
@@ -78,6 +78,7 @@ export default {
         // this.$refs.bw.style.transformOrigin = 'top left'
         this.$refs.bw.style.transform = `none`
         this.done = true
+        shelfBook && (shelfBook.style.opacity = '1')
       } else {
         this.$refs.cover.style.transform = 'rotateY(-180deg)'
         this.done = true
@@ -85,6 +86,41 @@ export default {
 
       this.$refs.bw.style.transform = 'none'
       this.$refs.contents.style.transform = 'none'
+    },
+    async closeBook() {
+      this.done = false
+      const { top: pt, left: pl, width: pw, height: ph } = document.documentElement.getBoundingClientRect()
+      const { top, left, width, height } = this.originRect
+      const offsetX = (pw / 2) + 'px'
+      const offsetY = (ph / 2) + 'px'
+      const coverScale = width / pw
+      this.coverScale = coverScale
+      const shelfBook = document.querySelector(`.book-list .book-item[data-book-id="${this.book.id}"]`)
+      shelfBook && (shelfBook.style.opacity = 0)
+
+      // 动画3. 缩放书本内容
+      await this.$refs.bw.animate([
+        { transform: `scale(0.5) translate(${offsetX}, ${offsetY})` },
+        { transform: `none`}
+      ], { duration: 400, easing: 'ease-out', direction: 'reverse' }).finished
+      this.$refs.bw.style.transform = `scale(0.5) translate(${offsetX}, ${offsetY})`
+
+      // 动画2. 翻开书封面
+      await this.$refs.cover.animate([
+        { transform: `rotateY(0)` },
+        { transform: `rotateY(-180deg)` }
+      ], { duration: 500, easing: 'ease', direction: 'reverse' }).finished
+      this.$refs.cover.style.transform = 'rotateY(0)'
+
+      await this.$refs.bw.animate([
+        { transform: `scale(${coverScale}) translate(${left/coverScale}px, ${top/coverScale}px)`, },
+        { transform: `scale(0.5) translate(${offsetX}, ${offsetY})` },
+      ], { duration: 400, easing: 'ease', direction: 'reverse' }).finished
+      this.$refs.bw.style.transform = `scale(${coverScale}) translate(${left/coverScale}px, ${top/coverScale}px)`
+
+      shelfBook && (shelfBook.style.opacity = '1')
+
+      this.$router.back()
     }
   }
 }
