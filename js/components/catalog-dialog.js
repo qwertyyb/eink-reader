@@ -4,7 +4,7 @@ export default {
   template: /*html*/`
     <div class="catalog" :style="{ zIndex: zIndex}">
       <div class="mask" :class="maskAnim" @click="$emit('close')"></div>
-      <div class="catalog-content" :class="anim">
+      <div class="catalog-content" :class="anim" ref="list-wrapper">
         <virtual-list
           class="catalog-content-wrapper"
           data-key="id"
@@ -40,6 +40,12 @@ export default {
       zIndex: -1,
       maskAnim: '', // fade-in | fade-out
     }
+  },
+  mounted() {
+    this.initHammer()
+  },
+  beforeUnmount() {
+    this.hammer && this.hammer.destroy()
   },
   watch: {
     selectedIndex() {
@@ -78,5 +84,10 @@ export default {
       await this.$nextTick()
       this.$refs.catalog.scrollToIndex(Math.max(0, this.selectedIndex - 2))
     },
+    initHammer() {
+      const hammer = new Hammer(this.$refs['list-wrapper'])
+      hammer.on('swipeleft', () => this.$emit('close'))
+      this.hammer = hammer
+    }
   }
 }
