@@ -60,6 +60,9 @@
   position: relative;
   margin-bottom: 20px;
 }
+.page-container.shelf-page .book-item.is-reading {
+  opacity: 0;
+}
 .page-container.shelf-page .book-item:last-child {
   margin-right: auto;
 }

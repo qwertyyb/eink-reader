@@ -9,13 +9,11 @@ import CatalogDialog from '../components/catalog-dialog.js'
 import CSelect from '../components/c-select.js'
 import COption from '../components/c-option.js'
 import CProgress from '../components/c-progress.js'
-import BookCoverAnimation from '../components/book-cover-animation.js'
 
 export default {
   template: document.querySelector('#components .route-book').outerHTML,
   components: {
     CatalogDialog,
-    BookCoverAnimation,
     CSelect,
     COption,
     CProgress
@@ -23,6 +21,7 @@ export default {
   props: {
     server: String,
     id: [String, Number],
+    close: Function
   },
   data() {
     return {
@@ -79,9 +78,13 @@ export default {
     fullscreen.exit()
     darkMode.exit()
   },
+  async beforeRouteLeave(to, from, next) {
+    this.panelVisible = false
+    this.close && await this.close()
+    next()
+  },
   methods: {
     async fetchBook() {
-
       const book = await services[this.server].getBookList().then(bookList => bookList.find(book => `${book.id}` === `${this.id}`))
       if (!book) {
         return showToast(`获取book失败: ${this.server}/${this.id}`)

@@ -3,25 +3,30 @@ import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router
 import VirtualList from 'https://unpkg.com/vue-virtual-list-v3@1.5.1/dist/index.js'
 import PageIndex from './js/pages/index.js'
 import PageBook from './js/pages/book.js'
+import BookCoverAnimation from './js/components/book-cover-animation.js'
 import { env } from './js/utils/env.js'
-
-const EmptyComponent = {
-  template: '<div></div>'
-}
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: PageIndex,
-    meta: { transitionName: 'slide-right' }
-  },
-  {
-    path: '/book/:server/:id',
-    name: 'book',
-    component: PageIndex,
-    props: true,
-    meta: { transitionName: 'slide-left' }
+    children: [
+      {
+        path: 'book/:server/:id',
+        name: 'transition',
+        component: BookCoverAnimation,
+        props: true,
+        children: [
+          {
+            path: 'read',
+            name: 'book',
+            component: PageBook,
+            props: true,
+          }
+        ]
+      }
+    ]
   },
 ]
 
@@ -32,9 +37,6 @@ const router = createRouter({
 
 const App = {
   template: document.getElementById('app').outerHTML,
-  components: {
-    PageBook
-  }
 }
 
 const app = createApp(App)

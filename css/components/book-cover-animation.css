@@ -10,10 +10,11 @@
   --height: 140vw;
   position: relative;
   width: fit-content;
-  perspective: 800px;
+  perspective: 600px;
   transform-origin: top left;
   width: 100vw;
   height: var(--height);
+  transition: height .2s ease-out;
 }
 .book-cover-animation.done .book-cover-animation-wrapper {
   --height: 100vh;

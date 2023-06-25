@@ -11,18 +11,73 @@ export default {
     MenuDialog,
     BookCover
   },
-  template: document.querySelector('#components .route-index').outerHTML,
+  template: /*html*/`
+    <div class="page-container shelf-page route-index">
+      <div class="header">
+        <img class="logo"
+          @click="menuDialogVisible=true"
+          src="https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/assets/icons/128.png" />
+        <span class="select" @click="mode='select'" v-if="mode==='read'">选择</span>
+        <span class="select" @click="mode='read'" v-if="mode==='select'">取消</span>
+        <span id="import-file"
+          @click="importLocalFile"
+          class="material-icons">add</span>
+      </div>
+      <div class="shelf">
+        <div class="book-list">
+          <div class="book-item"
+            v-for="(book, index) in bookList"
+            :class="{'is-reading': \`\${book.id}\` === \`\${$route.params.id}\`}"
+            :key="index"
+            :data-book-id="book.id">
+            <book-cover :book="book"
+              @click="toReadBook(book, index, bookList)"></book-cover>
+            <div class="action-mask"
+              @click="removeLocalBook(book, index)"
+              v-if="mode==='select' && book.downloaded">
+              <div class="action-label">点击删除本地缓存</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="type-tabs">
+        <div class="tab-item" id="local-books" @click="changeTab('local')">
+          <span class="material-icons">menu_book</span>
+          本地
+        </div>
+        <div class="tab-item center" @click="toLastReadBook" v-if="lastReadBook">
+          <span class="material-icons">book</span>
+        </div>
+        <div class="tab-item" id="online-books" @click="changeTab('online')">
+          <span class="material-icons">cloud</span>
+          在线
+        </div>
+      </div>
+      <menu-dialog :visible="menuDialogVisible" @close="menuDialogVisible=false"></menu-dialog>
+      <router-view :book="book" :book-position="curBookPos" v-if="book && curBookPos"></router-view>
+    </div>
+  `,
   data() {
     return {
       curTab: 'local', // local | online
       bookList: [],
+      curBookPos: null,
       lastReadBook: lastReadBook.get(),
       menuDialogVisible: false,
       mode: 'read' // read | select
     }
   },
-  created() {
-    this.refreshBookList()
+  computed: {
+    book() {
+      return this.bookList.find(item => `${item.id}` === `${this.$route.params.id}`)
+    }
+  },
+  async created() {
+    await this.refreshBookList()
+    if (!this.$route.params.id) return;
+    await this.$nextTick()
+    const { top, left } = this.$el.querySelector(`.book-list .book-item[data-book-id="${this.$route.params.id}"]`).getBoundingClientRect()
+    this.curBookPos = { top, left }
   },
   methods: {
     async refreshBookList() {
@@ -63,22 +118,14 @@ export default {
     },
     async toReadBook(book, index, bookList) {
       if (book.downloaded) {
-        let rect = null
-        if (!env.isBooxLeaf()) {
-          const bookDom = this.$el.querySelector(`.book-list .book-item[data-book-id="${book.id}"]`)
-          const { top, left, width, height } = bookDom.getBoundingClientRect()
-          rect = { top, left, width, height }
-          bookDom.style.opacity = 0
-        }
+        const { top, left } = this.$el.querySelector(`.book-list .book-item[data-book-id="${book.id}"]`).getBoundingClientRect()
+        this.curBookPos = { top, left }
         this.$router.push({
           name: 'book',
           params: {
             server: this.curTab,
             id: book.id
           },
-          query: {
-            rect: rect ? JSON.stringify(rect) : null
-          }
         })
       } else {
         showToast('开始下载...')
