@@ -42,7 +42,7 @@ export default {
       },
 
       settings: getSettings(),
-      isBooxLeaf: env.isBooxLeaf()
+      isInk: env.isInk()
     }
   },
   computed: {
@@ -148,7 +148,7 @@ export default {
     },
     initHammer() {
       const contentTapHandler = (event) => {
-        if (env.isBooxLeaf()) {
+        if (env.isInk()) {
           // 左、中、右
           const { x } = event.center
           const centerLeft = window.innerWidth / 3
@@ -164,7 +164,7 @@ export default {
         this.panelVisible = !this.panelVisible
       }
       const hammer = new Hammer(this.$refs.contentWrapper)
-      if (env.isBooxLeaf()) {
+      if (env.isInk()) {
         hammer.on('swipeleft', () => this.pageHandler('next'))
         hammer.on('swiperight', () => this.pageHandler('prev'))
       }
@@ -264,7 +264,7 @@ export default {
       lastReadBooks.set(this.book.id, { catalogId: chapter.id, cursor })
     },
     needAppendNextChapter() {
-      if (env.isBooxLeaf()) {
+      if (env.isInk()) {
         const content = this.$refs.content
         const pageWidth = content.getBoundingClientRect().width
         const curPage = Math.round(content.scrollLeft / pageWidth)
@@ -293,7 +293,7 @@ export default {
       this.chapterList[nextIndex].content = content
     },
     hScrollHandler() {
-      if (env.isBooxLeaf()) {
+      if (env.isInk()) {
         this.updateProgress()
         if (this.needAppendNextChapter()) {
           this.appendNextChapter()

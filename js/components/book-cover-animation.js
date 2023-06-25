@@ -1,5 +1,6 @@
 import BookCover from "./book-cover.js"
 import { coverSize } from "../../constant.js"
+import { env } from "../utils/env.js"
 
 export default {
   name: 'book-cover-animation',
@@ -41,7 +42,7 @@ export default {
     return {
       coverScale: 0.25,
       done: false,
-      enableAnim: true,
+      enableAnim: !env.isInk(),
     }
   },
   mounted() {
@@ -87,6 +88,7 @@ export default {
     },
     async closeBook() {
       this.done = false
+      if (!this.enableAnim) return
       const { width: pw, height: ph } = document.documentElement.getBoundingClientRect()
       const { top, left } = this.bookPosition
       const offsetX = (pw / 2) + 'px'

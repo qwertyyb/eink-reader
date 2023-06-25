@@ -48,7 +48,7 @@ export default {
     visible() {
       if (this.visible) {
         this.zIndex = 10
-        if (env.isBooxLeaf()) {
+        if (env.isInk()) {
           return
         }
         this.anim = 'slide-right'
@@ -58,7 +58,7 @@ export default {
           this.maskAnim = ''
         }, 200)
       } else {
-        if (env.isBooxLeaf()) {
+        if (env.isInk()) {
           this.zIndex = -1
           return
         }

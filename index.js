@@ -48,6 +48,6 @@ app.use(VirtualList)
 
 app.mount('#app')
 
-if (!env.isBooxLeaf()) {
+if (!env.isInk()) {
   document.body.classList.add('enable-anim')
 }
