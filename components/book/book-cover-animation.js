@@ -1,6 +1,6 @@
-import BookCover from "./book-cover.js"
+import BookCover from "../common/book-cover.js"
 import { coverSize } from "../../constant.js"
-import { env } from "../utils/env.js"
+import { env } from "../../js/utils/env.js"
 
 export default {
   name: 'book-cover-animation',

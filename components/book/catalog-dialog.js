@@ -1,38 +1,16 @@
-import { env } from "../utils/env.js"
+import { env } from "../../js/utils/env.js"
 
 export default {
   template: /*html*/`
     <div class="catalog" :style="{ zIndex: zIndex}">
       <div class="mask" :class="maskAnim" @click="$emit('close')"></div>
       <div class="catalog-content" :class="anim" ref="list-wrapper">
-        <virtual-list
-          class="catalog-content-wrapper"
-          data-key="id"
-          :data-sources="catalog"
-          ref="catalog"
-          :estimate-size="48">
-          <template #="{ source, index }">
-            <div class="catalog-item"
-              @click="$emit('to-catalog-item', source, index)"
-              :class="{active: index === selectedIndex}"
-              :data-catalog-id="source.id">
-              <div class="catalog-label">{{ source.title }}</div>
-            </div>
-          </template>
-        </virtual-list>
+        <slot></slot>
       </div>
     </div>
   `,
   props: {
     visible: Boolean,
-    catalog: {
-      type: Array,
-      default: () => []
-    },
-    selectedIndex: {
-      type: Number,
-      default: 0
-    },
   },
   data() {
     return {
@@ -57,7 +35,7 @@ export default {
         if (env.isInk()) {
           return
         }
-        this.anim = 'slide-right'
+        this.anim = 'slide-left'
         this.maskAnim = 'fade-in'
         setTimeout(() => {
           this.anim = ''
@@ -68,7 +46,7 @@ export default {
           this.zIndex = -1
           return
         }
-        this.anim = 'slide-left'
+        this.anim = 'slide-left-leave'
         this.maskAnim = 'fade-out'
         setTimeout(() => {
           this.zIndex = -1
@@ -79,11 +57,11 @@ export default {
     }
   },
   methods: {
-    async refresh() {
-      // 等待页面更新完成
-      await this.$nextTick()
-      this.$refs.catalog.scrollToIndex(Math.max(0, this.selectedIndex - 2))
-    },
+    // async refresh() {
+    //   // 等待页面更新完成
+    //   await this.$nextTick()
+    //   this.$refs.catalog.scrollToIndex(Math.max(0, this.selectedIndex - 2))
+    // },
     initHammer() {
       const hammer = new Hammer(this.$refs['list-wrapper'])
       hammer.on('swipeleft', () => this.$emit('close'))

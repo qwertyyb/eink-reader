@@ -5,6 +5,7 @@
   bottom: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.6);
+  height: 100%;
 }
 .book-cover-animation .book-cover-animation-wrapper {
   --height: 140vw;
@@ -34,6 +35,7 @@
   background: #fff;
   z-index: 1;
   overflow: hidden;
+  height: 100%;
 }
 .book-cover-animation .book-contents {
   display: flex;

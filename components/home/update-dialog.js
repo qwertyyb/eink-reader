@@ -1,6 +1,6 @@
 import { bridge } from "../../register-sw.js";
-import { showToast } from "../utils/index.js";
-import CDialog from "./c-dialog.js";
+import { showToast } from "../../js/utils/index.js";
+import CDialog from "../common/c-dialog.js";
 import { version } from "../../constant.js";
 
 export default {

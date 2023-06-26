@@ -1,10 +1,9 @@
-import { services } from '../services/index.js'
-import { importFile } from '../services/local-server.js'
-import { formatSize, showToast } from '../utils/index.js'
-import { lastReadBook } from '../utils/last-read.js'
-import MenuDialog from '../components/menu-dialog.js'
-import BookCover from '../components/book-cover.js'
-import { env } from '../utils/env.js'
+import { services } from '../js/services/index.js'
+import { importFile } from '../js/services/local-server.js'
+import { formatSize, showToast } from '../js/utils/index.js'
+import { lastReadBook } from '../js/utils/last-read.js'
+import MenuDialog from '../components/home/menu-dialog.js'
+import BookCover from '../components/common/book-cover.js'
 
 export default {
   components: {

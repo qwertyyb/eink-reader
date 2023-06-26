@@ -1,4 +1,4 @@
-import CDialog from "./c-dialog.js";
+import CDialog from "../common/c-dialog.js";
 import { bridge } from '../../register-sw.js'
 
 const fontLabel = {

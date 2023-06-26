@@ -22,7 +22,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="./css/components/index.css">
+  <link rel="stylesheet" href="./index.css">
   <style>
     * {
       padding: 0;
@@ -51,112 +51,6 @@
 </head>
 <body>
   <div id="app">
-    <router-view></router-view>
-  </div>
-  <div style="display: none" id="components">
-    <div class="page-container detail-page route-book">
-      <transition name="slide-down">
-        <div class="navigator" v-if="panelVisible">
-          <div id="back-to-index" class="material-icons"
-            @click="$router.replace('/')">arrow_back</div>
-        </div>
-      </transition>
-      <catalog-dialog :catalog="chapterList"
-        :selected-index="curChapterIndex"
-        :visible="visiblePanel === 'catalog'"
-        @to-catalog-item="toCatalogItem"
-        @close="visiblePanel=null"></catalog-dialog>
-      <div class="content-wrapper" ref="contentWrapper" @scroll="scrollHandler">
-        <div class="content" :data-font="settings.fontFamily"
-          :style="{
-            fontSize: settings.fontSize + 'px',
-            fontWeight: settings.fontWeight
-          }"
-          :class="{ column: isInk }"
-          ref="content"
-          @scroll="hScrollHandler"
-          v-html="content">
-        </div>
-      </div>
-      <transition name="slide-up">
-        <div class="control" v-if="panelVisible">
-          <div class="control-panel play-panel" data-target-control="autoPlay" v-if="visiblePanel === 'autoPlay'">
-            <div class="speed">
-              <button class="material-icons speed-dec" data-action="dec" @click="changeAutoPlayDuration(settings.autoPlayDuration - 1)">
-                remove
-              </button>
-              <span class="speed-value">{{ settings.autoPlayDuration }}</span>
-              <button class="material-icons speed-inc" data-action="inc" @click="changeAutoPlayDuration(settings.autoPlayDuration + 1)">
-                add
-              </button>
-            </div>
-          </div>
-
-          <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
-            <div class="font-weight">
-              <div class="lighter-btn" @click="changeFontWeight('dec')">B-</div>
-              <c-progress
-                :steps="[100, 200, 300, 400, 500, 600, 700, 800, 900]"
-                style="flex: 1"
-                v-model="settings.fontWeight"></c-progress>
-              <div class="bolder-btn" @click="changeFontWeight('inc')">B+</div>
-            </div>
-            <div class="font-family-size">
-              <div class="font-family">
-                <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
-                  <template v-slot:label="{ label }">
-                    <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
-                  </template>
-                  <c-option value="思源宋体" data-font="思源宋体">思源宋体</c-option>
-                  <c-option value="方正书宋" data-font="方正书宋">方正书宋</c-option>
-                  <c-option value="方正仿宋" data-font="方正仿宋">方正仿宋</c-option>
-                  <c-option value="方正黑体" data-font="方正黑体">方正黑体</c-option>
-                  <c-option value="方正楷体" data-font="方正楷体">方正楷体</c-option>
-                  <c-option value="落霞文楷" data-font="落霞文楷">落霞文楷</c-option>
-                  <c-option value="落霞文楷 屏幕阅读版" data-font="落霞文楷 屏幕阅读版">落霞文楷 屏幕阅读版</c-option>
-                  <c-option value="975圆体" data-font="975圆体">975圆体</c-option>
-                </c-select>
-                <span class="material-icons">chevron_right</span>
-              </div>
-              <div class="font-size">
-                <button class="material-icons text-dec" @click="settings.fontSize -= 1">
-                    text_decrease
-                </button>
-                <span class="text-size">{{ settings.fontSize }}</span>
-                <button class="material-icons text-inc" @click="settings.fontSize += 1">
-                    text_increase
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="control-list">
-            <div class="control-item" data-control="catalog"
-              @click="actionHandler('catalog')">
-              <div class="control-icon material-icons">menu</div>
-              <div class="control-label"></div>
-            </div>
-            <div class="control-item" data-control="autoPlay"
-              @click="actionHandler('autoPlay')">
-              <div class="control-icon material-icons">{{ controlState.autoPlay ? 'pause' : 'play_arrow' }}</div>
-              <div class="control-label"></div>
-            </div>
-            <div class="control-item" data-control="readSpeak" @click="actionHandler('readSpeak')">
-              <div class="control-icon material-icons">{{ controlState.readSpeak ? 'pause_circle' : 'play_circle' }}</div>
-              <div class="control-label"></div>
-            </div>
-            <div class="control-item" data-control="font" @click="visiblePanel='font'">
-              <span class="material-icons">text_format</span>
-              <div class="control-label"></div>
-            </div>
-            <div class="control-item" data-control="darkMode" @click="actionHandler('darkMode')">
-              <span class="material-icons">{{ controlState.darkMode ? 'light_mode' : 'dark_mode' }}</span>
-              <div class="control-label"></div>
-            </div>
-          </div>
-        </div>
-      </transition>
-    </div>
-
   </div>
   <script async src="https://unpkg.com/es-module-shims@1.7.3/dist/es-module-shims.js"></script>
   <script src="./js/lib/vconsole.min.js"></script>

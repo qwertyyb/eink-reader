@@ -1,9 +1,9 @@
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
 import VirtualList from 'https://unpkg.com/vue-virtual-list-v3@1.5.1/dist/index.js'
-import PageIndex from './js/pages/index.js'
-import PageBook from './js/pages/book.js'
-import BookCoverAnimation from './js/components/book-cover-animation.js'
+import PageIndex from './pages/index.js'
+import PageBook from './pages/book.js'
+import BookCoverAnimation from './components/book/book-cover-animation.js'
 import { env } from './js/utils/env.js'
 
 const routes = [
@@ -36,7 +36,7 @@ const router = createRouter({
 })
 
 const App = {
-  template: document.getElementById('app').outerHTML,
+  template: '<router-view></router-view>',
 }
 
 const app = createApp(App)

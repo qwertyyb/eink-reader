@@ -1,9 +1,9 @@
 import { bridge } from "../../register-sw.js"
-import CDialog from "./c-dialog.js"
+import CDialog from "../common/c-dialog.js"
 import AboutDialog from "./about-dialog.js"
 import FontsDialog from "./fonts-dialog.js"
 import UpdateDialog from "./update-dialog.js"
-import { showToast } from "../utils/index.js"
+import { showToast } from "../../js/utils/index.js"
 
 export default {
   components: {

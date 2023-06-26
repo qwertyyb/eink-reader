@@ -1,22 +1,52 @@
 
-import { services } from '../services/index.js'
-import { createAutoPlay, darkMode, fullscreen, readSpeak } from '../actions/index.js'
-import { getSettings, saveAllSettings } from '../utils/settings.js'
-import { env } from '../utils/env.js'
-import { lastReadBooks, lastReadBook } from '../utils/last-read.js'
-import { showToast } from '../utils/index.js'
-import CatalogDialog from '../components/catalog-dialog.js'
-import CSelect from '../components/c-select.js'
-import COption from '../components/c-option.js'
-import CProgress from '../components/c-progress.js'
+import { services } from '../js/services/index.js'
+import { env } from '../js/utils/env.js'
+import { lastReadBooks, lastReadBook } from '../js/utils/last-read.js'
+import { showToast } from '../js/utils/index.js'
+import CatalogDialog from '../components/book/catalog-dialog.js'
+import ControlWrapper from '../components/book/control-wrapper.js'
 
 export default {
-  template: document.querySelector('#components .route-book').outerHTML,
+  template: /*html*/`
+    <div class="page-container detail-page route-book">
+      <control-wrapper ref="control-wrapper">
+        <template v-slot:catalog>
+          <virtual-list
+            class="catalog-content-wrapper"
+            data-key="id"
+            :data-sources="chapterList"
+            ref="catalog"
+            :estimate-size="48">
+            <template #="{ source, index }">
+              <div class="catalog-item"
+                @click="$emit('to-catalog-item', source, index)"
+                :class="{active: index === curChapterIndex}"
+                :data-catalog-id="source.id">
+                <div class="catalog-label">{{ source.title }}</div>
+              </div>
+            </template>
+          </virtual-list>
+        </template>
+        <template v-slot="{ settings }">
+          <div class="content-wrapper" ref="contentWrapper" @scroll="scrollHandler">
+            <div class="content" :data-font="settings.fontFamily"
+              :style="{
+                fontSize: settings.fontSize + 'px',
+                fontWeight: settings.fontWeight
+              }"
+              :class="{ column: isInk }"
+              ref="content"
+              @scroll="hScrollHandler"
+              v-html="content">
+            </div>
+          </div>
+        </template>
+      </control-wrapper>
+    </div>
+  `,
   components: {
     CatalogDialog,
-    CSelect,
-    COption,
-    CProgress
+    ControlWrapper,
   },
   props: {
     server: String,
@@ -31,17 +61,6 @@ export default {
       chapterList: [],
       startChapterIndex: 0,
       curChapterIndex: 0,
-      panelVisible: false,
-      visiblePanel: null,
-
-      controlState: {
-        fullscreen: false,
-        darkMode: false,
-        readSpeak: false,
-        autoPlay: false
-      },
-
-      settings: getSettings(),
       isInk: env.isInk()
     }
   },
@@ -52,17 +71,6 @@ export default {
     content() {
       return this.chapterList.slice(this.startChapterIndex, this.curChapterIndex + 20).map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>';
     },
-    rect() {
-      return this.$route.query && this.$route.query.rect && JSON.parse(this.$route.query.rect)
-    }
-  },
-  watch: {
-    settings: {
-      deep: true,
-      handler() {
-        saveAllSettings(this.settings)
-      }
-    }
   },
   async created() {
     await this.fetchBook()
@@ -72,14 +80,8 @@ export default {
       bookId: this.id
     })
   },
-  beforeUnmount() {
-    this.hammer && this.hammer.destroy()
-    this.actions && this.actions.autoPlay && this.actions.autoPlay.stop()
-    fullscreen.exit()
-    darkMode.exit()
-  },
   async beforeRouteLeave(to, from, next) {
-    this.panelVisible = false
+    this.$refs['control-wrapper']?.closePanel?.()
     this.close && await this.close()
     next()
   },
@@ -111,12 +113,9 @@ export default {
 
       const el = document.querySelector(`.content [data-cursor="${cursor}"]`)
 
-      console.log(el)
       if (el) {
         el.scrollIntoView()
       }
-      this.initHammer()
-      this.initAction()
       // 等待滚动到位置后再监听滚动事件
       setTimeout(() => {
         this.inited = true
@@ -129,76 +128,9 @@ export default {
       const { content } = await services[this.server].getContent(item, this.curChapterIndex, this.book)
       this.chapterList[this.curChapterIndex].status = 'loaded'
       this.chapterList[this.curChapterIndex].content = content
-      this.visiblePanel = null
-      this.panelVisible = false
       await this.$nextTick()
       this.$refs.contentWrapper.scrollTo(0, 0)
       this.updateProgress()
-    },
-    changeFontWeight(action) {
-      if (action === 'dec') {
-        this.settings.fontWeight = Math.max(100, this.settings.fontWeight - 100)
-      } else if (action === 'inc') {
-        this.settings.fontWeight = Math.min(900, this.settings.fontWeight + 100)
-      }
-    },
-    changeAutoPlayDuration(duration) {
-      this.settings.autoPlayDuration = duration
-      this.actions.autoPlay.updateInterval(duration)
-    },
-    initHammer() {
-      const contentTapHandler = (event) => {
-        if (env.isInk()) {
-          // 左、中、右
-          const { x } = event.center
-          const centerLeft = window.innerWidth / 3
-          const centerRight = 2 * centerLeft
-          const isLeft = x < centerLeft
-          const isRight = x > centerRight
-          if (isLeft) return this.pageHandler('prev')
-          if (isRight) return this.pageHandler('next')
-        }
-        if (this.actions.autoPlay.isPlaying()) {
-          this.visiblePanel = 'autoPlay'
-        }
-        this.panelVisible = !this.panelVisible
-      }
-      const hammer = new Hammer(this.$refs.contentWrapper)
-      if (env.isInk()) {
-        hammer.on('swipeleft', () => this.pageHandler('next'))
-        hammer.on('swiperight', () => this.pageHandler('prev'))
-      }
-      hammer.on('tap', contentTapHandler)
-      this.hammer = hammer
-    },
-    initAction() {
-      this.actions = {
-        autoPlay: createAutoPlay({
-          nextPage: () => this.pageHandler(direction),
-          scrollVertical: () => this.$refs.contentWrapper.scrollTop += 1
-        })
-      }
-    },
-    async actionHandler(control) {
-      // action: readSpeak | darkMode | fullscreen | autoPlay | catalog
-      if (control === 'fullscreen') {
-        await fullscreen.toggle()
-        this.controlState.fullscreen = fullscreen.isActivated()
-      }
-      if (control === 'darkMode') {
-        darkMode.toggle()
-        this.controlState.darkMode = darkMode.isActivated
-      }
-      if (control === 'readSpeak') {
-        readSpeak.toggle(this.getCurrentP())
-        this.controlState.readSpeak = readSpeak.isSpeaking()
-      } else if (control === 'autoPlay') {
-        this.visiblePanel = 'autoPlay'
-        this.actions.autoPlay.toggle()
-        this.controlState.autoPlay = this.actions.autoPlay.isPlaying()
-      } else if (control === 'catalog') {
-        this.visiblePanel = 'catalog'
-      }
     },
     getCurrentProgress() {
       // 1. 找到当前的章节
@@ -305,6 +237,6 @@ export default {
       if (this.needAppendNextChapter()) {
         this.appendNextChapter()
       }
-    }
+    },
   }
 }
