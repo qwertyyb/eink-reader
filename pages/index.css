@@ -49,9 +49,12 @@
 }
 .page-container.shelf-page .book-list {
   padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 140px);
+  grid-template-columns: repeat(auto-fill, 100px);
+  grid-gap: 10px;
+  gap: 10px;
+  justify-content: space-around;
   padding-bottom: calc(54px + env(safe-area-inset-bottom));
   position: relative;
   box-sizing: border-box;
@@ -62,9 +65,6 @@
 }
 .page-container.shelf-page .book-item.is-reading {
   opacity: 0;
-}
-.page-container.shelf-page .book-item:last-child {
-  margin-right: auto;
 }
 .page-container.shelf-page .book-item .action-mask {
   position: absolute;

@@ -9,7 +9,10 @@ import ControlWrapper from '../components/book/control-wrapper.js'
 export default {
   template: /*html*/`
     <div class="page-container detail-page route-book">
-      <control-wrapper ref="control-wrapper">
+      <control-wrapper ref="control-wrapper"
+        @prev-page="pageHandler('prev')"
+        @next-page="pageHandler('next')"
+        @scroll-vertical="scrollVertical">
         <template v-slot:catalog>
           <virtual-list
             class="catalog-content-wrapper"
@@ -19,7 +22,7 @@ export default {
             :estimate-size="48">
             <template #="{ source, index }">
               <div class="catalog-item"
-                @click="$emit('to-catalog-item', source, index)"
+                @click="readChapter(source, index)"
                 :class="{active: index === curChapterIndex}"
                 :data-catalog-id="source.id">
                 <div class="catalog-label">{{ source.title }}</div>
@@ -28,7 +31,7 @@ export default {
           </virtual-list>
         </template>
         <template v-slot="{ settings }">
-          <div class="content-wrapper" ref="contentWrapper" @scroll="scrollHandler">
+          <div class="content-wrapper" ref="contentWrapper" @scroll="vScrollHandler">
             <div class="content" :data-font="settings.fontFamily"
               :style="{
                 fontSize: settings.fontSize + 'px',
@@ -107,7 +110,7 @@ export default {
       
       let index = this.chapterList.findIndex(item => `${item.id}` === `${catalogId}`)
       index = index >= 0 ? index : 0
-      await this.toCatalogItem(this.chapterList[index], index)
+      await this.readChapter(this.chapterList[index], index)
 
       await this.$nextTick()
 
@@ -121,7 +124,7 @@ export default {
         this.inited = true
       }, 300)
     },
-    async toCatalogItem(item, index) {
+    async readChapter(item, index) {
       this.startChapterIndex = index
       this.curChapterIndex = index
       this.chapterList[this.curChapterIndex].status = 'loading'
@@ -168,6 +171,9 @@ export default {
         chapter: this.chapterList[+chapterEl.dataset.chapterIndex],
         cursor: target?.dataset.cursor
       }
+    },
+    scrollVertical(distance) {
+      this.$refs.contentWrapper.scrollTop += distance
     },
     pageHandler (direction) {
       const content = this.$refs.content
@@ -232,7 +238,7 @@ export default {
         }
       }
     },
-    scrollHandler() {
+    vScrollHandler() {
       this.updateProgress()
       if (this.needAppendNextChapter()) {
         this.appendNextChapter()

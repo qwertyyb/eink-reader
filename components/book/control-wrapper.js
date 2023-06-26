@@ -141,7 +141,7 @@ export default {
     this.actions = {
       autoPlay: createAutoPlay({
         nextPage: () => this.$emit('next-page'),
-        scrollVertical: () => this.$refs.contentWrapper.scrollTop += 1
+        scrollVertical: () => this.$emit('scroll-vertical', 1)
       })
     }
   },
@@ -176,7 +176,7 @@ export default {
         if (this.actions.autoPlay.isPlaying()) {
           this.visiblePanel = 'autoPlay'
         }
-        this.panelVisible = true
+        this.panelVisible = !this.panelVisible
       }
       const hammer = new Hammer.Manager(this.$refs.content, {
         recognizers: [
