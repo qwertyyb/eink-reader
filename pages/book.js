@@ -88,6 +88,11 @@ export default {
     this.close && await this.close()
     next()
   },
+  watch: {
+    curChapterIndex() {
+      this.$refs.catalog?.scrollToIndex(Math.max(0, this.curChapterIndex - 2))
+    }
+  },
   methods: {
     async fetchBook() {
       const book = await services[this.server].getBookList().then(bookList => bookList.find(book => `${book.id}` === `${this.id}`))
