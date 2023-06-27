@@ -41,6 +41,7 @@ export class AutoPlay extends EventTarget {
   }
 
   updateInterval(s) {
+    this.autoPlayDuration = s * 1000
     if (this.isPlaying()) {
       this.start()
     }
