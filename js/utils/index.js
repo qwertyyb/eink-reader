@@ -37,3 +37,16 @@ export const formatSize = (size) => {
   }
   return mB.toFixed(2) + 'MB'
 }
+
+export const getNearestTopEl = (els) => {
+  const el = Array.from(els)
+    .reverse()
+    .find((el) => {
+      const { top, left } = el.getBoundingClientRect()
+      return top < 0 || left < 0
+    }) || els[0]
+  if (!el) return null
+  console.log(el, el.getBoundingClientRect())
+  if (!el.children.length) return el
+  return getNearestTopEl(el.children)
+}

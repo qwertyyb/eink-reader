@@ -1,42 +1,59 @@
 import { getSettings } from "../utils/settings.js";
 import { env } from '../utils/env.js'
 
-export const createAutoPlay = ({ scrollVertical, nextPage } = {}) => {
-  let interval = null;
-  const isPlaying = () => !!interval;
-  const stop = () => {
-    interval && clearInterval(interval)
-    interval = null
+export class AutoPlay extends EventTarget {
+  static CHANGE_EVENT_NAME = 'change'
+
+  scrollVertical = () => {}
+  nextPage = () => {}
+  autoPlayDuration = 24
+
+  #interval = null
+
+  constructor({ scrollVertical, nextPage, autoPlayDuration, changeHandler } = {}) {
+    super()
+    this.scrollVertical = scrollVertical
+    this.nextPage = nextPage
+    this.autoPlayDuration = autoPlayDuration
+    if (typeof changeHandler === 'function') {
+      this.addEventListener(AutoPlay.CHANGE_EVENT_NAME, changeHandler)
+    }
   }
-  const start = () => {
-    stop()
+
+  start() {
+    this.stop()
     if (env.isHorizontal()) {
-      interval = setInterval(() => {
-        nextPage()
-      }, getSettings().autoPlayDuration * 1000)
+      this.#interval = setInterval(() => {
+        this.nextPage()
+      }, this.autoPlayDuration * 1000)
     } else {
-      interval = setInterval(() => {
-        scrollVertical()
-      }, getSettings().autoPlayDuration)
+      this.#interval = setInterval(() => {
+        this.scrollVertical()
+      }, this.autoPlayDuration)
+    }
+    this.dispatchEvent(new CustomEvent(AutoPlay.CHANGE_EVENT_NAME, { detail: { playing: true } }))
+  }
+
+  stop() {
+    this.#interval && clearInterval(this.#interval)
+    this.#interval = null
+    this.dispatchEvent(new CustomEvent(AutoPlay.CHANGE_EVENT_NAME, { detail: { playing: false } }))
+  }
+
+  updateInterval(s) {
+    if (this.isPlaying()) {
+      this.start()
     }
   }
-  const updateInterval = s => {
-    if (isPlaying()) {
-      start()
+
+  toggle() {
+    if (this.isPlaying()) {
+      return this.stop()
     }
+    this.start()
   }
-  const toggle = () => {
-    if (isPlaying()) {
-      return stop()
-    }
-    start()
-  }
-  return {
-    interval: () => getSettings().autoPlayDuration,
-    isPlaying,
-    start,
-    stop,
-    updateInterval,
-    toggle,
+
+  isPlaying() {
+    return !!this.#interval
   }
 }

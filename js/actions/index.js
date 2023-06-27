@@ -1,11 +1,9 @@
-import { readSpeak } from "./read-speak.js";
-import { darkMode } from "./dark-mode.js";
-import { createAutoPlay } from "./auto-play.js";
-import { fullscreen } from "./fullscreen.js";
+import { ReadSpeak } from "./read-speak.js";
+import { DarkMode } from "./dark-mode.js";
+import { AutoPlay } from "./auto-play.js";
 
 export {
-  readSpeak,
-  darkMode,
-  createAutoPlay,
-  fullscreen
+  ReadSpeak,
+  DarkMode,
+  AutoPlay,
 }

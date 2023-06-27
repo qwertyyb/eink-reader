@@ -1,56 +1,67 @@
-const createReadSpeak = () => {
-  const createUtterance = (p, readyNext) => {
-    const utterThis = new SpeechSynthesisUtterance(p.textContent);
-    let nextTriggered = false
-    utterThis.addEventListener('boundary', event => {
-      if (event.charIndex > event.utterance.text.length - 10 && !nextTriggered) {
-        nextTriggered = true
-        readyNext(p)
-      }
-    })
-    utterThis.addEventListener('start', event => {
-      Array.from(document.querySelectorAll('.content p.reading'))
-        .forEach(el => el.classList.remove('reading'))
-      p.classList.add('reading')
-      console.log('scrollIntoView')
-      p.scrollIntoView({ block: 'center' })
-    })
-    utterThis.addEventListener('end', event => {
-      p.classList.remove('reading')
-    })
-    utterThis.addEventListener('pause', event => {
-      p.classList.remove('reading')
-    })
-    return utterThis
-  }
-  const isEnd = p => p.parentNode.lastElementChild === p
-  const readyNext = (prevP) => {
-    if (isEnd(prevP)) return
-    const nextP = prevP.nextElementSibling
-    const utterance = createUtterance(nextP, readyNext)
-    window.speechSynthesis.speak(utterance)
-  }
-  const speak = (first) => {
-    const utterance = createUtterance(first, readyNext)
-    window.speechSynthesis.speak(utterance)
-  }
-  return {
-    start(p) {
-      speak(p)
-    },
-    stop() {
-      window.speechSynthesis.cancel()
-    },
-    toggle(p) {
-      if (window.speechSynthesis.speaking) {
-        return this.stop()
-      }
-      this.start(p)
-    },
-    isSpeaking() {
-      return window.speechSynthesis.speaking
+export class ReadSpeak extends EventTarget {
+  static CHANGE_EVENT_NAME = 'change'
+  getNextElement = () => ''
+
+  readingElement = null
+
+  constructor({ getNextElement, changeHandler } = {}) {
+    super()
+    if (typeof getNextElement === 'function') {
+      this.getNextElement = getNextElement
+    }
+    if (typeof changeHandler === 'function') {
+      this.addEventListener(ReadSpeak.CHANGE_EVENT_NAME, changeHandler)
     }
   }
+  #readyNext() {
+    const nextEl = this.getNextElement()
+    if (!nextEl) return
+    const utterance = this.#createUtterance(nextEl)
+    window.speechSynthesis.speak(utterance)
+  }
+  #createUtterance(el) {
+    const utter = new SpeechSynthesisUtterance(el.textContent);
+    let nextTriggered = false
+    utter.addEventListener('boundary', event => {
+      if (event.charIndex > event.utterance.text.length - 10 && !nextTriggered) {
+        nextTriggered = true
+        this.#readyNext()
+      }
+    })
+    utter.addEventListener('resume', () => {
+      this.dispatchEvent(new CustomEvent(ReadSpeak.CHANGE_EVENT_NAME, { detail: { speaking: false } }))
+    })
+    utter.addEventListener('start', event => {
+      this.readingElement = el
+      el.classList.add('reading')
+      // el.scrollIntoView({ block: 'center' })
+      this.dispatchEvent(new CustomEvent(ReadSpeak.CHANGE_EVENT_NAME, { detail: { speaking: true } }))
+    })
+    utter.addEventListener('end', event => {
+      el.classList.remove('reading')
+      this.dispatchEvent(new CustomEvent(ReadSpeak.CHANGE_EVENT_NAME, { detail: { speaking: true } }))
+    })
+    utter.addEventListener('pause', event => {
+      el.classList.remove('reading')
+      this.dispatchEvent(new CustomEvent(ReadSpeak.CHANGE_EVENT_NAME, { detail: { speaking: false } }))
+    })
+    return utter
+  }
+  start(el) {
+    const utterance = this.#createUtterance(el)
+    window.speechSynthesis.speak(utterance)
+  }
+  stop() {
+    window.speechSynthesis.cancel()
+    this.dispatchEvent(new CustomEvent(ReadSpeak.CHANGE_EVENT_NAME, { detail: { speaking: false } }))
+  }
+  toggle(el) {
+    if (window.speechSynthesis.speaking) {
+      return this.stop()
+    }
+    this.start(el)
+  }
+  isSpeaking() {
+    return window.speechSynthesis.speaking
+  }
 }
-
-export const readSpeak = createReadSpeak()

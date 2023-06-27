@@ -4,10 +4,8 @@ import CProgress from "../common/c-progress.js"
 import CSelect from "../common/c-select.js"
 import COption from "../common/c-option.js"
 import CatalogDialog from "./catalog-dialog.js"
-import { darkMode } from "../../js/actions/dark-mode.js"
-import { fullscreen } from "../../js/actions/fullscreen.js"
-import { readSpeak } from "../../js/actions/read-speak.js"
-import { createAutoPlay } from "../../js/actions/auto-play.js"
+import { DarkMode, ReadSpeak, AutoPlay } from "../../js/actions/index.js"
+import { getNearestTopEl } from "../../js/utils/index.js"
 
 export default {
   components: {
@@ -86,6 +84,11 @@ export default {
             </div>
           </div>
           <div class="control-list">
+            <div class="control-item" data-control="catalog"
+              @click="actionHandler('catalog')">
+              <div class="control-icon material-icons">menu</div>
+              <div class="control-label"></div>
+            </div>
             <div class="control-item" data-control="autoPlay"
               @click="actionHandler('autoPlay')">
               <div class="control-icon material-icons">{{ controlState.autoPlay ? 'pause' : 'play_arrow' }}</div>
@@ -103,11 +106,6 @@ export default {
               <span class="material-icons">{{ controlState.darkMode ? 'light_mode' : 'dark_mode' }}</span>
               <div class="control-label"></div>
             </div>
-            <div class="control-item" data-control="catalog"
-              @click="actionHandler('catalog')">
-              <div class="control-icon material-icons">menu</div>
-              <div class="control-label"></div>
-            </div>
           </div>
         </div>
       </transition>
@@ -119,7 +117,6 @@ export default {
       visiblePanel: null,
 
       controlState: {
-        fullscreen: false,
         darkMode: false,
         readSpeak: false,
         autoPlay: false
@@ -139,9 +136,23 @@ export default {
   },
   created() {
     this.actions = {
-      autoPlay: createAutoPlay({
+      darkMode: new DarkMode(event => this.controlState.darkMode = event.detail.enabled),
+      readSpeak: new ReadSpeak({
+        getNextElement: () => {
+          const el = this.$refs.content.querySelector('p.reading')
+          return el.nextElementSibling
+        },
+        changeHandler: event => {
+          this.controlState.readSpeak = event.detail.speaking
+        }
+      }),
+      autoPlay: new AutoPlay({
         nextPage: () => this.$emit('next-page'),
-        scrollVertical: () => this.$emit('scroll-vertical', 1)
+        scrollVertical: () => this.$emit('scroll-vertical', 1),
+        autoPlayDuration: this.settings.autoPlayDuration,
+        changeHandler: (event) => {
+          this.controlState.autoPlay = event.detail.playing
+        }
       })
     }
   },
@@ -151,8 +162,8 @@ export default {
   beforeUnmount() {
     this.hammer?.destroy?.()
     this.actions?.autoPlay?.stop?.()
-    fullscreen.exit()
-    darkMode.exit()
+    this.actions?.readSpeak?.stop?.()
+    this.actions?.darkMode?.exit()
   },
   methods: {
     touchstartHandler(e) {
@@ -213,22 +224,15 @@ export default {
       this.panelVisible = false
     },
     async actionHandler(control) {
-      // action: readSpeak | darkMode | fullscreen | autoPlay | catalog
-      if (control === 'fullscreen') {
-        await fullscreen.toggle()
-        this.controlState.fullscreen = fullscreen.isActivated()
-      }
+      // action: readSpeak | darkMode | autoPlay | catalog
       if (control === 'darkMode') {
-        darkMode.toggle()
-        this.controlState.darkMode = darkMode.isActivated
+        this.actions?.darkMode?.toggle()
       }
       if (control === 'readSpeak') {
-        readSpeak.toggle(this.getCurrentP())
-        this.controlState.readSpeak = readSpeak.isSpeaking()
+        this.actions.readSpeak.toggle(getNearestTopEl(this.$refs.content.querySelectorAll('.chapter')))
       } else if (control === 'autoPlay') {
         this.visiblePanel = 'autoPlay'
         this.actions.autoPlay.toggle()
-        this.controlState.autoPlay = this.actions.autoPlay.isPlaying()
       } else if (control === 'catalog') {
         this.visiblePanel = 'catalog'
       }
