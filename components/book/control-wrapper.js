@@ -181,14 +181,14 @@ export default {
       const hammer = new Hammer.Manager(this.$refs.content, {
         recognizers: [
           [Hammer.Tap],
-          [Hammer.Pan, { direction: Hammer.DIRECTION_ALL, threshold: 120 }]
+          [Hammer.Swipe, { direction: Hammer.DIRECTION_ALL, threshold: 10 }]
         ]
       })
       if (env.isInk()) {
         hammer.on('panleft', () => this.$emit('next-page'))
         hammer.on('panright', () => this.$emit('prev-page'))
       } else {
-        hammer.on('panright', (() => {
+        hammer.on('swiperight', (() => {
           let backed = false
           return (e) => {
             const { center: { x }, deltaX } = e
@@ -199,7 +199,9 @@ export default {
             }
           }
         })())
-        hammer.on('panleft', () => this.visiblePanel = 'catalog')
+        hammer.on('swipeleft', () => {
+          this.visiblePanel = 'catalog'
+        })
       }
       hammer.on('tap', contentTapHandler)
       this.hammer = hammer
