@@ -1,10 +1,23 @@
 export class DarkMode extends EventTarget {
   static CHANGE_EVENT_NAME = 'change'
 
-  constructor(changeHandler) {
+  constructor({ auto = true, changeHandler }) {
     super()
     if (typeof changeHandler === 'function') {
       this.addEventListener(DarkMode.CHANGE_EVENT_NAME, changeHandler)
+    }
+    if (auto) {
+      const match = window.matchMedia('(prefers-color-scheme: dark)')
+      match.addEventListener('change', event => {
+        if (event.matches) {
+          this.enter()
+        } else {
+          this.exit()
+        }
+      })
+      if (match.matches) {
+        this.enter()
+      }
     }
   }
 

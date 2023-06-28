@@ -16,6 +16,8 @@
   width: 100%;
   height: 54px;
   border-top: 1px solid #bbb;
+  position: relative;
+  z-index: 1;
 }
 .page-container.shelf-page .type-tabs .tab-item {
   flex: 1;

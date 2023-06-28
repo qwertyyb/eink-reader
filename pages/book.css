@@ -62,7 +62,7 @@
   /* content-visibility: auto; */
 }
 .content p + p {
-  margin-top: 0.5em;
+  margin-top: 0.2em;
 }
 .content h4.chapter-title {
   padding-top: env(safe-area-inset-top);

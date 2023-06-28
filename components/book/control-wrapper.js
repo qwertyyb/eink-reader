@@ -136,7 +136,10 @@ export default {
   },
   created() {
     this.actions = {
-      darkMode: new DarkMode(event => this.controlState.darkMode = event.detail.enabled),
+      darkMode: new DarkMode({
+        auto: true,
+        changeHandler: event => this.controlState.darkMode = event.detail.enabled
+      }),
       readSpeak: new ReadSpeak({
         getNextElement: () => {
           const el = this.$refs.content.querySelector('p.reading')
