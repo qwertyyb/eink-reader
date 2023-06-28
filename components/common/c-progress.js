@@ -19,25 +19,31 @@ export default {
     }
   },
   methods: {
-    onTap(e) {
-      const { x, width } = this.$refs.bar.getBoundingClientRect();
-      const percent = (e.clientX - x) / width
-      const value = Math.round(percent * (this.max - this.min) / this.step) * this.step + this.min
+    setValue(value) {
       this.$emit('update:modelValue', value)
+      this.$emit('change', value)
+    },
+    setValueFromOffset(left) {
+      const { x, width } = this.$refs.bar.getBoundingClientRect();
+      const percent = (left - x) / width
+      const value = Math.round(percent * (this.max - this.min) / this.step) * this.step + this.min
+      this.setValue(value)
+    },
+    onTap(e) {
+      this.setValueFromOffset(e.clientX)
     },
     onMove(e) {
       const { clientX } = e.touches[0]
-      const { x, width } = this.$refs.bar.getBoundingClientRect();
-      const percent = (clientX - x) / width
-      const value = Math.round(percent * (this.max - this.min) / this.step) * this.step + this.min
-      this.$emit('update:modelValue', value)
+      this.setValueFromOffset(clientX)
     },
     action(action) {
+      let value = this.value
       if (action === 'dec') {
-        this.$emit('update:modelValue', Math.max(this.min, this.modelValue - this.step))
+        value = Math.max(this.min, this.modelValue - this.step)
       } else if (action === 'inc') {
-        this.$emit('update:modelValue', Math.min(this.max, this.modelValue + this.step))
+        value = Math.min(this.max, this.modelValue + this.step)
       }
+      this.setValue(value)
     }
   }
 }

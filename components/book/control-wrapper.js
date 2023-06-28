@@ -36,13 +36,16 @@ export default {
         <div class="control" v-if="panelVisible">
           <div class="control-panel play-panel" data-target-control="autoPlay" v-if="visiblePanel === 'autoPlay'">
             <div class="speed">
-              <button class="material-icons speed-dec" data-action="dec" @click="changeAutoPlayDuration(settings.autoPlayDuration - 1)">
-                remove
-              </button>
-              <span class="speed-value">{{ settings.autoPlayDuration }}</span>
-              <button class="material-icons speed-inc" data-action="inc" @click="changeAutoPlayDuration(settings.autoPlayDuration + 1)">
-                add
-              </button>
+              <c-progress
+                :min="10"
+                :max="200"
+                :step="10"
+                style="flex: 1"
+                @change="changeAutoPlayDuration"
+                v-model="settings.autoPlayDuration">
+                <template v-slot:prefix>-</template>
+                <template v-slot:suffix>+</template>
+              </c-progress>
             </div>
           </div>
 

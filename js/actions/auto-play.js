@@ -1,4 +1,3 @@
-import { getSettings } from "../utils/settings.js";
 import { env } from '../utils/env.js'
 
 export class AutoPlay extends EventTarget {
@@ -41,7 +40,7 @@ export class AutoPlay extends EventTarget {
   }
 
   updateInterval(s) {
-    this.autoPlayDuration = s * 1000
+    this.autoPlayDuration = s
     if (this.isPlaying()) {
       this.start()
     }
