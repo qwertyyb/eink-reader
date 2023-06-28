@@ -82,31 +82,27 @@ html.dark-mode .control-wrapper .navigator::before {
 .control-panel.font-panel > div {
   width: 100%;
 }
-.control-panel.font-panel .font-family-size {
-  display: flex;
-  justify-content: space-between;
-}
 .control-panel.font-panel .font-family {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+.control-panel.font-panel .font-family .c-select {
+  flex: 1;
 }
 .control-panel.font-panel .font-family .font-family-label {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: calc(100vw - 240px);
+  max-width: 100%;
 }
 .control-panel.font-panel .font-weight {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
 }
-.control-panel.font-panel .lighter-btn {
-  margin-right: 10px;
-}
-.control-panel.font-panel .bolder-btn {
-  margin-left: 10px;
+.control-panel.font-panel > * {
+  margin: 10px 0;
 }
 .control-panel.font-panel .font-weight.selected {
   background: #000;

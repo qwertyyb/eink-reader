@@ -48,39 +48,43 @@ export default {
 
           <div class="control-panel font-panel" data-target-control="font" v-if="visiblePanel === 'font'">
             <div class="font-weight">
-              <div class="lighter-btn" @click="changeFontWeight('dec')">B-</div>
               <c-progress
+                :min="100"
+                :max="900"
+                :step="100"
                 :steps="[100, 200, 300, 400, 500, 600, 700, 800, 900]"
                 style="flex: 1"
-                v-model="settings.fontWeight"></c-progress>
-              <div class="bolder-btn" @click="changeFontWeight('inc')">B+</div>
+                v-model="settings.fontWeight">
+                <template v-slot:prefix>B-</template>
+                <template v-slot:suffix>B+</template>
+              </c-progress>
             </div>
-            <div class="font-family-size">
-              <div class="font-family">
-                <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
-                  <template v-slot:label="{ label }">
-                    <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
-                  </template>
-                  <c-option value="思源宋体" data-font="思源宋体">思源宋体</c-option>
-                  <c-option value="方正书宋" data-font="方正书宋">方正书宋</c-option>
-                  <c-option value="方正仿宋" data-font="方正仿宋">方正仿宋</c-option>
-                  <c-option value="方正黑体" data-font="方正黑体">方正黑体</c-option>
-                  <c-option value="方正楷体" data-font="方正楷体">方正楷体</c-option>
-                  <c-option value="落霞文楷" data-font="落霞文楷">落霞文楷</c-option>
-                  <c-option value="落霞文楷 屏幕阅读版" data-font="落霞文楷 屏幕阅读版">落霞文楷 屏幕阅读版</c-option>
-                  <c-option value="975圆体" data-font="975圆体">975圆体</c-option>
-                </c-select>
-                <span class="material-icons">chevron_right</span>
-              </div>
-              <div class="font-size">
-                <button class="material-icons text-dec" @click="settings.fontSize -= 1">
-                    text_decrease
-                </button>
-                <span class="text-size">{{ settings.fontSize }}</span>
-                <button class="material-icons text-inc" @click="settings.fontSize += 1">
-                    text_increase
-                </button>
-              </div>
+            <div class="font-size">
+              <c-progress
+                :min="10"
+                :max="30"
+                :step="1"
+                style="flex: 1"
+                v-model="settings.fontSize">
+                <template v-slot:prefix>A-</template>
+                <template v-slot:suffix>A+</template>
+              </c-progress>
+            </div>
+            <div class="font-family">
+              <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
+                <template v-slot:label="{ label }">
+                  <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
+                </template>
+                <c-option value="思源宋体" data-font="思源宋体">思源宋体</c-option>
+                <c-option value="方正书宋" data-font="方正书宋">方正书宋</c-option>
+                <c-option value="方正仿宋" data-font="方正仿宋">方正仿宋</c-option>
+                <c-option value="方正黑体" data-font="方正黑体">方正黑体</c-option>
+                <c-option value="方正楷体" data-font="方正楷体">方正楷体</c-option>
+                <c-option value="落霞文楷" data-font="落霞文楷">落霞文楷</c-option>
+                <c-option value="落霞文楷 屏幕阅读版" data-font="落霞文楷 屏幕阅读版">落霞文楷 屏幕阅读版</c-option>
+                <c-option value="975圆体" data-font="975圆体">975圆体</c-option>
+              </c-select>
+              <span class="material-icons">chevron_right</span>
             </div>
           </div>
           <div class="control-list">
@@ -243,13 +247,6 @@ export default {
     changeAutoPlayDuration(duration) {
       this.settings.autoPlayDuration = duration
       this.actions.autoPlay.updateInterval(duration)
-    },
-    changeFontWeight(action) {
-      if (action === 'dec') {
-        this.settings.fontWeight = Math.max(100, this.settings.fontWeight - 100)
-      } else if (action === 'inc') {
-        this.settings.fontWeight = Math.min(900, this.settings.fontWeight + 100)
-      }
     },
   }
 }

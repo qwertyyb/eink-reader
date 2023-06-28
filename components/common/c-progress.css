@@ -1,22 +1,28 @@
-.c-progress {
+.c-progress, .c-progress .c-progress-bar {
   display: flex;
-  height: 10px;
   align-items: center;
+}
+
+.c-progress .c-progress-bar {
+  flex: 1;
+  margin: 0 10px;
+  height: 16px;
   position: relative;
 }
 
-.c-progress .c-progress-line {
+.c-progress .c-progress-bar .c-progress-line {
   height: 3px;
   background: #000;
   border-radius: 9999px;
   width: 100%;
 }
-.c-progress .c-progress-indicator {
+.c-progress .c-progress-bar .c-progress-indicator {
   position: absolute;
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  top: 1px;
+  top: 4px;
   left: 50%;
+  margin-left: -4px;
   background: #000;
 }
