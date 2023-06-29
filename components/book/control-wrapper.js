@@ -185,14 +185,38 @@ export default {
     initHammer() {
       const contentTapHandler = (event) => {
         if (env.isInk()) {
-          // 左、中、右
-          const { x } = event.center
+          /**
+           * 把点击区域分为九个区域，如下
+           * 1|2|3
+           * 4|5|6
+           * 7|8|9
+           * 先计算在点击落于哪个区域
+           */
+          const { x, y } = event.center
           const centerLeft = window.innerWidth / 3
           const centerRight = 2 * centerLeft
-          const isLeft = x < centerLeft
-          const isRight = x > centerRight
-          if (isLeft) return this.$emit('prev-page')
-          if (isRight) return this.$emit('next-page')
+          const centerTop = window.innerHeight / 3
+          const centerBottom = 2 * centerTop
+          let area = -1
+          if (y <= centerTop) {
+            area = x < centerLeft ? 1 : x < centerRight ? 2 : 3
+          } else if (y <= centerBottom) {
+            area = x < centerLeft ? 4 : x < centerRight ? 5 : 6
+          } else {
+            area = x < centerLeft ? 7 : x < centerRight ? 8 : 9
+          }
+          
+          const nextPageArea = [3, 7, 9]
+          const prevPageArea = [1, 4, 6]
+
+          if (nextPageArea.includes(area)) {
+            this.$emit('next-page')
+          } else if (prevPageArea.includes(area)) {
+            this.$emit('prev-page')
+          } else {
+            this.panelVisible = !this.panelVisible
+            return
+          }
         }
         if (this.actions.autoPlay.isPlaying()) {
           this.visiblePanel = 'autoPlay'
@@ -206,8 +230,8 @@ export default {
         ]
       })
       if (env.isInk()) {
-        hammer.on('panleft', () => this.$emit('next-page'))
-        hammer.on('panright', () => this.$emit('prev-page'))
+        hammer.on('swipeleft', () => this.$emit('next-page'))
+        hammer.on('swiperight', () => this.$emit('prev-page'))
       } else {
         hammer.on('swiperight', (() => {
           let backed = false
