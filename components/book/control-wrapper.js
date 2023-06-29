@@ -215,8 +215,8 @@ export default {
             this.$emit('prev-page')
           } else {
             this.panelVisible = !this.panelVisible
-            return
           }
+          return
         }
         if (this.actions.autoPlay.isPlaying()) {
           this.visiblePanel = 'autoPlay'
