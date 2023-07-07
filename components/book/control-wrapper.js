@@ -4,6 +4,7 @@ import CProgress from "../common/c-progress.js"
 import CSelect from "../common/c-select.js"
 import COption from "../common/c-option.js"
 import CatalogDialog from "./catalog-dialog.js"
+import SelectionMenu from "./selection-menu.js"
 import { DarkMode, ReadSpeak, AutoPlay } from "../../js/actions/index.js"
 import { getNearestTopEl } from "../../js/utils/index.js"
 
@@ -12,7 +13,8 @@ export default {
     CProgress,
     CSelect,
     COption,
-    CatalogDialog
+    CatalogDialog,
+    SelectionMenu
   },
   template: /*html*/`
     <div class="control-wrapper">
@@ -28,9 +30,11 @@ export default {
         <slot name="catalog"></slot>
       </catalog-dialog>
 
-      <div class="content-container" ref="content" @touchstart="touchstartHandler">
-        <slot :settings="settings"></slot>
-      </div>
+      <selection-menu>
+        <div class="content-container" ref="content" @touchstart="touchstartHandler">
+            <slot :settings="settings"></slot>
+        </div>
+      </selection-menu>
 
       <transition name="slide-up">
         <div class="control" v-if="panelVisible">

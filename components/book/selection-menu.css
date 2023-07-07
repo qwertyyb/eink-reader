@@ -1,0 +1,50 @@
+.selection-menu {
+  height: 100%;
+}
+.selection-menu .selection-menu-list {
+  position: fixed;
+  z-index: 2;
+  background: #fff;
+  border-radius: 6px;
+  list-style: none;
+  display: flex;
+  box-shadow: 0 0 14px gray;
+  width: 120px;
+  justify-content: space-around;
+}
+.selection-menu .selection-menu-list .selection-menu-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  padding: 6px 0;
+}
+.selection-menu .selection-menu-list .menu-item-label {
+  margin-top: 6px;
+}
+.selection-menu mark.underline {
+  border-bottom: 1px solid #000;
+  background: transparent;
+}
+.thought-input-dialog .thought-input-wrapper {
+  padding: 20px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  display: flex;
+  align-items: flex-end;
+  width: 100vw;
+  box-sizing: border-box;
+}
+.thought-input-dialog .thought-input {
+  flex: 1;
+  height: 20vh;
+  outline: none;
+  border: none;
+  font-size: 16px;
+}
+.thought-input-dialog .save-btn {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  padding: 6px 8px;
+}
