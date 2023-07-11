@@ -40,5 +40,11 @@ export const remoteBooks = [
     cover: 'https://via.placeholder.com/300x400?text=cover',
     title: '神墓',
     downloadUrl: new URL('./神墓.txt', import.meta.url).href
+  },
+  {
+    id: 8,
+    cover: 'https://via.placeholder.com/300x400?text=cover',
+    title: '星门',
+    downloadUrl: new URL('./星门.txt', import.meta.url).href
   }
 ]
