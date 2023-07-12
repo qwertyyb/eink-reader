@@ -64,15 +64,27 @@ export default {
       chapterList: [],
       startChapterIndex: 0,
       curChapterIndex: 0,
-      isInk: env.isInk()
+      isInk: env.isInk(),
     }
   },
   computed: {
     chapter() {
       return this.chapterList[this.curChapterIndex]
     },
+    contentChapterList() {
+      let chapterList = []
+      for(let i = this.startChapterIndex; i < this.chapterList.length; i += 1) {
+        const chapter = this.chapterList[i]
+        if (chapter.status === 'loaded') {
+          chapterList.push(chapter)
+        } else {
+          break
+        }
+      }
+      return chapterList
+    },
     content() {
-      return this.chapterList.slice(this.startChapterIndex, this.curChapterIndex + 20).map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>';
+      return this.contentChapterList.map(chapter => chapter.content).filter(i => i).join('\n') || '<div class="placeholder">正在加载</div>'
     },
   },
   async created() {
@@ -132,13 +144,17 @@ export default {
     async readChapter(item, index) {
       this.startChapterIndex = index
       this.curChapterIndex = index
-      this.chapterList[this.curChapterIndex].status = 'loading'
-      const { content } = await services[this.server].getContent(item, this.curChapterIndex, this.book)
-      this.chapterList[this.curChapterIndex].status = 'loaded'
-      this.chapterList[this.curChapterIndex].content = content
+      await this.loadChapter(this.curChapterIndex)
       await this.$nextTick()
       this.$refs.contentWrapper.scrollTo(0, 0)
       this.updateProgress()
+    },
+    async loadChapter(chapterIndex) {
+      const chapter = this.chapterList[chapterIndex]
+      chapter.status = 'loading'
+      const { content } = await services[this.server].getContent(chapter, this.curChapterIndex, this.book)
+      chapter.content = content
+      chapter.status = 'loaded'
     },
     getCurrentProgress() {
       // 1. 找到当前的章节
@@ -230,10 +246,7 @@ export default {
       }
       if (nextIndex < 0) return;
 
-      this.chapterList[nextIndex].status = 'loading'
-      const { content } = await services[this.server].getContent(this.chapterList[nextIndex], nextIndex, this.book)
-      this.chapterList[nextIndex].status = 'loaded'
-      this.chapterList[nextIndex].content = content
+      await this.loadChapter(nextIndex)
     },
     hScrollHandler() {
       if (env.isInk()) {
