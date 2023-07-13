@@ -1,16 +1,18 @@
+
 const decodeText = (arrayBuffer) => {
-  let text = null
-  const encodingList = ['utf-8', 'gbk', 'big5', 'utf-16le', 'utf-16be', 'utf-8']
-  for(let i = 0; i < encodingList.length; i += 1) {
-    const decoder = new TextDecoder(encodingList[i], { fatal: true })
-    try {
-      text = decoder.decode(arrayBuffer).replace(/\r\n/g, '\n')
-    } catch(e) {
-      continue
-    }
+  const bytes = new Uint8Array(arrayBuffer.slice(0, 10000));
+  let binary = ''
+  bytes.forEach(item => {
+    binary += String.fromCharCode(item)
+  })
+  const { encoding } = jschardet.detect(binary)
+  console.log('encoding', encoding)
+  const decoder = new TextDecoder(encoding, { fatal: true })
+  try {
+    return decoder.decode(arrayBuffer).replace(/\r\n/g, '\n')
+  } catch(e) {
+    throw new Error('解码失败')
   }
-  if (!text) throw new Error('解码失败')
-  return text
 }
 
 const parseCatalog = (content, { reg = /^第.+章/ } = {}) => {

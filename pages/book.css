@@ -60,6 +60,7 @@
 }
 .content p {
   text-indent: 2em;
+  word-break: break-all;
   /* content-visibility: auto; */
 }
 .content p + p {
