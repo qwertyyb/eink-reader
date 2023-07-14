@@ -6,14 +6,7 @@ export default {
   },
   template: /*html*/`
     <div class="book-cover" :style="{width,height}">
-      {{ book.title }}
-      <div class="download-progress-size" v-if="!book.downloaded && book.total && book.progress">
-        {{ book.fProgress }}
-      </div>
-      <div class="download-progress-percent" v-if="!book.downloaded && book.total && book.progress">
-        ({{ Math.round(book.progress/book.total * 100) + '%' }})
-      </div>
-      <div class="downloaded-label" v-if="book.downloaded">已下载</div>
+      <img class="book-cover-img" :src="book.cover" :alt="book.title" />
     </div>
   `
 }

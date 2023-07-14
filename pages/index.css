@@ -52,7 +52,6 @@
 .page-container.shelf-page .book-list {
   padding: 20px;
   display: grid;
-  grid-template-rows: repeat(auto-fill, 140px);
   grid-template-columns: repeat(auto-fill, 100px);
   grid-gap: 10px;
   gap: 10px;
@@ -63,9 +62,31 @@
 }
 .page-container.shelf-page .book-item {
   position: relative;
-  margin-bottom: 20px;
 }
-.page-container.shelf-page .book-item.is-reading {
+.book-item .book-title {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  height: 28px;
+  margin-top: -4px;
+}
+.book-item .book-title .remote-icon {
+  font-size: 18px;
+  margin-right: 6px;
+}
+.book-item .book-title .download-progress-percent {
+  font-size: 12px;
+  color: gray;
+  margin-right: 6px;
+}
+.book-item .book-title .title {
+  width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.page-container.shelf-page .book-item.is-reading .book-cover {
   opacity: 0;
 }
 .page-container.shelf-page .book-item .action-mask {

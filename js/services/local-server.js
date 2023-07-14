@@ -20,7 +20,6 @@ export const dataService = {
       const local = list.find(localBook => localBook.id === item.id)
       return {
         ...item,
-        cover: 'https://via.placeholder.com/300x400?text=cover',
         downloaded: !!local,
         catalog: (local && local.catalog || []).map(item => {
           return {

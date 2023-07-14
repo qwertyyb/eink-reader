@@ -34,6 +34,7 @@ export default {
               transformOrigin: 'top left',
               transform: 'scale(' + (1/coverScale) + ')'
             }"></book-cover>
+          <div class="book-cover-backface"></div>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@
   z-index: 2;
 }
 .book-cover-animation .book-cover-animation-wrapper {
-  --height: 140vw;
+  --height: 132vw;
   position: relative;
   width: fit-content;
   perspective: 600px;
@@ -26,6 +26,30 @@
   position: relative;
   z-index: 2;
   transform-origin: top left;
+  background: #fff;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  height: 100%;
+  width: 100%;
+  transform-style: preserve-3d;
+}
+.book-cover-animation .book-cover-wrapper .book-cover {
+  backface-visibility: hidden;
+  position: relative;
+  z-index: 2;
+}
+.book-cover-animation .book-cover-wrapper .book-cover-backface {
+  content: " ";
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
 }
 .book-cover-animation .book-contents-wrapper {
   position: absolute;

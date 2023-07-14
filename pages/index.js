@@ -31,6 +31,13 @@ export default {
             :data-book-id="book.id">
             <book-cover :book="book"
               @click="toReadBook(book, index, bookList)"></book-cover>
+            <div class="book-title">
+              <span class="material-icons-outlined remote-icon" v-if="!book.downloaded">cloud</span>
+              <div class="download-progress-percent" v-else-if="!book.downloaded && book.total && book.progress">
+                ({{ Math.round(book.progress/book.total * 100) + '%' }})
+              </div>
+              <span class="title">{{ book.title }}</span>
+            </div>
             <div class="action-mask"
               @click="removeLocalBook(book, index)"
               v-if="mode==='select' && book.downloaded">

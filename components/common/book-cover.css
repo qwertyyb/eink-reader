@@ -1,16 +1,11 @@
 .book-cover {
   width: 100px;
-  height: 140px;
   box-sizing: border-box;
-  border: 1px solid #000;
   text-align: center;
-  padding-top: 10px;
   background: #fff;
+  position: relative;
 }
-.book-cover .download-progress-size,
-.book-cover .download-progress-percent, 
-.book-cover .downloaded-label {
-  white-space: pre-wrap;
-  font-size: 10px;
-  margin-top: 6px;
+.book-cover img.book-cover-img {
+  width: 100px;
+  height: 133.33px;
 }
