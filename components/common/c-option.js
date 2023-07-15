@@ -1,31 +1,20 @@
 export default {
   template: `<div class="c-option" :class="{selected: selected}" @click="select"><slot></slot></div>`,
   props: {
-    value: [Number, String],
-    label: [Number, String]
+    value: [Number, String]
   },
-  inject: ['selectedValue', 'onOptionSelected', 'updateSelectedLabel'],
+  inject: {
+    'selectedValue': Symbol.for('c-select:modelValue'),
+    'onOptionSelected': Symbol.for('c-select:onOptionSelected')
+  },
   computed: {
     selected() {
       return this.selectedValue === this.value
     }
   },
-  watch: {
-    selected() {
-      this.updateSelectLabel()
-    }
-  },
-  mounted() {
-    this.updateSelectLabel()
-  },
   methods: {
     select() {
-      this.onOptionSelected && this.onOptionSelected(this.value, { label: this.label || this.$el.textContent.trim() })
-    },
-    updateSelectLabel() {
-      if (this.selected) {
-        this.updateSelectedLabel(this.label || this.$el.textContent.trim())
-      }
+      this.onOptionSelected && this.onOptionSelected(this.value)
     }
   }
 }

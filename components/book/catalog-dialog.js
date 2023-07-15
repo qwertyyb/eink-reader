@@ -2,7 +2,7 @@ import { env } from "../../js/utils/env.js"
 
 export default {
   template: /*html*/`
-    <div class="catalog" :style="{ zIndex: zIndex}">
+    <div class="catalog" :style="{ zIndex: zIndex, opacity: zIndex < 0 ? '0' : '1'}">
       <div class="mask" :class="maskAnim" @click="$emit('close')"></div>
       <div class="catalog-content" :class="anim" ref="list-wrapper">
         <slot></slot>

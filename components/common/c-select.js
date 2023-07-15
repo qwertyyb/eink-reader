@@ -4,7 +4,7 @@ import CDialog from './c-dialog.js'
 export default {
   template: `<div class="c-select">
     <div class="c-select-label" @click="optionsVisible=true">
-      <slot name="label" :label="valueLabel">{{ valueLabel }}</slot>
+      <slot name="label" :value="modelValue">{{ label }}</slot>
     </div>
     <c-dialog :visible="optionsVisible" @close="optionsVisible=false" class="c-select-dialog">
       <div class="c-option-list">
@@ -16,27 +16,27 @@ export default {
     CDialog
   },
   props: {
-    value: {
+    modelValue: {
       type: [Number, String]
+    },
+    label: {
+      type: String,
     }
   },
   data() {
     return {
-      valueLabel: '方正宋体',
       optionsVisible: false,
     }
   },
   provide() {
     return {
-      selectedValue: computed(() => this.value),
-      onOptionSelected: this.onOptionSelected,
-      updateSelectedLabel: (label) => this.valueLabel = label
+      [Symbol.for('c-select:modelValue')]: computed(() => this.modelValue),
+      [Symbol.for('c-select:onOptionSelected')]: this.onOptionSelected,
     }
   },
   methods: {
-    onOptionSelected(value, options = {}) {
-      this.$emit('input', value)
-      this.valueLabel = options.label
+    onOptionSelected(value) {
+      this.$emit('update:modelValue', value)
       this.optionsVisible = false
     }
   }

@@ -78,9 +78,12 @@ export default {
               </c-progress>
             </div>
             <div class="font-family">
-              <c-select :value="settings.fontFamily" @input="settings.fontFamily=$event">
-                <template v-slot:label="{ label }">
-                  <div class="font-family-label" :data-font="settings.fontFamily">{{ label }}</div>
+              <c-select v-model="settings.fontFamily">
+                <template v-slot:label="{ value }">
+                  <div class="font-family-label"
+                    :data-font="settings.fontFamily">
+                    {{ fontFamilyList.find(item => item.value === value)?.label || fontFamilyList[0]?.label }}
+                  </div>
                 </template>
                 <c-option value="思源宋体" data-font="思源宋体">思源宋体</c-option>
                 <c-option value="方正书宋" data-font="方正书宋">方正书宋</c-option>
@@ -132,6 +135,17 @@ export default {
         readSpeak: false,
         autoPlay: false
       },
+
+      fontFamilyList: [
+        { value: '思源宋体', label: '思源宋体' },
+        { value: '方正书宋', label: '方正书宋' },
+        { value: '方正仿宋', label: '方正仿宋' },
+        { value: '方正黑体', label: '方正黑体' },
+        { value: '方正楷体', label: '方正楷体' },
+        { value: '落霞文楷', label: '落霞文楷' },
+        { value: '落霞文楷 屏幕阅读版', label: '落霞文楷 屏幕阅读版' },
+        { value: '975圆体', label: '975圆体' }
+      ],
 
       settings: getSettings(),
       isInk: env.isInk()
