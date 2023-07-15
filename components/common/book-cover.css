@@ -8,4 +8,5 @@
 .book-cover img.book-cover-img {
   width: 100px;
   height: 133.33px;
+  vertical-align: top;
 }

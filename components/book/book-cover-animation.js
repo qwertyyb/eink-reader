@@ -69,7 +69,7 @@ export default {
         await this.$refs.cover.animate([
           { transform: `rotateY(0)` },
           { transform: `rotateY(-180deg)` }
-        ], { duration: 500, easing: 'ease' }).finished
+        ], { duration: 600, easing: 'ease' }).finished
         this.$refs.cover.style.transform = 'rotateY(-180deg)'
 
         // // 动画3. 缩放书本内容
