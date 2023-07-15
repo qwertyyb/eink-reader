@@ -152,7 +152,7 @@ export default {
     async loadChapter(chapterIndex) {
       const chapter = this.chapterList[chapterIndex]
       chapter.status = 'loading'
-      const { content } = await services[this.server].getContent(chapter, this.curChapterIndex, this.book)
+      const { content } = await services[this.server].getContent(chapter, chapterIndex, this.book)
       chapter.content = content
       chapter.status = 'loaded'
     },
