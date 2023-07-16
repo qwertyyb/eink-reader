@@ -50,3 +50,30 @@ export const getNearestTopEl = (els) => {
   if (!el.children.length) return el
   return getNearestTopEl(el.children)
 }
+
+export const getNodeOffset = ({ textOffset, paragrahp } = {}) => {
+  let lastOffset = 0;
+  for(let i = 0; i < paragrahp.childNodes.length; i += 1) {
+    const node = paragrahp.childNodes[i]
+    const endOffset = lastOffset + node.textContent.length
+    if (lastOffset <= textOffset && textOffset <= endOffset) {
+      return {
+        offset: textOffset - lastOffset,
+        node
+      }
+    }
+    lastOffset = endOffset
+  }
+}
+
+const getPreviousOffset = (node) => {
+  if (!node) return 0
+  return node.textContent.length + getPreviousOffset(node.previousSibling)
+}
+export const getChapterOffset = ({ node, offset } = {}) => {
+  const result = offset + getPreviousOffset(node.previousSibling)
+  if (node.parentElement.nodeName === 'P') {
+    return result + parseInt(node.parentElement.dataset.chapterTextOffset, 10)
+  }
+  return result + getChapterOffset({ node: node.parentElement, offset: 0 })
+}

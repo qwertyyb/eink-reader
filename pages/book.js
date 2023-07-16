@@ -1,4 +1,4 @@
-
+import { computed } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import { services } from '../js/services/index.js'
 import { env } from '../js/utils/env.js'
 import { lastReadBooks, lastReadBook } from '../js/utils/last-read.js'
@@ -55,6 +55,12 @@ export default {
     server: String,
     id: [String, Number],
     close: Function
+  },
+  provide() {
+    return {
+      book: computed(() => this.book),
+      chapter: computed(() => this.chapter)
+    }
   },
   data() {
     return {

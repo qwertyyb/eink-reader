@@ -1,26 +1,27 @@
+import { toRaw } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import CDialog from "../common/c-dialog.js"
-
-const getClosestCursor = (node) => {
-  if (+node?.dataset?.cursor) return +node.dataset.cursor
-  if (!node) return 0
-  return getClosestCursor(node.parentElement)
-}
-
-const MarkType = {
-  UNKNOWN: 0,
-  UNDERLINE: 1,
-  THOUGHT: 2,
-}
+import { ChapterMark, ChapterMarkRange, MarkType } from '../../js/utils/mark.js'
+import { marks } from '../../js/storage.js'
 
 export default {
   template: /*html*/`<div class="selection-menu">
-    <slot></slot>
-    <ul class="selection-menu-list" :style="{top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px'}" v-show="visible">
-      <li class="selection-menu-item" @mousedown.capture="actionHandler($event, 'thought')">
+    <div class="selection-menu-content-wrapper" @pointerdown.capture="contentTapHandler" ref="contentWrapper">
+      <slot></slot>
+    </div>
+    <ul class="selection-menu-list" :style="{top: rect.top + 'px', left: rect.left + 'px'}" v-show="visible">
+      <li class="selection-menu-item" @pointerdown.capture="actionHandler($event, 'thought')">
         <span class="material-icons">lightbulb</span>
         <span class="menu-item-label">想法</span>
       </li>
-      <li class="selection-menu-item" @mousedown.capture="actionHandler($event, 'underline')">
+      <li class="selection-menu-item"
+        v-if="selectedUnderlineMark"
+        @pointerdown.capture="actionHandler($event, 'removeUnderline')">
+        <span class="material-icons">format_color_text</span>
+        <span class="menu-item-label">删除划线</span>
+      </li>
+      <li class="selection-menu-item"
+        v-else
+        @pointerdown.capture="actionHandler($event, 'underline')">
         <span class="material-icons">format_color_text</span>
         <span class="menu-item-label">划线</span>
       </li>
@@ -35,30 +36,54 @@ export default {
   components: {
     CDialog
   },
+  inject: ['book', 'chapter'],
   data() {
     return {
       rect: {
         top: 0,
         left: 0,
-        width: 120
       },
       visible: false,
       thoughtInputVisible: false,
       mark: {
-        start: { cursor: 0, offset: 0 },
-        end: { cursor: 0, offset: 0 },
+        range: null,
         type: 1, // 0: none, 1: underline, 2: thought
         thought: ''
-      }
+      },
+      selectedUnderlineMark: null,
+    }
+  },
+  computed: {
+    chapterMark() {
+      return this.$refs.contentWrapper.querySelector(`.chapter[data-id="${this.chapter.id}"]`)?.chapterMark
     }
   },
   mounted() {
     document.addEventListener('selectionchange', this.selectionChangeHandler)
+    this.registerMutationObserver()
   },
   beforeUnmount() {
     document.removeEventListener('selectionchange', this.selectionChangeHandler)
+    this.unregisterMutationObserver()
   },
   methods: {
+    registerMutationObserver() {
+      const observer = new MutationObserver(() => {
+        const chapterEls = this.$refs.contentWrapper.querySelectorAll('.chapter')
+        chapterEls.forEach(chapterEl => {
+          if (chapterEl.chapterMark) return
+          chapterEl.chapterMark = new ChapterMark(this.book.id, chapterEl.dataset.id, chapterEl)
+          chapterEl.chapterMark.refresh()
+        })
+      })
+      observer.observe(this.$refs.contentWrapper, {
+        childList: true,
+        subtree: true
+      })
+    },
+    unregisterMutationObserver() {
+      this.observer?.disconnect()
+    },
     selectionChangeHandler() {
       const selection = window.getSelection()
 
@@ -69,37 +94,38 @@ export default {
 
       // 现代浏览器只支持一个range
       const range = selection.getRangeAt(0)
-      const { startContainer, startOffset, endContainer, endOffset } = range
-      if (!this.$el.contains(startContainer) || !this.$el.contains(endContainer)) return;
-      
-      // 获取开始和结束index
-      const [start, end] = [getClosestCursor(startContainer), getClosestCursor(endContainer)]
-      if (!start || !end) return;
-      console.log(start, end)
-
+      const chapterMarkRange = ChapterMarkRange.fromRange(range)
       const mark = {
-        start: { cursor: start, offset: startOffset },
-        end: { cursor: end, offset: endOffset },
+        bookId: this.book.id,
+        chapterId: this.chapter.id,
+        text: range.toString(),
+        range: chapterMarkRange,
         type: MarkType.UNKNOWN,
-        thought: ''
+        thought: '',
       }
       this.mark = mark
 
-      // @todo 暂时不考虑多个node的情况
       const { bottom, left, width } = range.getBoundingClientRect()
+      this.selectedUnderlineMark = false
       this.visible = true
       this.rect = {
-        ...this.rect,
         top: bottom + 10,
-        left: left + width / 2 - this.rect.width / 2,
+        left: left + width / 2,
       }
     },
-    underlineActionHandler() {
-      const range = window.getSelection().getRangeAt(0)
-      const mark = document.createElement('mark')
-      mark.classList.add('underline')
-      range.surroundContents(mark)
+    async underlineActionHandler() {
       this.mark.type = MarkType.UNDERLINE
+      await marks.add({
+        ...toRaw(this.mark),
+      })
+      this.chapterMark.refresh()
+      window.getSelection().empty()
+      this.visible = false
+    },
+    async removeUnderlineHandler() {
+      await marks.remove(this.selectedUnderlineMark)
+      this.chapterMark.refresh()
+      this.visible =false
     },
     thoughtActionHandler() {
       this.thoughtInputVisible = true
@@ -120,11 +146,28 @@ export default {
       setTimeout(() => {
         this.$refs.input?.focus()
         fakeInput.remove()
-      }, 100)
+      }, 300)
     },
-    saveThought() {
+    async saveThought() {
       this.mark.type = MarkType.THOUGHT
-      console.log(this.mark)
+      await marks.add(toRaw(this.mark))
+      this.chapterMark.refresh()
+      this.thoughtInputVisible = false
+      this.visible = false
+    },
+    contentTapHandler(e) {
+      const markEl = e.target.nodeName === 'MARK' ? e.target : e.target.closest('mark')
+      if (!markEl) return
+      e.preventDefault()
+      if (parseInt(markEl.dataset.type, 10) === MarkType.UNDERLINE) {
+        this.visible = true
+        this.selectedUnderlineMark = parseInt(markEl.dataset.id, 10)
+        const { bottom, left, width } = markEl.getBoundingClientRect()
+        this.rect = {
+          top: bottom + 10,
+          left: left + width / 2
+        }
+      }
     },
     actionHandler(event, action) {
       event.preventDefault()
@@ -133,6 +176,8 @@ export default {
         this.underlineActionHandler()
       } else if (action === 'thought') {
         this.thoughtActionHandler()
+      } else if (action === 'removeUnderline') {
+        this.removeUnderlineHandler()
       }
     }
   }

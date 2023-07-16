@@ -85,14 +85,7 @@ export default {
                     {{ fontFamilyList.find(item => item.value === value)?.label || fontFamilyList[0]?.label }}
                   </div>
                 </template>
-                <c-option value="思源宋体" data-font="思源宋体">思源宋体</c-option>
-                <c-option value="方正书宋" data-font="方正书宋">方正书宋</c-option>
-                <c-option value="方正仿宋" data-font="方正仿宋">方正仿宋</c-option>
-                <c-option value="方正黑体" data-font="方正黑体">方正黑体</c-option>
-                <c-option value="方正楷体" data-font="方正楷体">方正楷体</c-option>
-                <c-option value="落霞文楷" data-font="落霞文楷">落霞文楷</c-option>
-                <c-option value="落霞文楷 屏幕阅读版" data-font="落霞文楷 屏幕阅读版">落霞文楷 屏幕阅读版</c-option>
-                <c-option value="975圆体" data-font="975圆体">975圆体</c-option>
+                <c-option :value="family.value" :data-font="family.value" v-for="family in fontFamilyList" :key="family.value">{{ family.label }}</c-option>
               </c-select>
               <span class="material-icons">chevron_right</span>
             </div>
