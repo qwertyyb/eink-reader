@@ -2,6 +2,7 @@ import { toRaw } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import CDialog from "../common/c-dialog.js"
 import { ChapterMark, ChapterMarkRange, MarkType } from '../../js/utils/mark.js'
 import { marks } from '../../js/storage.js'
+import MarksDialog from './marks-dialog.js'
 
 export default {
   template: /*html*/`<div class="selection-menu">
@@ -25,16 +26,25 @@ export default {
         <span class="material-icons">format_color_text</span>
         <span class="menu-item-label">划线</span>
       </li>
+      <li class="selection-menu-item"
+        v-if="selectedUnderlineMark"
+        @pointerdown.capture="actionHandler($event, 'viewMark')">
+        <span class="material-icons">format_color_text</span>
+        <span class="menu-item-label">查看</span>
+      </li>
     </ul>
-    <c-dialog :visible="thoughtInputVisible" class="thought-input-dialog" @close="thoughtInputVisible=false">
+    <c-dialog :visible="dialog==='thoughtInput'" class="thought-input-dialog" @close="dialog=null">
       <div class="thought-input-wrapper">
         <textarea class="thought-input" placeholder="写下这一刻的想法" ref="input" v-model="mark.thought"></textarea>
         <button class="save-btn" @click="saveThought">保存</button>
       </div>
     </c-dialog>
+    <marks-dialog :visible="dialog==='marks'" @close="dialog=null" v-bind="dialogProps">
+    </marks-dialog>
   </div>`,
   components: {
-    CDialog
+    CDialog,
+    MarksDialog
   },
   inject: ['book', 'chapter'],
   data() {
@@ -44,7 +54,8 @@ export default {
         left: 0,
       },
       visible: false,
-      thoughtInputVisible: false,
+      dialog: null,
+      dialogProps: {},
       mark: {
         range: null,
         type: 1, // 0: none, 1: underline, 2: thought
@@ -94,7 +105,13 @@ export default {
 
       // 现代浏览器只支持一个range
       const range = selection.getRangeAt(0)
-      const chapterMarkRange = ChapterMarkRange.fromRange(range)
+
+      if (range.startContainer.nodeType !== Node.TEXT_NODE || range.endContainer.nodeType !== Node.TEXT_NODE) {
+        this.visible = false
+        return
+      }
+
+      const chapterMarkRange = new ChapterMarkRange(range)
       const mark = {
         bookId: this.book.id,
         chapterId: this.chapter.id,
@@ -128,7 +145,7 @@ export default {
       this.visible =false
     },
     thoughtActionHandler() {
-      this.thoughtInputVisible = true
+      this.dialog = 'thoughtInput'
       // create invisible dummy input to receive the focus first
       const fakeInput = document.createElement('input')
       fakeInput.setAttribute('type', 'text')
@@ -152,7 +169,7 @@ export default {
       this.mark.type = MarkType.THOUGHT
       await marks.add(toRaw(this.mark))
       this.chapterMark.refresh()
-      this.thoughtInputVisible = false
+      this.dialog = null
       this.visible = false
     },
     contentTapHandler(e) {
@@ -169,7 +186,7 @@ export default {
         }
       }
     },
-    actionHandler(event, action) {
+    async actionHandler(event, action) {
       event.preventDefault()
       // action: thought | underline
       if (action === 'underline') {
@@ -178,6 +195,12 @@ export default {
         this.thoughtActionHandler()
       } else if (action === 'removeUnderline') {
         this.removeUnderlineHandler()
+      } else if (action === 'viewMark') {
+        this.dialog = 'marks'
+        const mark = await marks.get(this.selectedUnderlineMark)
+        this.dialogProps = {
+          range: mark.range
+        }
       }
     }
   }

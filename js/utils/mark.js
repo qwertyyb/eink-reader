@@ -1,18 +1,19 @@
 import { marks } from "../storage.js"
-import { getChapterOffset } from "./index.js"
+import { getChapterOffset, getParagraphPoint } from "./index.js"
 
 export class ChapterMarkRange {
   start = 0
   length = 0
-  constructor(start = 0, length = 0) {
-    this.start = start
-    this.length = length
-  }
-
-  static fromRange(range) {
+  markStart = { cursor: 0, offset: 0 }
+  markEnd = { cursor: 0, offset: 0 }
+  constructor(range) {
     const chapterStartOffset = getChapterOffset({ node: range.startContainer, offset: range.startOffset })
     const chapterEndOffset = getChapterOffset({ node: range.endContainer, offset: range.endOffset })
-    return new ChapterMarkRange(chapterStartOffset, chapterEndOffset - chapterStartOffset)
+    console.log(chapterStartOffset, chapterEndOffset, chapterEndOffset - chapterStartOffset, range)
+    this.start = chapterStartOffset
+    this.length = chapterEndOffset - chapterStartOffset
+    this.markStart = getParagraphPoint({ node: range.startContainer, offset: range.startOffset })
+    this.markEnd = getParagraphPoint({ node: range.endContainer, offset: range.endOffset })
   }
 }
 

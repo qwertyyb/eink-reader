@@ -66,14 +66,37 @@ export const getNodeOffset = ({ textOffset, paragrahp } = {}) => {
   }
 }
 
-const getPreviousOffset = (node) => {
+const getPreviousOffset = (node, stopEl) => {
   if (!node) return 0
-  return node.textContent.length + getPreviousOffset(node.previousSibling)
-}
-export const getChapterOffset = ({ node, offset } = {}) => {
-  const result = offset + getPreviousOffset(node.previousSibling)
-  if (node.parentElement.nodeName === 'P') {
-    return result + parseInt(node.parentElement.dataset.chapterTextOffset, 10)
+
+  if (stopEl === node) return 0
+
+  const length = node.textContent.length
+
+  if (node.previousSibling) {
+    return length + getPreviousOffset(node.previousSibling, stopEl)
   }
-  return result + getChapterOffset({ node: node.parentElement, offset: 0 })
+  return length + getPreviousOffset(node.parentNode, stopEl)
+}
+
+export const getClosest = (node, selector) => {
+  return node?.closest?.(selector) || node?.parentElement?.closest?.(selector)
+}
+
+export const getParagraphOffset = ({ node, offset } = {}) => {
+  const p = getClosest(node, 'p[data-chapter-text-offset]')
+  return offset + getPreviousOffset(node.previousSibling, p)
+}
+
+export const getChapterOffset = ({ node, offset } = {}) => {
+  const p = getClosest(node, 'p[data-chapter-text-offset]')
+  return getParagraphOffset({ node, offset }) + parseInt(p.dataset.chapterTextOffset, 10)
+}
+
+export const getParagraphPoint = ({ node, offset } = {}) => {
+  const p = getClosest(node, 'p[data-chapter-text-offset]')
+  return {
+    offset: getParagraphOffset({ node, offset }),
+    cursor: parseInt(p.dataset.cursor, 10)
+  }
 }
