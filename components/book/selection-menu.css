@@ -16,12 +16,13 @@ mark {
   position: fixed;
   z-index: 2;
   background: #fff;
-  border-radius: 6px;
+  border-radius: 10px;
   list-style: none;
   display: flex;
   box-shadow: 0 0 14px gray;
   justify-content: space-around;
   transform: translateX(-50%);
+  padding: 0 6px;
 }
 .selection-menu .selection-menu-list .selection-menu-item {
   position: relative;
@@ -50,8 +51,8 @@ mark {
   transform: translateX(-50%);
 }
 .selection-menu .selection-menu-list .underline-submenu-item {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   border-radius: 9999px;
   display: flex;
   align-items: center;
@@ -60,8 +61,14 @@ mark {
 .selection-menu .selection-menu-list .underline-submenu-item.mark-style .style-icon {
   color: inherit;
 }
-.selection-menu .selection-menu-list .underline-submenu-item + .underline-submenu-item{
-  margin-left: 12px;
+.selection-menu .selection-menu-list .underline-submenu-item + .underline-submenu-item {
+  margin-left: 8px;
+}
+.selection-menu .selection-menu-list .underline-submenu-list .divider {
+  width: 2px;
+  height: 24px;
+  background: #bbb;
+  margin: 0 12px;
 }
 .selection-menu .selection-menu-list .menu-item-label {
   margin-top: 3px;

@@ -33,6 +33,7 @@ export default {
             {{ MarkStyleIcons[style] }}
             </span>
           </li>
+          <li class="divider"></li>
           <li class="underline-submenu-item"
             v-for="color in MarkColors"
             @click="actionHandler($event, 'update', { color })"
@@ -70,7 +71,7 @@ export default {
     <marks-dialog
       :visible="dialog==='marks'"
       @close="dialog=null"
-      @mark-removed="refreshMark"
+      @mark-removed="markRemovedHandler"
       v-bind="dialogProps">
     </marks-dialog>
   </div>`,
@@ -129,6 +130,12 @@ export default {
         childList: true,
         subtree: true
       })
+    },
+    markRemovedHandler(mark) {
+      if (mark.id === this.selectedMark?.id) {
+        this.selectedMark = null
+      }
+      this.refreshMark()
     },
     refreshMark() {
       this.chapterMark.refresh()
