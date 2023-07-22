@@ -7,6 +7,9 @@ import CatalogDialog from "./catalog-dialog.js"
 import SelectionMenu from "./selection-menu.js"
 import { DarkMode, ReadSpeak, AutoPlay } from "../../js/actions/index.js"
 import { getNearestTopEl } from "../../js/utils/index.js"
+import MenuDialog from './book-menu-dialog.js'
+import MarksViewer from './marks-viewer.js'
+import CDialog from "../common/c-dialog.js"
 
 export default {
   components: {
@@ -14,7 +17,10 @@ export default {
     CSelect,
     COption,
     CatalogDialog,
-    SelectionMenu
+    SelectionMenu,
+    MenuDialog,
+    MarksViewer,
+    CDialog
   },
   template: /*html*/`
     <div class="control-wrapper">
@@ -24,7 +30,7 @@ export default {
             @click="$router.replace('/')">arrow_back</div>
           
           <div class="navigator-menu">
-            <span class="material-icons-outlined">
+            <span class="material-icons-outlined" @click="dialog='bookMenu'">
               more_vert
             </span>
           </div>
@@ -35,6 +41,14 @@ export default {
         @close="visiblePanel=null">
         <slot name="catalog"></slot>
       </catalog-dialog>
+
+      <menu-dialog :visible="dialog==='bookMenu'" @close="dialog=null"
+        @action="dialog='marksViewer'">
+      </menu-dialog>
+
+      <c-dialog :visible="dialog==='marksViewer'" @close="dialog=null">
+        <marks-viewer></marks-viewer>
+      </c-dialog>
 
       <selection-menu>
         <div class="content-container" ref="content" @touchstart="touchstartHandler">
@@ -128,6 +142,7 @@ export default {
     return {
       panelVisible: false,
       visiblePanel: null,
+      dialog: null,
 
       controlState: {
         darkMode: false,

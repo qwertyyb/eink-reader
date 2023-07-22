@@ -59,7 +59,8 @@ export default {
   provide() {
     return {
       book: computed(() => this.book),
-      chapter: computed(() => this.chapter)
+      chapter: computed(() => this.chapter),
+      chapterList: computed(() => this.chapterList)
     }
   },
   data() {

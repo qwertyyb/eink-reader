@@ -9,7 +9,6 @@ export class ChapterMarkRange {
   constructor(range) {
     const chapterStartOffset = getChapterOffset({ node: range.startContainer, offset: range.startOffset })
     const chapterEndOffset = getChapterOffset({ node: range.endContainer, offset: range.endOffset })
-    console.log(chapterStartOffset, chapterEndOffset, chapterEndOffset - chapterStartOffset, range)
     this.start = chapterStartOffset
     this.length = chapterEndOffset - chapterStartOffset
     this.markStart = getParagraphPoint({ node: range.startContainer, offset: range.startOffset })
@@ -27,6 +26,12 @@ export const MarkStyles = {
   SOLID: 1,
   WAVE: 2,
   HIGHLIGHT: 3,
+}
+
+export const MarkStyleIcons = {
+  [MarkStyles.SOLID]: 'format_underlined',
+  [MarkStyles.WAVE]: 'format_underlined_squiggle',
+  [MarkStyles.HIGHLIGHT]: 'texture'
 }
 
 export const MarkColors = {
@@ -78,13 +83,12 @@ export class ChapterMark {
       this.markInstance.markRanges([range], {
         className,
         each(markedDom, range) {
-          console.log(markedDom)
           markedDom.dataset.id = id
           markedDom.dataset.type = type
           if (style === MarkStyles.HIGHLIGHT) {
             markedDom.style.backgroundColor = color || ''
           } else {
-            markedDom.style.borderColor = color
+            markedDom.style.borderBottom = `1px solid ${color}`
           }
         }
       })

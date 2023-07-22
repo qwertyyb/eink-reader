@@ -1,0 +1,14 @@
+.mark-list {
+  list-style: none;
+}
+.mark-list .mark-item {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 12px;
+  padding: 10px;
+}
+.mark-list .mark-item .mark-icon {
+  margin-right: 6px;
+}

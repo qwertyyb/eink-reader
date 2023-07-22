@@ -1,5 +1,6 @@
 import { marks } from "../../js/storage.js"
 import CDialog from "../common/c-dialog.js"
+import MarkList from './mark-list.js'
 
 export default {
   props: {
@@ -8,20 +9,12 @@ export default {
   },
   template: /*html*/`
     <c-dialog :visible="visible" @close="$emit('close')" class="marks-dialog">
-      <ul class="mark-list">
-        <li class="mark-item" v-for="mark in markList" :key="mark.id">
-          <span class="material-icons-outlined mark-icon"
-            :style="{color: mark.underlineColor || 'black'}">format_underlined</span>
-          <div class="mark-content">
-            <p class="mark-content">{{ mark.thought }}</p>
-            <p class="mark-quote">{{ mark.text }}</p>
-          </div>
-        </li>
-      </ul>
+      <mark-list :mark-list="markList"></mark-list>
     </c-dialog>
   `,
   components: {
-    CDialog
+    CDialog,
+    MarkList
   },
   inject: ['book', 'chapter'],
   data() {

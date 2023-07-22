@@ -1,6 +1,6 @@
 import { toRaw } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import CDialog from "../common/c-dialog.js"
-import { ChapterMark, MarkData, MarkType, MarkColors, MarkStyles } from '../../js/utils/mark.js'
+import { ChapterMark, MarkData, MarkType, MarkColors, MarkStyles, MarkStyleIcons } from '../../js/utils/mark.js'
 import { marks } from '../../js/storage.js'
 import MarksDialog from './marks-dialog.js'
 
@@ -29,14 +29,8 @@ export default {
             @click="actionHandler($event, 'update', { style })"
             :style="{color: selectedUnderlineMark.style === style ? selectedUnderlineMark.color : ''}"
             :key="style">
-            <span class="material-symbols-outlined style-icon" v-if="style === MarkStyles.WAVE">
-            format_underlined_squiggle
-            </span>
-            <span class="material-symbols-outlined style-icon" v-else-if="style === MarkStyles.HIGHLIGHT">
-            texture
-            </span>
-            <span class="material-symbols-outlined style-icon" v-else>
-            format_underlined
+            <span class="material-symbols-outlined style-icon">
+            {{ MarkStyleIcons[style] }}
             </span>
           </li>
           <li class="underline-submenu-item"
@@ -85,6 +79,7 @@ export default {
     return {
       MarkStyles,
       MarkColors,
+      MarkStyleIcons,
       rect: {
         top: 0,
         left: 0,

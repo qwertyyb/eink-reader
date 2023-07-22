@@ -93,13 +93,21 @@ const createStore = (storeName) => {
 
 export const books = createStore('books')
 
-const marks = createStore('marks')
-
-marks.getListByChapterAndBook = async (bookId, chapterId) => {
-  const list = await marks.getList()
-  return list.filter(item => {
-    return item.bookId === bookId && item.chapterId === chapterId
-  })
+const marks = {
+  ...createStore('marks'),
+  async getListByChapterAndBook(bookId, chapterId) {
+    const list = await marks.getList()
+    return list.filter(item => {
+      return item.bookId === bookId && item.chapterId === chapterId
+    })
+  },
+  async getListByBook(bookId) {
+    const list = await marks.getList()
+    return list.filter(item => item.bookId === bookId)
+      .sort((a, b) => {
+        return a.chapterId - b.chapterId || a.range.start - b.range.start
+      })
+  }
 }
 
 export { marks }

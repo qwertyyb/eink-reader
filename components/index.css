@@ -3,6 +3,9 @@
 @import url("./book/book-cover-animation.css");
 @import url("./book/selection-menu.css");
 @import url("./book/marks-dialog.css");
+@import url("./book/book-menu-dialog.css");
+@import url("./book/mark-list.css");
+@import url("./book/marks-viewer.css");
 
 @import url("./home/update-dialog.css");
 @import url("./home/fonts-dialog.css");

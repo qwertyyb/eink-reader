@@ -6,11 +6,10 @@
   height: 100%;
 }
 
-.selection-menu .selection-menu-content-wrapper mark.underline {
-  border-bottom: 1px solid #000;
+.selection-menu .selection-menu-content-wrapper mark {
   background: transparent;
 }
-.selection-menu .selection-menu-content-wrapper mark.underline:active {
+.selection-menu .selection-menu-content-wrapper mark:active {
   background: rgba(53, 161, 238, 0.5);
 }
 .selection-menu .selection-menu-list {

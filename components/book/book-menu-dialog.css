@@ -1,0 +1,15 @@
+.book-menu-dialog .book-menu {
+  padding: 30px 40px 50px 40px;
+  width: calc(100vw - 80px);
+  list-style: none;
+  display: flex;
+  font-size: 12px;
+  text-align: center;
+}
+.book-menu-dialog .menu-item {
+  margin-right: 32px;
+}
+.book-menu-dialog .menu-item-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}

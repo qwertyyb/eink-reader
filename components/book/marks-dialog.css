@@ -8,17 +8,3 @@
   margin-left: 8vw;
   color: #fff;
 }
-.marks-dialog .mark-list {
-  list-style: none;
-}
-.marks-dialog .mark-list .mark-item {
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  margin-bottom: 18px;
-  padding: 10px;
-}
-.marks-dialog .mark-item .mark-icon {
-  margin-right: 6px;
-}
