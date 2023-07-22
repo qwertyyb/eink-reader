@@ -32,7 +32,7 @@ mark {
   justify-content: center;
   align-items: center;
   font-size: 10px;
-  padding: 6px 16px;
+  padding: 4px 10px;
 }
 .selection-menu .selection-menu-list .selection-menu-item .menu-item-wrapper > .menu-icon {
   font-size: 18px;
@@ -64,7 +64,7 @@ mark {
   margin-left: 12px;
 }
 .selection-menu .selection-menu-list .menu-item-label {
-  margin-top: 6px;
+  margin-top: 3px;
   white-space: nowrap;
 }
 .thought-input-dialog .thought-input-wrapper {

@@ -6,7 +6,7 @@ import MarksDialog from './marks-dialog.js'
 
 export default {
   template: /*html*/`<div class="selection-menu">
-    <div class="selection-menu-content-wrapper" @click.capture="contentTapHandler" ref="contentWrapper">
+    <div class="selection-menu-content-wrapper" @pointerdown.capture="contentTapHandler" ref="contentWrapper">
       <slot></slot>
     </div>
     <ul class="selection-menu-list" :style="{top: rect.top + 'px', left: rect.left + 'px'}" v-show="visible">
@@ -17,10 +17,10 @@ export default {
         </div>
       </li>
       <li class="selection-menu-item"
-        v-if="selectedMark">
+        v-if="selectedMark && selectedMark.type === MarkType.UNDERLINE">
         <div class="menu-item-wrapper"
           @pointerdown.capture="actionHandler($event, 'removeUnderline')">
-          <span class="material-icons menu-icon">format_color_text</span>
+          <span class="material-icons menu-icon">format_underlined</span>
           <span class="menu-item-label">删除划线</span>
         </div>
         <ul class="underline-submenu-list">
@@ -56,7 +56,7 @@ export default {
         v-if="selectedMark"
         @pointerdown.capture="actionHandler($event, 'viewMark')">
         <div class="menu-item-wrapper">
-          <span class="material-symbols-outlined menu-icon">list</span>
+          <span class="material-symbols-outlined menu-icon">visibility</span>
           <span class="menu-item-label">查看</span>
         </div>
       </li>
@@ -84,6 +84,7 @@ export default {
       MarkStyles,
       MarkColors,
       MarkStyleIcons,
+      MarkType,
       rect: {
         top: 0,
         left: 0,
@@ -227,6 +228,8 @@ export default {
       const markEl = e.target.nodeName === 'MARK' ? e.target : e.target.closest('mark')
       if (!markEl) return
       e.preventDefault()
+      e.stopImmediatePropagation()
+      e.stopPropagation()
       const mark = await marks.get(parseInt(markEl.dataset.id, 10))
       if (!mark) return
       this.selectedMark = mark
