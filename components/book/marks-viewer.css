@@ -1,12 +1,12 @@
 .marks-viewer {
   width: 100vw;
   box-sizing: border-box;
-  padding: 10px 40px 30px 40px;
+  padding: 10px 12px 30px 12px;
   background: rgb(238, 238, 238);
   max-height: 80vh;
   overflow: auto;
 }
 .marks-viewer .mark-chapter-title {
   margin-bottom: 12px;
-  margin-left: -20px;
+  margin-left: -6px;
 }

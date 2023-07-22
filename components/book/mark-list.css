@@ -8,6 +8,37 @@
   display: flex;
   margin-bottom: 12px;
   padding: 10px;
+  font-size: 14px;
+  position: relative;
+}
+.mark-list .mark-item .remove-action {
+  margin-top: 8px;
+  position: absolute;
+  top: 0px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  color: blue;
+  cursor: pointer;
+}
+.mark-list .mark-item .remove-icon {
+  color: inherit;
+}
+.mark-list .mark-quote-wrapper {
+  display: flex;
+}
+.mark-list .mark-thought {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+.mark-list .mark-quote-wrapper .pre-line {
+  width: 4px;
+  height: auto;
+  background: rgb(195, 195, 195);
+  margin-right: 8px;
+}
+.mark-list .mark-quote-wrapper .mark-quote {
+  line-height: 1.8;
 }
 .mark-list .mark-item .mark-icon {
   margin-right: 6px;

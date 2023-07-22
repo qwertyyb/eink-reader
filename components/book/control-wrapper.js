@@ -46,7 +46,7 @@ export default {
         @action="dialog='marksViewer'">
       </menu-dialog>
 
-      <c-dialog :visible="dialog==='marksViewer'" @close="dialog=null">
+      <c-dialog :visible="dialog==='marksViewer'" @close="dialog=null;refreshMarks()">
         <marks-viewer></marks-viewer>
       </c-dialog>
 
@@ -213,6 +213,12 @@ export default {
       if (p.pageX < 20 || p.pageX > window.innerWidth - 20) {
         e.preventDefault()
       }
+    },
+    refreshMarks() {
+      const chapterEls = this.$refs.content.querySelectorAll('.chapter')
+      chapterEls.forEach(el => {
+        el.chapterMark?.refresh()
+      })
     },
     initHammer() {
       const contentTapHandler = (event) => {

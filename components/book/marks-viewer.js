@@ -1,5 +1,6 @@
 import { services } from "../../js/services/index.js"
 import { marks } from "../../js/storage.js"
+import { showToast } from "../../js/utils/index.js"
 import MarkList from "./mark-list.js"
 
 export default {
@@ -10,7 +11,7 @@ export default {
     <div class="marks-viewer">
       <div class="mark-chapter" v-for="chapter in chapterMarkList" :key="chapter.id">
         <h4 class="mark-chapter-title">{{ chapter.title }}</h4>
-        <mark-list :mark-list="chapter.markList"></mark-list>
+        <mark-list :mark-list="chapter.markList" @remove="removeMark"></mark-list>
       </div>
     </div>
   `,
@@ -21,10 +22,10 @@ export default {
     }
   },
   created() {
-    this.getMarkList()
+    this.refresh()
   },
   methods: {
-    async getMarkList() {
+    async refresh() {
       const markList = await marks.getListByBook(this.book.id)
       const chapterLabels = this.chapterList.reduce((acc, chapter) => {
         return {
@@ -49,6 +50,12 @@ export default {
       
       this.chapterMarkList = chapterMarkList
       console.log(chapterMarkList)
+    },
+    async removeMark(mark) {
+      await marks.remove(mark.id)
+      showToast('已删除')
+      this.refresh()
+      this.$emit('mark-removed', mark)
     }
   }
 }

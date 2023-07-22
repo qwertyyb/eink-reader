@@ -17,7 +17,7 @@ export default {
         </div>
       </li>
       <li class="selection-menu-item"
-        v-if="selectedUnderlineMark">
+        v-if="selectedMark">
         <div class="menu-item-wrapper"
           @pointerdown.capture="actionHandler($event, 'removeUnderline')">
           <span class="material-icons menu-icon">format_color_text</span>
@@ -27,7 +27,7 @@ export default {
           <li class="underline-submenu-item mark-style"
             v-for="style in MarkStyles"
             @click="actionHandler($event, 'update', { style })"
-            :style="{color: selectedUnderlineMark.style === style ? selectedUnderlineMark.color : ''}"
+            :style="{color: selectedMark.style === style ? selectedMark.color : ''}"
             :key="style">
             <span class="material-symbols-outlined style-icon">
             {{ MarkStyleIcons[style] }}
@@ -38,7 +38,7 @@ export default {
             @click="actionHandler($event, 'update', { color })"
             :key="color"
             :style="{background: color}">
-            <span class="material-symbols-outlined" v-if="selectedUnderlineMark.color===color">
+            <span class="material-symbols-outlined" v-if="selectedMark.color===color">
             check
             </span>
           </li>
@@ -53,7 +53,7 @@ export default {
         </div>
       </li>
       <li class="selection-menu-item"
-        v-if="selectedUnderlineMark"
+        v-if="selectedMark"
         @pointerdown.capture="actionHandler($event, 'viewMark')">
         <div class="menu-item-wrapper">
           <span class="material-symbols-outlined menu-icon">list</span>
@@ -67,7 +67,11 @@ export default {
         <button class="save-btn" @click="saveThought">保存</button>
       </div>
     </c-dialog>
-    <marks-dialog :visible="dialog==='marks'" @close="dialog=null" v-bind="dialogProps">
+    <marks-dialog
+      :visible="dialog==='marks'"
+      @close="dialog=null"
+      @mark-removed="refreshMark"
+      v-bind="dialogProps">
     </marks-dialog>
   </div>`,
   components: {
@@ -91,7 +95,7 @@ export default {
         type: 1, // 0: none, 1: underline, 2: thought
         thought: ''
       },
-      selectedUnderlineMark: null,
+      selectedMark: null,
     }
   },
   computed: {
@@ -99,7 +103,7 @@ export default {
       return this.$refs.contentWrapper.querySelector(`.chapter[data-id="${this.chapter.id}"]`)?.chapterMark
     },
     visible() {
-      return this.mark.text || this.selectedUnderlineMark
+      return !this.dialog && (this.mark.text || this.selectedMark)
     }
   },
   mounted() {
@@ -125,10 +129,15 @@ export default {
         subtree: true
       })
     },
+    refreshMark() {
+      this.chapterMark.refresh()
+    },
     unregisterMutationObserver() {
       this.observer?.disconnect()
     },
     selectionChangeHandler() {
+      if (this.dialog === 'thoughtInput') return
+
       const selection = window.getSelection()
 
       let text = ''
@@ -156,7 +165,7 @@ export default {
       this.mark = mark
 
       const { bottom, left, width } = range.getBoundingClientRect()
-      this.selectedUnderlineMark = null
+      this.selectedMark = null
       this.rect = {
         top: bottom + 10,
         left: left + width / 2,
@@ -172,17 +181,17 @@ export default {
       this.mark.text = ''
     },
     async removeUnderlineHandler() {
-      await marks.remove(this.selectedUnderlineMark.id)
+      await marks.remove(this.selectedMark.id)
       this.chapterMark.refresh()
-      this.selectedUnderlineMark = null
+      this.selectedMark = null
     },
     async updateSelectedMarkHandler(newData) {
       const newMark = {
-        ...toRaw(this.selectedUnderlineMark),
+        ...toRaw(this.selectedMark),
         ...newData
       }
-      await marks.update(this.selectedUnderlineMark.id, newMark)
-      this.selectedUnderlineMark = newMark
+      await marks.update(this.selectedMark.id, newMark)
+      this.selectedMark = newMark
       this.chapterMark.refresh()
     },
     thoughtActionHandler() {
@@ -214,18 +223,22 @@ export default {
       this.mark.text = ''
     },
     async contentTapHandler(e) {
-      this.selectedUnderlineMark = null
+      this.selectedMark = null
       const markEl = e.target.nodeName === 'MARK' ? e.target : e.target.closest('mark')
       if (!markEl) return
       e.preventDefault()
-      if (parseInt(markEl.dataset.type, 10) === MarkType.UNDERLINE) {
-        const mark = await marks.get(parseInt(markEl.dataset.id, 10))
-        if (!mark) return
-        this.selectedUnderlineMark = mark
+      const mark = await marks.get(parseInt(markEl.dataset.id, 10))
+      if (!mark) return
+      this.selectedMark = mark
         const { bottom, left, width } = markEl.getBoundingClientRect()
         this.rect = {
           top: bottom + 10,
           left: left + width / 2
+        }
+      if (mark.type === MarkType.THOUGHT) {
+        this.dialog = 'marks'
+        this.dialogProps = {
+          range: mark.range
         }
       }
     },
@@ -242,8 +255,8 @@ export default {
         event.stopImmediatePropagation()
         event.stopPropagation()
         this.dialog = 'marks'
-        const mark = await marks.get(this.selectedUnderlineMark.id)
-        this.selectedUnderlineMark = mark
+        const mark = await marks.get(this.selectedMark.id)
+        this.selectedMark = mark
         this.dialogProps = {
           range: mark.range
         }
