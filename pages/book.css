@@ -62,7 +62,6 @@
 .content p {
   text-indent: 2em;
   word-break: break-all;
-  color: #fff;
   /* content-visibility: auto; */
 }
 .content p + p {

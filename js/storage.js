@@ -80,6 +80,13 @@ const createStore = (storeName) => {
           .objectStore(storeName)
           .delete(id)
       )
+    },
+    update (id, updatedData) {
+      return wrap(db =>
+        db.transaction([storeName], 'readwrite')
+          .objectStore(storeName)
+          .put({ ...updatedData, id })
+      )
     }
   }
 }

@@ -3,7 +3,7 @@ export default {
   <transition name="fade-in"
     @enter="contentVisible=true">
     <div class="c-dialog" v-if="containerVisible">
-      <div class="mask" @click="$emit('close')"></div>
+      <div class="mask" @pointerdown="$emit('close')"></div>
       <transition :name="anim" @after-leave="containerVisible=false">
         <div class="c-dialog-content" v-if="contentVisible">
           <slot></slot>

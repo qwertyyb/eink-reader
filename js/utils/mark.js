@@ -23,8 +23,21 @@ export const MarkType = {
   THOUGHT: 2,
 }
 
+export const MarkStyles = {
+  SOLID: 1,
+  WAVE: 2,
+  HIGHLIGHT: 3,
+}
+
+export const MarkColors = {
+  YELLOW: 'yellow',
+  BLUE: 'blue',
+  PURPLE: 'purple',
+  GREEN: 'green',
+  RED: 'red'
+}
+
 export class MarkData {
-  id = 0
   bookId = 0
   chapterId = 0
   text = ''
@@ -32,6 +45,17 @@ export class MarkData {
   range = null
   type = MarkType.UNKNOWN
   thought = ''
+  style = MarkStyles.SOLID
+  color = MarkColors.BLUE
+
+  constructor({
+    range, bookId, chapterId
+  }) {
+    this.range = new ChapterMarkRange(range)
+    this.bookId = bookId
+    this.chapterId = chapterId
+    this.text = range.toString()
+  }
 }
 
 export class ChapterMark {
@@ -49,7 +73,7 @@ export class ChapterMark {
   render() {
     this.markInstance.unmark()
     this.markList.forEach(markData => {
-      const { range, id, type } = markData
+      const { range, id, type, color, style } = markData
       const className = type === MarkType.UNDERLINE ? 'underline' : 'thought'
       this.markInstance.markRanges([range], {
         className,
@@ -57,6 +81,11 @@ export class ChapterMark {
           console.log(markedDom)
           markedDom.dataset.id = id
           markedDom.dataset.type = type
+          if (style === MarkStyles.HIGHLIGHT) {
+            markedDom.style.backgroundColor = color || ''
+          } else {
+            markedDom.style.borderColor = color
+          }
         }
       })
     })

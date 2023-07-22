@@ -25,6 +25,9 @@
   transform: translateX(-50%);
 }
 .selection-menu .selection-menu-list .selection-menu-item {
+  position: relative;
+}
+.selection-menu .selection-menu-list .selection-menu-item .menu-item-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -32,8 +35,38 @@
   font-size: 10px;
   padding: 6px 16px;
 }
+.selection-menu .selection-menu-list .selection-menu-item .menu-item-wrapper > .menu-icon {
+  font-size: 18px;
+}
+.selection-menu .selection-menu-list .underline-submenu-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  display: flex;
+  background: #fff;
+  padding: 6px 12px;
+  box-shadow: 0 0 14px gray;
+  list-style: none;
+  border-radius: 99999px;
+  transform: translateX(-50%);
+}
+.selection-menu .selection-menu-list .underline-submenu-item {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.selection-menu .selection-menu-list .underline-submenu-item.mark-style .style-icon {
+  color: inherit;
+}
+.selection-menu .selection-menu-list .underline-submenu-item + .underline-submenu-item{
+  margin-left: 12px;
+}
 .selection-menu .selection-menu-list .menu-item-label {
   margin-top: 6px;
+  white-space: nowrap;
 }
 .thought-input-dialog .thought-input-wrapper {
   padding: 20px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));

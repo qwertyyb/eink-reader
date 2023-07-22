@@ -10,8 +10,12 @@ export default {
     <c-dialog :visible="visible" @close="$emit('close')" class="marks-dialog">
       <ul class="mark-list">
         <li class="mark-item" v-for="mark in markList" :key="mark.id">
-          <p class="mark-content">{{ mark.thought }}</p>
-          <p class="mark-quote">{{ mark.text }}</p>
+          <span class="material-icons-outlined mark-icon"
+            :style="{color: mark.underlineColor || 'black'}">format_underlined</span>
+          <div class="mark-content">
+            <p class="mark-content">{{ mark.thought }}</p>
+            <p class="mark-quote">{{ mark.text }}</p>
+          </div>
         </li>
       </ul>
     </c-dialog>

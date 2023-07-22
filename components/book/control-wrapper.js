@@ -22,6 +22,12 @@ export default {
         <div class="navigator" v-if="panelVisible">
           <div class="material-icons back-to-index"
             @click="$router.replace('/')">arrow_back</div>
+          
+          <div class="navigator-menu">
+            <span class="material-icons-outlined">
+              more_vert
+            </span>
+          </div>
         </div>
       </transition>
 

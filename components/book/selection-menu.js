@@ -1,36 +1,70 @@
 import { toRaw } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import CDialog from "../common/c-dialog.js"
-import { ChapterMark, ChapterMarkRange, MarkType } from '../../js/utils/mark.js'
+import { ChapterMark, MarkData, MarkType, MarkColors, MarkStyles } from '../../js/utils/mark.js'
 import { marks } from '../../js/storage.js'
 import MarksDialog from './marks-dialog.js'
 
 export default {
   template: /*html*/`<div class="selection-menu">
-    <div class="selection-menu-content-wrapper" @pointerdown.capture="contentTapHandler" ref="contentWrapper">
+    <div class="selection-menu-content-wrapper" @click.capture="contentTapHandler" ref="contentWrapper">
       <slot></slot>
     </div>
     <ul class="selection-menu-list" :style="{top: rect.top + 'px', left: rect.left + 'px'}" v-show="visible">
       <li class="selection-menu-item" @pointerdown.capture="actionHandler($event, 'thought')">
-        <span class="material-icons">lightbulb</span>
-        <span class="menu-item-label">想法</span>
+        <div class="menu-item-wrapper">
+          <span class="material-icons menu-icon">lightbulb</span>
+          <span class="menu-item-label">想法</span>
+        </div>
       </li>
       <li class="selection-menu-item"
-        v-if="selectedUnderlineMark"
-        @pointerdown.capture="actionHandler($event, 'removeUnderline')">
-        <span class="material-icons">format_color_text</span>
-        <span class="menu-item-label">删除划线</span>
+        v-if="selectedUnderlineMark">
+        <div class="menu-item-wrapper"
+          @pointerdown.capture="actionHandler($event, 'removeUnderline')">
+          <span class="material-icons menu-icon">format_color_text</span>
+          <span class="menu-item-label">删除划线</span>
+        </div>
+        <ul class="underline-submenu-list">
+          <li class="underline-submenu-item mark-style"
+            v-for="style in MarkStyles"
+            @click="actionHandler($event, 'update', { style })"
+            :style="{color: selectedUnderlineMark.style === style ? selectedUnderlineMark.color : ''}"
+            :key="style">
+            <span class="material-symbols-outlined style-icon" v-if="style === MarkStyles.WAVE">
+            format_underlined_squiggle
+            </span>
+            <span class="material-symbols-outlined style-icon" v-else-if="style === MarkStyles.HIGHLIGHT">
+            texture
+            </span>
+            <span class="material-symbols-outlined style-icon" v-else>
+            format_underlined
+            </span>
+          </li>
+          <li class="underline-submenu-item"
+            v-for="color in MarkColors"
+            @click="actionHandler($event, 'update', { color })"
+            :key="color"
+            :style="{background: color}">
+            <span class="material-symbols-outlined" v-if="selectedUnderlineMark.color===color">
+            check
+            </span>
+          </li>
+        </ul>
       </li>
       <li class="selection-menu-item"
         v-else
         @pointerdown.capture="actionHandler($event, 'underline')">
-        <span class="material-icons">format_color_text</span>
-        <span class="menu-item-label">划线</span>
+        <div class="menu-item-wrapper">
+          <span class="material-icons menu-icon">format_color_text</span>
+          <span class="menu-item-label">划线</span>
+        </div>
       </li>
       <li class="selection-menu-item"
         v-if="selectedUnderlineMark"
         @pointerdown.capture="actionHandler($event, 'viewMark')">
-        <span class="material-icons">format_color_text</span>
-        <span class="menu-item-label">查看</span>
+        <div class="menu-item-wrapper">
+          <span class="material-symbols-outlined menu-icon">list</span>
+          <span class="menu-item-label">查看</span>
+        </div>
       </li>
     </ul>
     <c-dialog :visible="dialog==='thoughtInput'" class="thought-input-dialog" @close="dialog=null">
@@ -49,11 +83,12 @@ export default {
   inject: ['book', 'chapter'],
   data() {
     return {
+      MarkStyles,
+      MarkColors,
       rect: {
         top: 0,
         left: 0,
       },
-      visible: false,
       dialog: null,
       dialogProps: {},
       mark: {
@@ -67,6 +102,9 @@ export default {
   computed: {
     chapterMark() {
       return this.$refs.contentWrapper.querySelector(`.chapter[data-id="${this.chapter.id}"]`)?.chapterMark
+    },
+    visible() {
+      return this.mark.text || this.selectedUnderlineMark
     }
   },
   mounted() {
@@ -98,33 +136,32 @@ export default {
     selectionChangeHandler() {
       const selection = window.getSelection()
 
-      if (selection.isCollapsed) {
-        this.visible = false
-        return
+      let text = ''
+      let range = null
+
+      if (selection.rangeCount) {
+        // 现代浏览器只支持一个range
+        range = selection.getRangeAt(0)
+        text = range.toString()
+
+        if (range.startContainer.nodeType !== Node.TEXT_NODE || range.endContainer.nodeType !== Node.TEXT_NODE) {
+          text = ''
+        }
       }
 
-      // 现代浏览器只支持一个range
-      const range = selection.getRangeAt(0)
+      this.mark.text = text
 
-      if (range.startContainer.nodeType !== Node.TEXT_NODE || range.endContainer.nodeType !== Node.TEXT_NODE) {
-        this.visible = false
-        return
-      }
+      if (!text) return
 
-      const chapterMarkRange = new ChapterMarkRange(range)
-      const mark = {
+      const mark = new MarkData({
+        range,
         bookId: this.book.id,
-        chapterId: this.chapter.id,
-        text: range.toString(),
-        range: chapterMarkRange,
-        type: MarkType.UNKNOWN,
-        thought: '',
-      }
+        chapterId: this.chapter.id
+      })
       this.mark = mark
 
       const { bottom, left, width } = range.getBoundingClientRect()
-      this.selectedUnderlineMark = false
-      this.visible = true
+      this.selectedUnderlineMark = null
       this.rect = {
         top: bottom + 10,
         left: left + width / 2,
@@ -137,12 +174,21 @@ export default {
       })
       this.chapterMark.refresh()
       window.getSelection().empty()
-      this.visible = false
+      this.mark.text = ''
     },
     async removeUnderlineHandler() {
-      await marks.remove(this.selectedUnderlineMark)
+      await marks.remove(this.selectedUnderlineMark.id)
       this.chapterMark.refresh()
-      this.visible =false
+      this.selectedUnderlineMark = null
+    },
+    async updateSelectedMarkHandler(newData) {
+      const newMark = {
+        ...toRaw(this.selectedUnderlineMark),
+        ...newData
+      }
+      await marks.update(this.selectedUnderlineMark.id, newMark)
+      this.selectedUnderlineMark = newMark
+      this.chapterMark.refresh()
     },
     thoughtActionHandler() {
       this.dialog = 'thoughtInput'
@@ -170,15 +216,17 @@ export default {
       await marks.add(toRaw(this.mark))
       this.chapterMark.refresh()
       this.dialog = null
-      this.visible = false
+      this.mark.text = ''
     },
-    contentTapHandler(e) {
+    async contentTapHandler(e) {
+      this.selectedUnderlineMark = null
       const markEl = e.target.nodeName === 'MARK' ? e.target : e.target.closest('mark')
       if (!markEl) return
       e.preventDefault()
       if (parseInt(markEl.dataset.type, 10) === MarkType.UNDERLINE) {
-        this.visible = true
-        this.selectedUnderlineMark = parseInt(markEl.dataset.id, 10)
+        const mark = await marks.get(parseInt(markEl.dataset.id, 10))
+        if (!mark) return
+        this.selectedUnderlineMark = mark
         const { bottom, left, width } = markEl.getBoundingClientRect()
         this.rect = {
           top: bottom + 10,
@@ -186,7 +234,7 @@ export default {
         }
       }
     },
-    async actionHandler(event, action) {
+    async actionHandler(event, action, params) {
       event.preventDefault()
       // action: thought | underline
       if (action === 'underline') {
@@ -196,11 +244,16 @@ export default {
       } else if (action === 'removeUnderline') {
         this.removeUnderlineHandler()
       } else if (action === 'viewMark') {
+        event.stopImmediatePropagation()
+        event.stopPropagation()
         this.dialog = 'marks'
-        const mark = await marks.get(this.selectedUnderlineMark)
+        const mark = await marks.get(this.selectedUnderlineMark.id)
+        this.selectedUnderlineMark = mark
         this.dialogProps = {
           range: mark.range
         }
+      } else if (action === 'update') {
+        this.updateSelectedMarkHandler(params)
       }
     }
   }
