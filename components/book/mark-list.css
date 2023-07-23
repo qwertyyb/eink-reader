@@ -20,9 +20,11 @@
   align-items: center;
   color: blue;
   cursor: pointer;
+  font-size: 12px;
 }
 .mark-list .mark-item .remove-icon {
   color: inherit;
+  font-size: 18px;
 }
 .mark-list .mark-quote-wrapper {
   display: flex;

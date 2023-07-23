@@ -8,7 +8,7 @@ export default {
     <ul class="mark-list">
       <li class="mark-item"
         v-for="mark in markListWithStyle" :key="mark.id">
-        <span class="material-icons-outlined mark-icon"
+        <span class="material-symbols-outlined mark-icon"
           v-if="mark.type === MarkType.UNDERLINE"
           :style="mark.iconStyle">{{ MarkStyleIcons[mark.style] }}</span>
         <span class="material-icons-outlined mark-icon"
@@ -40,7 +40,12 @@ export default {
         return {
           ...mark,
           iconStyle: { color: mark.color },
-          textStyle: mark.style === MarkStyles.HIGHLIGHT ? { backgroundColor: mark.color } : { borderBottom: `1px solid ${mark.color}` }
+          textStyle: mark.style === MarkStyles.HIGHLIGHT ? {
+            backgroundColor: mark.color
+          } : {
+            textDecoration: `underline ${mark.style === MarkStyles.WAVE ? 'wavy' : 'solid'} ${mark.color}`,
+            textUnderlineOffset: '0.3em'
+          }
         }
       })
     }

@@ -40,8 +40,11 @@ export default {
     async removeMark(mark) {
       await marks.remove(mark.id)
       showToast('已删除')
-      this.refresh()
       this.$emit('mark-removed', mark)
+      await this.refresh()
+      if (!this.markList.length) {
+        this.$emit('close')
+      }
     }
   }
 }
