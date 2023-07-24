@@ -88,7 +88,7 @@ export class ChapterMark {
           if (style === MarkStyles.HIGHLIGHT) {
             markedDom.style.backgroundColor = color || ''
           } else {
-            markedDom.style.cssText = `text-decoration: underline ${style === MarkStyles.WAVE ? 'wavy' : 'solid'} ${color};text-underline-offset: 0.3em`
+            markedDom.style.cssText = `text-decoration:underline;text-decoration-style:${style === MarkStyles.WAVE ? 'wavy' : 'solid'};text-decoration-color:${color};text-underline-offset: 0.3em`
           }
         }
       })

@@ -43,7 +43,9 @@ export default {
           textStyle: mark.style === MarkStyles.HIGHLIGHT ? {
             backgroundColor: mark.color
           } : {
-            textDecoration: `underline ${mark.style === MarkStyles.WAVE ? 'wavy' : 'solid'} ${mark.color}`,
+            textDecoration: 'underline',
+            textDecorationStyle: mark.style === MarkStyles.WAVE ? 'wavy' : 'solid',
+            textDecorationColor: mark.color,
             textUnderlineOffset: '0.3em'
           }
         }
