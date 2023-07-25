@@ -16,6 +16,7 @@
 .catalog-content-wrapper {
   height: 100vh;
   overflow: auto;
+  overscroll-behavior: contain;
   content-visibility: auto;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top);
