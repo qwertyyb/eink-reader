@@ -46,5 +46,17 @@ export const remoteBooks = [
     cover: new URL('../assets/covers/xm.jpeg', import.meta.url).href,
     title: '星门',
     downloadUrl: new URL('./星门.txt', import.meta.url).href
+  },
+  {
+    id: 9,
+    cover: new URL('../assets/covers/nocover.jpeg', import.meta.url).href,
+    title: '佛本是道',
+    downloadUrl: new URL('./佛本是道.txt', import.meta.url).href
+  },
+  {
+    id: 10,
+    cover: new URL('../assets/covers/wsxsztwjl.jpeg', import.meta.url).href,
+    title: '我师兄实在太稳健了',
+    downloadUrl: new URL('./我师兄实在太稳健了.txt', import.meta.url).href
   }
 ]
