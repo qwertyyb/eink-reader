@@ -3,4 +3,4 @@ export const coverSize = {
   height: 140
 }
 
-export const version = '202308031441'
+export const version = '202308082025'

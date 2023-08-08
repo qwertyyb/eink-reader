@@ -39,6 +39,7 @@ export const dataService = {
     const bookList = remoteBooks.map(item => {
       const local = list.find(localBook => localBook.id === item.id)
       return {
+        ...local,
         ...item,
         downloaded: !!local,
         catalog: (local && local.catalog || []).map(item => {
@@ -48,6 +49,8 @@ export const dataService = {
           }
         })
       }
+    }).sort((prev, next) => {
+      return next.downloaded - prev.downloaded || (next.lastReadTime || 0) - (prev.lastReadTime || 0) || 0
     })
     return bookList
   },

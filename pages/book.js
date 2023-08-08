@@ -5,6 +5,7 @@ import { lastReadBooks, lastReadBook } from '../js/utils/last-read.js'
 import { showToast } from '../js/utils/index.js'
 import CatalogDialog from '../components/book/catalog-dialog.js'
 import ControlWrapper from '../components/book/control-wrapper.js'
+import { books } from '../js/storage.js'
 
 export default {
   template: /*html*/`
@@ -101,6 +102,7 @@ export default {
       server: this.server,
       bookId: this.id
     })
+    books.updateLastReadTime(this.id)
   },
   async beforeRouteLeave(to, from, next) {
     this.$refs['control-wrapper']?.closePanel?.()

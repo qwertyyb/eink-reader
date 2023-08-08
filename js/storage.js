@@ -91,7 +91,18 @@ const createStore = (storeName) => {
   }
 }
 
-export const books = createStore('books')
+export const books = (() => {
+  const baseBooks = createStore('books')
+  return {
+    ...baseBooks,
+    async updateLastReadTime(id) {
+      const data = await baseBooks.get(+id)
+      const lastReadTime = Date.now()
+      data.lastReadTime = lastReadTime
+      return baseBooks.update(+id, data)
+    }
+  }
+})()
 
 const marks = {
   ...createStore('marks'),
