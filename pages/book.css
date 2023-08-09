@@ -23,7 +23,6 @@
   overflow: auto;
   position: relative;
   z-index: 2;
-  background: #fff;
 }
 .content {
   box-sizing: border-box;
