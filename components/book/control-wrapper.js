@@ -109,6 +109,8 @@ export default {
               </c-select>
               <span class="material-icons">chevron_right</span>
             </div>
+            <div class="background">
+            </div>
           </div>
           <div class="control-list">
             <div class="control-item" data-control="catalog"
@@ -159,6 +161,10 @@ export default {
         { value: '落霞文楷', label: '落霞文楷' },
         { value: '落霞文楷 屏幕阅读版', label: '落霞文楷 屏幕阅读版' },
         { value: '975圆体', label: '975圆体' }
+      ],
+
+      backgroundList: [
+        { label: '仿纸', value: {} },
       ],
 
       settings: getSettings(),
