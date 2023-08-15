@@ -12,19 +12,19 @@
   position: relative;
 }
 .mark-list .mark-item .remove-action {
-  margin-top: 8px;
-  position: absolute;
-  top: 0px;
-  right: 8px;
   display: flex;
   align-items: center;
-  color: blue;
+  color: red;
   cursor: pointer;
   font-size: 12px;
 }
 .mark-list .mark-item .remove-icon {
   color: inherit;
   font-size: 18px;
+}
+.mark-list .mark-item .mark-content {
+  flex: 1;
+  margin-right: 6px;
 }
 .mark-list .mark-quote-wrapper {
   display: flex;
@@ -41,6 +41,9 @@
 }
 .mark-list .mark-quote-wrapper .mark-quote {
   line-height: 1.8;
+}
+.mark-list .mark-quote-wrapper .mark-quote mark {
+  color: #666;
 }
 .mark-list .mark-item .mark-icon {
   margin-right: 6px;

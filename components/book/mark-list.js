@@ -14,10 +14,6 @@ export default {
         <span class="material-icons-outlined mark-icon"
           v-else-if="mark.type === MarkType.THOUGHT"
           :style="mark.iconStyle">comment</span>
-        <span class="remove-action" @click="$emit('remove', mark)">
-          <span class="material-symbols-outlined remove-icon">delete</span>
-          删除
-        </span>
         <div class="mark-content">
           <p class="mark-thought" v-if="mark.type === MarkType.THOUGHT">{{ mark.thought }}</p>
           <div class="mark-quote-wrapper">
@@ -25,6 +21,9 @@ export default {
             <p class="mark-quote"><mark :style="mark.textStyle">{{ mark.text }}</mark></p>
           </div>
         </div>
+        <span class="remove-action" @click="$emit('remove', mark)">
+          <span class="material-symbols-outlined remove-icon">delete</span>
+        </span>
       </li>
     </ul>
   `,

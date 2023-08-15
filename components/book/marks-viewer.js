@@ -9,9 +9,12 @@ export default {
   },
   template: /*html*/`
     <div class="marks-viewer">
-      <div class="mark-chapter" v-for="chapter in chapterMarkList" :key="chapter.id">
-        <h4 class="mark-chapter-title">{{ chapter.title }}</h4>
-        <mark-list :mark-list="chapter.markList" @remove="removeMark"></mark-list>
+      <h3 class="marks-viewer-title">笔记<span class="material-symbols-outlined more-icon">arrow_forward_ios</span></h3>
+      <div class="mark-chapters">
+        <div class="mark-chapter" v-for="chapter in chapterMarkList" :key="chapter.id">
+          <h4 class="mark-chapter-title">{{ chapter.title }}</h4>
+          <mark-list :mark-list="chapter.markList" @remove="removeMark" class="marks-viewer-list"></mark-list>
+        </div>
       </div>
     </div>
   `,
