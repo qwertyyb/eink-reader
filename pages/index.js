@@ -1,7 +1,6 @@
 import { services } from '../js/services/index.js'
 import { importFile } from '../js/services/local-server.js'
 import { formatSize, showToast } from '../js/utils/index.js'
-import { lastReadBook } from '../js/utils/last-read.js'
 import MenuDialog from '../components/home/menu-dialog.js'
 import BookCover from '../components/common/book-cover.js'
 
@@ -26,7 +25,10 @@ export default {
         <div class="book-list">
           <div class="book-item"
             v-for="(book, index) in bookList"
-            :class="{'is-reading': \`\${book.id}\` === \`\${$route.params.id}\`}"
+            :class="{
+              'is-reading': \`\${book.id}\` === \`\${$route.params.id}\`,
+              'downloaded': book.downloaded
+            }"
             :key="index"
             :data-book-id="book.id">
             <book-cover :book="book"
@@ -39,9 +41,8 @@ export default {
               <span class="title">{{ book.title }}</span>
             </div>
             <div class="action-mask"
-              @click="removeLocalBook(book, index)"
               v-if="mode==='select' && book.downloaded">
-              <div class="action-label">点击删除本地缓存</div>
+              <span class="material-icons-outlined remove-icon" @click="removeLocalBook(book, index)">delete</span>
             </div>
           </div>
         </div>
@@ -50,9 +51,6 @@ export default {
         <div class="tab-item" id="local-books" @click="changeTab('local')">
           <span class="material-icons">menu_book</span>
           本地
-        </div>
-        <div class="tab-item center" @click="toLastReadBook" v-if="lastReadBook">
-          <span class="material-icons">book</span>
         </div>
         <div class="tab-item" id="online-books" @click="changeTab('online')">
           <span class="material-icons">cloud</span>
@@ -68,7 +66,6 @@ export default {
       curTab: 'local', // local | online
       bookList: [],
       curBookPos: null,
-      lastReadBook: lastReadBook.get(),
       menuDialogVisible: false,
       mode: 'read' // read | select
     }
@@ -112,15 +109,6 @@ export default {
       })
       input.style.display = 'none'
       input.click()
-    },
-    toLastReadBook() {
-      this.$router.push({
-        name: 'book',
-        params: {
-          server: this.lastReadBook.server,
-          id: this.lastReadBook.bookId
-        }
-      })
     },
     async toReadBook(book, index, bookList) {
       if (book.downloaded) {
