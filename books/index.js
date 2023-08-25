@@ -1,62 +1,71 @@
+const bookUrl = (bookName) => new URL(`./${bookName}.txt`, import.meta.url).href
+const coverUrl = (name) => new URL(`../assets/covers/${name}.jpeg`, import.meta.url).href
+
 export const remoteBooks = [
   {
     id: 1,
-    cover: new URL('../assets/covers/wzzj.jpeg', import.meta.url).href,
+    cover: coverUrl('wzzj'),
     title: '万族之劫',
-    downloadUrl: new URL('./万族之劫.txt', import.meta.url).href
+    downloadUrl: bookUrl('万族之劫')
   },
   {
     id: 2,
-    cover: new URL('../assets/covers/qqgw.jpeg', import.meta.url).href,
+    cover: coverUrl('qqgw'),
     title: '全球高武',
-    downloadUrl: new URL('./全球高武.txt', import.meta.url).href
+    downloadUrl: bookUrl('全球高武')
   },
   {
     id: 3,
-    cover: new URL('../assets/covers/zt.jpeg', import.meta.url).href,
+    cover: coverUrl('zt'),
     title: '遮天',
-    downloadUrl: new URL('./遮天.txt', import.meta.url).href
+    downloadUrl: bookUrl('遮天')
   },
   {
     id: 4,
-    cover: new URL('../assets/covers/wmsj.jpeg', import.meta.url).href,
+    cover: coverUrl('wmsj'),
     title: '完美世界',
-    downloadUrl: new URL('./完美世界.txt', import.meta.url).href
+    downloadUrl: bookUrl('完美世界')
   },
   {
     id: 5,
-    cover: new URL('../assets/covers/dfdgr.jpeg', import.meta.url).href,
+    cover: coverUrl('dfdgr'),
     title: '大奉打更人',
-    downloadUrl: new URL('./大奉打更人.txt', import.meta.url).href
+    downloadUrl: bookUrl('大奉打更人')
   },
   {
     id: 6,
-    cover: new URL('../assets/covers/gmzz.jpeg', import.meta.url).href,
+    cover: coverUrl('gmzz'),
     title: '诡秘之主',
-    downloadUrl: new URL('./诡秘之主.txt', import.meta.url).href
+    downloadUrl: bookUrl('诡秘之主')
   },
   {
     id: 7,
-    cover: new URL('../assets/covers/sm.jpeg', import.meta.url).href,
+    cover: coverUrl('sm'),
     title: '神墓',
-    downloadUrl: new URL('./神墓.txt', import.meta.url).href
+    downloadUrl: bookUrl('神墓')
   },
   {
     id: 8,
-    cover: new URL('../assets/covers/xm.jpeg', import.meta.url).href,
+    cover: coverUrl('xm'),
     title: '星门',
-    downloadUrl: new URL('./星门.txt', import.meta.url).href
+    downloadUrl: bookUrl('星门')
   },
   {
     id: 9,
-    cover: new URL('../assets/covers/nocover.jpeg', import.meta.url).href,
+    cover: coverUrl('nocover'),
     title: '佛本是道',
-    downloadUrl: new URL('./佛本是道.txt', import.meta.url).href
+    downloadUrl: bookUrl('佛本是道')
   },
   {
     id: 10,
-    cover: new URL('../assets/covers/wsxsztwjl.jpeg', import.meta.url).href,
+    cover: coverUrl('wsxsztwjl'),
     title: '我师兄实在太稳健了',
-    downloadUrl: new URL('./我师兄实在太稳健了.txt', import.meta.url).href
+    downloadUrl: bookUrl('我师兄实在太稳健了')
+  },
+  {
+    id: 11,
+    cover: coverUrl('xzltq'),
+    title: '修真聊天群',
+    downloadUrl: bookUrl('修真聊天群')
   }
 ]
