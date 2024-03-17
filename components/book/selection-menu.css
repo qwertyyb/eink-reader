@@ -6,11 +6,9 @@
   height: 100%;
 }
 
-mark {
+.selection-menu .selection-menu-content-wrapper mark {
   background: transparent;
-}
-.selection-menu .selection-menu-content-wrapper mark:active {
-  background: rgba(53, 161, 238, 0.5);
+  cursor: pointer;
 }
 .selection-menu .selection-menu-list {
   position: fixed;

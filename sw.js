@@ -141,7 +141,7 @@ self.addEventListener('fetch', function(event) {
         if (disableCache) return fetch(event.request);
         return caches.match(event.request).then(function(cachedResp) {
           if (cachedResp) {
-            logger.info('cache find', event.request.url)
+            logger.info('cache hit', event.request.url)
             return cachedResp
           }
           return fetch(event.request).then(function(response) {

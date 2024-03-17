@@ -1,6 +1,7 @@
 import { services } from '../js/services/index.js'
 import { importFile } from '../js/services/local-server.js'
 import { formatSize, showToast } from '../js/utils/index.js'
+import { DarkMode } from '../js/actions/dark-mode.js'
 import MenuDialog from '../components/home/menu-dialog.js'
 import BookCover from '../components/common/book-cover.js'
 
@@ -15,11 +16,17 @@ export default {
         <img class="logo"
           @click="menuDialogVisible=true"
           src="https://cdn.jsdelivr.net/gh/qwertyyb/eink-reader/assets/icons/128.png" />
-        <span class="select" @click="mode='select'" v-if="mode==='read'">选择</span>
-        <span class="select" @click="mode='read'" v-if="mode==='select'">取消</span>
-        <span id="import-file"
+        <span class="material-symbols-outlined mode-toggle-action header-action"
+          v-if="isDarkMode"
+          @click="toggleDarkMode">dark_mode</span>
+        <span class="material-symbols-outlined mode-toggle-action header-action"
+          v-else
+          @click="toggleDarkMode">light_mode</span>
+        <span class="header-action select-action" @click="mode='select'" v-if="mode==='read'">选择</span>
+        <span class="header-action select-action" @click="mode='read'" v-if="mode==='select'">取消</span>
+        <!-- <span id="import-file"
           @click="importLocalFile"
-          class="material-icons">add</span>
+          class="material-icons">add</span> -->
       </div>
       <div class="shelf">
         <div class="book-list">
@@ -67,7 +74,8 @@ export default {
       bookList: [],
       curBookPos: null,
       menuDialogVisible: false,
-      mode: 'read' // read | select
+      mode: 'read', // read | select
+      isDarkMode: false,
     }
   },
   computed: {
@@ -76,11 +84,18 @@ export default {
     }
   },
   async created() {
+    this.darkModeDetector = new DarkMode({
+      auto: true,
+      changeHandler: isDarkMode => this.isDarkMode = isDarkMode
+    })
     await this.refreshBookList()
     if (!this.$route.params.id) return;
     await this.$nextTick()
     const { top, left } = this.$el.querySelector(`.book-list .book-item[data-book-id="${this.$route.params.id}"]`).getBoundingClientRect()
     this.curBookPos = { top, left }
+  },
+  beforeDestory() {
+    this.darkModeDetector?.exit()
   },
   methods: {
     async refreshBookList() {
@@ -147,6 +162,9 @@ export default {
     async removeLocalBook(book, index) {
       await services.local.removeLocalBook(book)
       this.refreshBookList()
+    },
+    toggleDarkMode() {
+      this.darkModeDetector.toggle()
     }
   }
 }

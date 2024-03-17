@@ -6,11 +6,11 @@ import MarksDialog from './marks-dialog.js'
 
 export default {
   template: /*html*/`<div class="selection-menu">
-    <div class="selection-menu-content-wrapper" @pointerdown.capture="contentTapHandler" ref="contentWrapper">
+    <div class="selection-menu-content-wrapper" @click.capture="contentTapHandler" ref="contentWrapper">
       <slot></slot>
     </div>
-    <ul class="selection-menu-list" :style="{top: rect.top + 'px', left: rect.left + 'px'}" v-show="visible">
-      <li class="selection-menu-item" @pointerdown.capture="actionHandler($event, 'thought')">
+    <ul class="selection-menu-list" @pointerdown.prevent :style="{top: rect.top + 'px', left: rect.left + 'px'}" v-show="visible">
+      <li class="selection-menu-item" @click="actionHandler($event, 'thought')">
         <div class="menu-item-wrapper">
           <span class="material-icons menu-icon">lightbulb</span>
           <span class="menu-item-label">想法</span>
@@ -19,7 +19,7 @@ export default {
       <li class="selection-menu-item"
         v-if="selectedMark && selectedMark.type === MarkType.UNDERLINE">
         <div class="menu-item-wrapper"
-          @pointerdown.capture="actionHandler($event, 'removeUnderline')">
+          @click="actionHandler($event, 'removeUnderline')">
           <span class="material-icons menu-icon">format_underlined</span>
           <span class="menu-item-label">删除划线</span>
         </div>
@@ -47,7 +47,7 @@ export default {
       </li>
       <li class="selection-menu-item"
         v-else
-        @pointerdown.capture="actionHandler($event, 'underline')">
+        @click="actionHandler($event, 'underline')">
         <div class="menu-item-wrapper">
           <span class="material-icons menu-icon">format_color_text</span>
           <span class="menu-item-label">划线</span>
@@ -55,7 +55,7 @@ export default {
       </li>
       <li class="selection-menu-item"
         v-if="selectedMark"
-        @pointerdown.capture="actionHandler($event, 'viewMark')">
+        @click="actionHandler($event, 'viewMark')">
         <div class="menu-item-wrapper">
           <span class="material-symbols-outlined menu-icon">visibility</span>
           <span class="menu-item-label">查看</span>

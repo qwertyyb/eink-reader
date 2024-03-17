@@ -93,7 +93,8 @@
   background: rgba(0, 0, 0, .6);
 }
 .page-container.shelf-page .book-item .action-mask .remove-icon {
-  color: #B00020;
+  color: #fff;
+  font-size: 36px;
 }
 .page-container.shelf-page .book-item .action-label {
   color: #fff;
@@ -117,9 +118,13 @@
   width: 24px;
   height: 24px;
 }
-.page-container.shelf-page .header .select {
+.page-container.shelf-page .header .header-action {
+  margin-left: 8px;
+}
+.page-container.shelf-page .header .header-action.mode-toggle-action {
   margin-left: auto;
-  margin-right: 6px;
+}
+.page-container.shelf-page .header .select-action {
   font-size: 20px;
 }
 .page-container.shelf-page .header #import-file {

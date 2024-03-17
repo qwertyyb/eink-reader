@@ -211,7 +211,7 @@ export default {
     this.hammer?.destroy?.()
     this.actions?.autoPlay?.stop?.()
     this.actions?.readSpeak?.stop?.()
-    this.actions?.darkMode?.exit()
+    this.actions?.darkMode?.destroy?.()
   },
   methods: {
     touchstartHandler(e) {

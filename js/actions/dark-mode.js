@@ -8,17 +8,23 @@ export class DarkMode extends EventTarget {
     }
     if (auto) {
       const match = window.matchMedia('(prefers-color-scheme: dark)')
-      match.addEventListener('change', event => {
-        if (event.matches) {
-          this.enter()
-        } else {
-          this.exit()
-        }
-      })
+      match.addEventListener('change', this.#callback)
       if (match.matches) {
         this.enter()
       }
     }
+  }
+
+  #callback = (event) => {
+    if (event.matches) {
+      this.enter()
+    } else {
+      this.exit()
+    }
+  }
+
+  destroy() {
+    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.#callback)
   }
 
   #changeHandler() {
