@@ -86,7 +86,9 @@ export default {
   async created() {
     this.darkModeDetector = new DarkMode({
       auto: true,
-      changeHandler: isDarkMode => this.isDarkMode = isDarkMode
+      changeHandler: event => {
+        this.isDarkMode = event.detail.enabled
+      }
     })
     await this.refreshBookList()
     if (!this.$route.params.id) return;
