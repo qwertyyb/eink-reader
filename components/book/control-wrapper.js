@@ -228,6 +228,7 @@ export default {
     },
     initHammer() {
       const contentTapHandler = (event) => {
+        if (event.srcEvent.target.nodeName.toLowerCase() === 'mark') return
         if (env.isInk()) {
           /**
            * 把点击区域分为九个区域，如下
