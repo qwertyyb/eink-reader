@@ -73,12 +73,15 @@ export const dataService = {
     })
     return { catalog }
   },
-  async getContent (chapter, chapterIndex, book) {
+  async getChapter(chapter, chapterIndex, book) {
     const { content } = await books.get(book.id)
     const index = book.catalog.findIndex(item => item.cursor === chapter.cursor)
     const next = book.catalog[index + 1]
     const startCursor = chapter.cursor
     return { content: await render(book, chapter, content, chapterIndex, startCursor, next && next.cursor || undefined) }
+  },
+  async getBook(bookId) {
+    return books.get(bookId)
   }
 }
 

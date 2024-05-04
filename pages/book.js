@@ -15,10 +15,29 @@ export default {
         @next-page="pageHandler('next')"
         @scroll-vertical="scrollVertical">
         <template v-slot:catalog>
+          <header class="catalog-header">
+            <div class="search-input">
+              <input type="text" v-model.trim="search.keyword" />
+              <span class="material-symbols-outlined regexp-icon"
+                :class="{active: search.isRegexp}"
+                @click="search.isRegexp = !search.isRegexp">regular_expression</span>
+            </div>
+            <button class="action-btn search-btn" @click="searchContent">
+              <span class="material-symbols-outlined action-icon">search</span>
+            </button>
+            <button class="action-btn close-btn" @click="clearSearch" v-if="search.completed">
+              <span class="material-symbols-outlined action-icon">close</span>
+            </button>
+          </header>
+          <div class="search-empty-results" v-if="search.completed && search.results.length <= 0">
+            <span class="material-symbols-outlined icon">find_in_page</span>
+            <p class="empty-title">未找到结果</p>
+          </div>
           <virtual-list
+            v-else
             class="catalog-content-wrapper"
             data-key="id"
-            :data-sources="chapterList"
+            :data-sources="list"
             ref="catalog"
             :estimate-size="48">
             <template #="{ source, index }">
@@ -73,9 +92,20 @@ export default {
       startChapterIndex: 0,
       curChapterIndex: 0,
       isInk: env.isInk(),
+
+      search: {
+        keyword: '',
+        isRegexp: false,
+        completed: false,
+        results: [],
+      }
     }
   },
   computed: {
+    list () {
+      if (this.search.keyword.trim()) return this.search.results
+      return this.chapterList
+    },
     chapter() {
       return this.chapterList[this.curChapterIndex]
     },
@@ -115,6 +145,30 @@ export default {
     }
   },
   methods: {
+    async searchContent() {
+      if (!this.search.keyword.trim()) return;
+      const { content } = await services[this.server].getBook(Number(this.id))
+      const results = []
+      const reg = this.search.isRegexp ? new RegExp(this.search.keyword) : null
+      content.split('\n').forEach((line, index) => {
+        const match = this.search.isRegexp ? reg.test(line.trim()) : line.trim().includes(this.search.keyword)
+        if (match) {
+          results.push({
+            title: line.trim(),
+            cursor: index,
+            id: index,
+          })
+        }
+      })
+      this.search.completed = true
+      this.search.results = results
+    },
+    async clearSearch() {
+      this.search.completed = false
+      this.search.keyword = ''
+      this.search.results = []
+      this.search.isRegexp = false
+    },
     async fetchBook() {
       const book = await services[this.server].getBookList().then(bookList => bookList.find(book => `${book.id}` === `${this.id}`))
       if (!book) {
@@ -129,6 +183,7 @@ export default {
         status: 'default', // default | loading | loaded
         content: '',
       }))
+      console.log(book)
       this.book = book
     },
     async startRead() {
@@ -161,7 +216,7 @@ export default {
     async loadChapter(chapterIndex) {
       const chapter = this.chapterList[chapterIndex]
       chapter.status = 'loading'
-      const { content } = await services[this.server].getContent(chapter, chapterIndex, this.book)
+      const { content } = await services[this.server].getChapter(chapter, chapterIndex, this.book)
       chapter.content = content
       chapter.status = 'loaded'
     },
