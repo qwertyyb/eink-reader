@@ -73,5 +73,11 @@ export const remoteBooks = [
     cover: coverUrl('msj'),
     title: '牧神记',
     downloadUrl: bookUrl('牧神记')
+  },
+  {
+    id: 13,
+    cover: coverUrl('wxkb'),
+    title: '无限恐怖',
+    downloadUrl: bookUrl('无限恐怖')
   }
 ]
