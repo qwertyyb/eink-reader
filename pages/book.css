@@ -117,6 +117,7 @@
   align-items: center;
   justify-content: center;
   margin-left: 12px;
+  flex-shrink: 0;
 }
 .catalog-header .action-btn .action-icon {
   color: #fff;

@@ -10,6 +10,7 @@ import { getNearestTopEl } from "../../js/utils/index.js"
 import MenuDialog from './book-menu-dialog.js'
 import MarksViewer from './marks-viewer.js'
 import CDialog from "../common/c-dialog.js"
+import CatalogSettingDialog from "./catalog-setting-dialog.js"
 
 export default {
   components: {
@@ -20,7 +21,8 @@ export default {
     SelectionMenu,
     MenuDialog,
     MarksViewer,
-    CDialog
+    CDialog,
+    CatalogSettingDialog,
   },
   template: /*html*/`
     <div class="control-wrapper">
@@ -43,8 +45,11 @@ export default {
       </catalog-dialog>
 
       <menu-dialog :visible="dialog==='bookMenu'" @close="dialog=null"
-        @action="dialog='marksViewer'">
+        @action="dialog=$event">
       </menu-dialog>
+
+      <catalog-setting-dialog :visible="dialog==='catalogSetting'" @close="dialog=null">
+      </catalog-setting-dialog>
 
       <c-dialog :visible="dialog==='marksViewer'" @close="dialog=null;refreshMarks()">
         <marks-viewer></marks-viewer>

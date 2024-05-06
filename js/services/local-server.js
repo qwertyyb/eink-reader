@@ -82,6 +82,9 @@ export const dataService = {
   },
   async getBook(bookId) {
     return books.get(bookId)
+  },
+  async updateBook(bookId, updatedData) {
+    return books.update(bookId, updatedData)
   }
 }
 

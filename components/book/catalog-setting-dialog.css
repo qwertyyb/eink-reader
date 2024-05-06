@@ -1,0 +1,34 @@
+.catalog-setting-dialog .c-dialog-content {
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 16px;
+}
+.catalog-setting-dialog .form-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.catalog-setting-dialog .form-item .form-item-label {
+  width: 100px;
+}
+.catalog-setting-dialog .form-item .form-item-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: #ddd;
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 12px 0 12px;
+  font-size: 14px;
+}
+.catalog-setting-dialog .form-item .submit-btn {
+  border: none;
+  outline: none;
+  background: #448AFF;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  color: #fff;
+  flex: 1;
+  border-radius: 6px;
+}

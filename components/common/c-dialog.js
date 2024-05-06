@@ -29,6 +29,7 @@ export default {
     visible() {
       if (this.visible) {
         this.containerVisible = true
+        this.$emit('open')
       } else {
         this.contentVisible = false
       }

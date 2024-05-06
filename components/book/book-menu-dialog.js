@@ -22,6 +22,12 @@ export default {
           </span>
           <div class="menu-item-label">导出笔记</div>
         </li>
+        <li class="menu-item" @click="catalogSetting">
+          <span class="material-symbols-outlined menu-item-icon">
+          toc
+          </span>
+          <div class="menu-item-label">目录设置</div>
+        </li>
       </ul>
     </c-dialog>
   `,
@@ -39,6 +45,10 @@ export default {
     },
     exportMarks() {
       console.log('导出笔记')
+    },
+    catalogSetting() {
+      console.log('设置目录')
+      this.$emit('action', 'catalogSetting')
     }
   }
 }

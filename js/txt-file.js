@@ -15,16 +15,16 @@ const decodeText = (arrayBuffer) => {
   }
 }
 
-const parseCatalog = (content, { reg = /^第.+章/ } = {}) => {
+export const parseCatalog = (content, { regList = [/^第.+章/] } = {}) => {
   const toc = []
-  content.split('\n').forEach((line, index) => {
-    const isToc = reg.test(line.trim())
-    if (isToc) {
-      toc.push({
-        title: line.trim(),
-        cursor: index
-      })
-    }
+  content.split('\n').forEach((line, row) => {
+    const index = regList.findIndex(reg => reg.test(line.trim()))
+    if (index < 0) return;
+    toc.push({
+      title: line.trim(),
+      cursor: row,
+      level: index + 1
+    })
   })
   return toc
 }
@@ -56,7 +56,7 @@ export const parseTxtFile = async (file, { tocReg = /^第.+章/ } = {}) => {
   return {
     title,
     content,
-    catalog: parseCatalog(content, { reg: tocReg })
+    catalog: parseCatalog(content, { regList: [tocReg] })
   }
 }
 

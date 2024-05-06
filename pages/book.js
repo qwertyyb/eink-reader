@@ -44,6 +44,7 @@ export default {
               <div class="catalog-item"
                 @click="readChapter(source, index)"
                 :class="{active: index === curChapterIndex}"
+                :data-catalog-level="source.level || 1"
                 :data-catalog-id="source.id">
                 <div class="catalog-label">{{ source.title }}</div>
               </div>
@@ -103,7 +104,7 @@ export default {
   },
   computed: {
     list () {
-      if (this.search.keyword.trim()) return this.search.results
+      if (this.search.completed) return this.search.results
       return this.chapterList
     },
     chapter() {
@@ -325,6 +326,6 @@ export default {
       if (this.needAppendNextChapter()) {
         this.appendNextChapter()
       }
-    },
+    }
   }
 }
